@@ -6,10 +6,10 @@
  @brief Kernel functions related to software and hardware interrupts
 */
 
-/** Disable interrupts */
+/** Enables interrupts */
 #define sti() __asm__ volatile ("sti")
 
-/** Enable interrupts */
+/** Disables interrupts */
 #define cli() __asm__ volatile ("cli")
 
 /**
