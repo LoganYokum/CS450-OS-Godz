@@ -66,11 +66,29 @@ int serial_poll(device dev, char *buffer, size_t len)
 	// You must validate each key and handle special keys such as delete, back space, and
 	// arrow keys
 
-	// REMOVE THIS -- IT ONLY EXISTS TO AVOID UNUSED PARAMETER WARNINGS
-	// Failure to remove this comment and the following line *will* result in
-	// losing points for inattention to detail
-	(void)dev; (void)buffer;
+	size_t bufferIndex = 0;
+	while (bufferIndex < len-1) {
+		if (!(inb(dev + LSR) & 0x01)) {
+			continue;
+		}
+		char c = inb(dev);
+		if (c == 0x0A || c == 0x0D) {
+			buffer[bufferIndex] = c;
+			bufferIndex++;
+			break;
+		}else if (c == 0x08) {
+			if (bufferIndex > 0) {
+				bufferIndex--;
+				buffer[bufferIndex] = 0;
+			}
+			continue;
+		}
 
-	// THIS MUST BE CHANGED TO RETURN THE CORRECT VALUE
-	return (int)len;
+		buffer[bufferIndex] = c;
+		outb(dev, c);
+		bufferIndex++;
+	}
+	buffer[bufferIndex] = '\0';
+
+	return bufferIndex;
 }

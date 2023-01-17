@@ -14,6 +14,7 @@
 #include <mpx/interrupts.h>
 #include <mpx/serial.h>
 #include <mpx/vm.h>
+#include <commhand.h>
 #include <sys_req.h>
 #include <string.h>
 #include <memory.h>
@@ -84,6 +85,8 @@ void kmain(void)
 	// 9) YOUR command handler -- *create and #include an appropriate .h file*
 	// Pass execution to your command handler so the user can interact with the system.
 	klogv(COM1, "Transferring control to commhand...");
+	commhand();
+
 	// R4: __asm__ volatile ("int $0x60" :: "a"(IDLE));
 
 	// 10) System Shutdown -- *headers to be determined by your design*
