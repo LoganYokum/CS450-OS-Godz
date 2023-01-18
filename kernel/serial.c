@@ -2,6 +2,10 @@
 #include <mpx/serial.h>
 #include <sys_req.h>
 
+#define BACKSPACE 0x08
+#define CARRIAGE_RETURN 0x0D
+#define NEWLINE 0x0A
+
 enum uart_registers {
 	RBR = 0,	// Receive Buffer
 	THR = 0,	// Transmitter Holding
@@ -73,8 +77,11 @@ int serial_poll(device dev, char *buffer, size_t len)
 			continue;
 		}
 		char c = inb(dev);
-		if (c == 0x08) {
+		if (c == BACKSPACE) {
 			if (bufferIndex > 0) {
+				outb(dev, BACKSPACE);
+				outb(dev, ' ');
+				outb(dev, BACKSPACE);
 				bufferIndex--;
 				buffer[bufferIndex] = 0;
 			}
@@ -83,7 +90,7 @@ int serial_poll(device dev, char *buffer, size_t len)
 		outb(dev, c);
 		buffer[bufferIndex] = c;
 		bufferIndex++;
-		if (c == 0x0A || c == 0x0D) break;
+		if (c == NEWLINE || c == CARRIAGE_RETURN) break;
 		
 	}
 	buffer[bufferIndex] = '\0';

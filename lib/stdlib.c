@@ -39,13 +39,13 @@ char *iota(int n)
 		digits++;
 	}
 
-	char *res = sys_mem_alloc(digits + 1);
+	char *res = sys_alloc_mem(digits + 1);
 	res[digits] = '\0';
 
 	for (int i = digits - 1; i >= 0; i--) {
-		res[i] = (n % 10);
+		res[i] = (n % 10) + '0';
 		n /= 10;
 	}
-	
+
 	return res;
 }
