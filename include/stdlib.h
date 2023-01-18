@@ -13,4 +13,7 @@
 */
 int atoi(const char *s);
 
+/**
+*/
+int println(const char *message);
 #endif

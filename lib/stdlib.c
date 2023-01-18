@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <memory.h>
+#include <mpx/io.h>
+#include <mpx/device.h>
+#include <string.h>
 
 int atoi(const char *s)
 {
@@ -48,4 +51,18 @@ char *iota(int n)
 	}
 
 	return res;
+}
+
+int println(const char* message)
+{
+        //TODO: possible that com1 will not always be the default device. may need to use a provided function to get the current
+        //      device?
+        int index = 0;
+        while(*(index+message)!='\0'){ //pointer arithmetic to outb each byte in the message to COM1.
+                outb(COM1,*(index+message));
+                index++;
+        }
+        outb(COM1,'\r'); //carrage return
+        outb(COM1,'\n'); //new line
+        return (int)strlen(message);
 }
