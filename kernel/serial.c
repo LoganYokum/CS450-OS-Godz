@@ -67,26 +67,24 @@ int serial_poll(device dev, char *buffer, size_t len)
 	// arrow keys
 
 	size_t bufferIndex = 0;
+	// size_t cursorIndex = 0;
 	while (bufferIndex < len-1) {
 		if (!(inb(dev + LSR) & 0x01)) {
 			continue;
 		}
 		char c = inb(dev);
-		if (c == 0x0A || c == 0x0D) {
-			buffer[bufferIndex] = c;
-			bufferIndex++;
-			break;
-		}else if (c == 0x08) {
+		if (c == 0x08) {
 			if (bufferIndex > 0) {
 				bufferIndex--;
 				buffer[bufferIndex] = 0;
 			}
 			continue;
 		}
-
-		buffer[bufferIndex] = c;
 		outb(dev, c);
+		buffer[bufferIndex] = c;
 		bufferIndex++;
+		if (c == 0x0A || c == 0x0D) break;
+		
 	}
 	buffer[bufferIndex] = '\0';
 

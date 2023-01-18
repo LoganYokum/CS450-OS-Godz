@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <ctype.h>
+#include <memory.h>
 
 int atoi(const char *s)
 {
@@ -25,5 +26,26 @@ int atoi(const char *s)
 		res = res * -1;
 	}
 
+	return res;
+}
+
+char *iota(int n) 
+{
+	int tmp = n;
+	int digits = 0;
+
+	while (tmp < 0) {
+		tmp /= 10;
+		digits++;
+	}
+
+	char *res = sys_mem_alloc(digits + 1);
+	res[digits] = '\0';
+
+	for (int i = digits - 1; i >= 0; i--) {
+		res[i] = (n % 10);
+		n /= 10;
+	}
+	
 	return res;
 }
