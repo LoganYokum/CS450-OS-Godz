@@ -71,8 +71,7 @@ int serial_poll(device dev, char *buffer, size_t len)
 	// arrow keys
 
 	size_t bufferIndex = 0;
-	// size_t cursorIndex = 0;
-	while (bufferIndex < len-1) {
+	while (bufferIndex < len-3) {
 		if (!(inb(dev + LSR) & 0x01)) {
 			continue;
 		}
@@ -84,6 +83,7 @@ int serial_poll(device dev, char *buffer, size_t len)
 				outb(dev, BACKSPACE);
 				bufferIndex--;
 				buffer[bufferIndex] = 0;
+				
 			}
 			continue;
 		}
@@ -93,7 +93,13 @@ int serial_poll(device dev, char *buffer, size_t len)
 		if (c == NEWLINE || c == CARRIAGE_RETURN) break;
 		
 	}
-	buffer[bufferIndex] = '\0';
+	buffer[bufferIndex] = '\r';
+	buffer[bufferIndex + 1] = '\n';
+	buffer[bufferIndex + 2] = '\0';
+	bufferIndex += 3;
+
+	outb(dev, '\r');
+	outb(dev, '\n');
 
 	return bufferIndex;
 }
