@@ -7,7 +7,6 @@ kernel/irq.o\
 kernel/core.o\
 kernel/kmain.o\
 kernel/serial.o\
-kernel/commhand.o
 
 LIB_OBJECTS =\
 lib/ctype.o\
@@ -15,7 +14,8 @@ lib/stdlib.o\
 lib/string.o
 
 USER_OBJECTS =\
-user/system.o
+user/system.o\
+user/commhand.o
 
 ########################################################################
 ### Nothing below here needs to be changed
