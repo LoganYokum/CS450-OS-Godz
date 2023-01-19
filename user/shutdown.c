@@ -26,6 +26,9 @@ int shutdown(){
 
     if(strcmp(compare_str,"shutdown")==0) //compare string for shutdown
         return 0;
-    else   
+    else{
+        sys_req(WRITE, COM1, prompt, sizeof(prompt)); //add prompt
+        println("You did not confirm shutdown.");
         return 1;
+    }
 }
