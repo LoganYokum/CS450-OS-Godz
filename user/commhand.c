@@ -32,12 +32,7 @@ void commhand() {
             version();
         }
         else if(strcmp(command_str,"help")==0){
-            // if(should only print if only help is listed){
-            //     help(NULL);
-            // }
-            // else{ take param and parse
-            //     help(str);
-            // }   
+            help(NULL);
         }
         else if(strcmp(command_str,"shutdown")==0){
            int code = shutdown();
