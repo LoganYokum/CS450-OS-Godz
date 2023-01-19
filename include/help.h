@@ -1,1 +1,1 @@
-void help();
+void help(char *str);
