@@ -1,5 +1,9 @@
+#include <version.h>
 #include <stdlib.h>
 
-void help(){
+/*
+ Manually update version function upon each module release.
+*/
+void version(){
     println("R1");
 }
