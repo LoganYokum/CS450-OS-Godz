@@ -13,7 +13,6 @@ int shutdown(){
     compare_str[9] = '\0'; //null terminator at end of string
 
     char prompt[] = "> ";
-    sys_req(WRITE, COM1, prompt, sizeof(prompt)); //add prompt
     println("You selected shutdown. Retype shutdown to confirm.");
     sys_req(WRITE, COM1, prompt, sizeof(prompt)); //add prompt
     sys_req(READ,COM1,shutdown_buf,(size_t)sizeof(shutdown_buf)); //read in buffer for confirmation
@@ -27,7 +26,6 @@ int shutdown(){
     if(strcmp(compare_str,"shutdown")==0) //compare string for shutdown
         return 0;
     else{
-        sys_req(WRITE, COM1, prompt, sizeof(prompt)); //add prompt
         println("You did not confirm shutdown.");
         return 1;
     }
