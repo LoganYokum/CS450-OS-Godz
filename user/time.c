@@ -4,7 +4,7 @@
 
 void date(char *args) {
     if (strcmp(args, "") == 0) {
-
+        // need to implement getting date from RTC
         println("current date");
     } else {
         int i = 0;
@@ -49,7 +49,7 @@ void date(char *args) {
 
 void time(char *args) {
     if (strcmp(args, "") == 0) {
-
+        // need to implement getting time from RTC
         println("current time");
     } else {
         int i = 0;
