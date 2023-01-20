@@ -3,6 +3,7 @@
 #include <sys_req.h>
 
 #define BACKSPACE 0x08
+#define DELETE 0x7F
 #define CARRIAGE_RETURN 0x0D
 #define NEWLINE 0x0A
 
@@ -71,25 +72,45 @@ int serial_poll(device dev, char *buffer, size_t len)
 	// arrow keys
 
 	size_t bufferIndex = 0;
+	size_t cursorIndex = 0;
 	while (bufferIndex < len-3) {
 		if (!(inb(dev + LSR) & 0x01)) {
 			continue;
 		}
 		char c = inb(dev);
-		if (c == BACKSPACE) {
+		if (c == '\033') {
+			inb(dev);
+
+			c = inb(dev);
+			if (c == 'D') {
+				if (cursorIndex > 0) {
+					cursorIndex -= 1;
+					c = ' ';
+				}
+				continue;
+			}else if (c == 'C') {
+				if (cursorIndex < bufferIndex) {
+					cursorIndex += 1;
+					c = buffer[cursorIndex];
+				}
+				continue;
+			}
+		}else if (c == BACKSPACE || c == DELETE) {
 			if (bufferIndex > 0) {
 				outb(dev, BACKSPACE);
 				outb(dev, ' ');
 				outb(dev, BACKSPACE);
 				bufferIndex--;
-				buffer[bufferIndex] = 0;
+				cursorIndex--;
+				buffer[cursorIndex] = 0;
 				
 			}
 			continue;
 		}
 		outb(dev, c);
-		buffer[bufferIndex] = c;
+		buffer[cursorIndex] = c;
 		bufferIndex++;
+		cursorIndex++;
 		if (c == NEWLINE || c == CARRIAGE_RETURN) break;
 		
 	}
