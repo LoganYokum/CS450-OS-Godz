@@ -15,7 +15,7 @@ int shutdown(){
     char prompt[] = "> ";
     println("You selected shutdown. Retype shutdown to confirm.");
     sys_req(WRITE, COM1, prompt, sizeof(prompt)); //add prompt
-    sys_req(READ,COM1,shutdown_buf,(size_t)sizeof(shutdown_buf)); //read in buffer for confirmation
+    sys_req(READ,COM1,shutdown_buf,strlen(shutdown_buf)); //read in buffer for confirmation
 
     int i = 0;
     while(isspace(shutdown_buf[i])==0){ //while not a space
