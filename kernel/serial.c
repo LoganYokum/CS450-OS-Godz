@@ -79,23 +79,23 @@ int serial_poll(device dev, char *buffer, size_t len)
 		}
 		char c = inb(dev);
 		if (c == '\033') {
-			inb(dev);
+			outb(dev, c);
+			outb(dev, inb(dev));
 
 			c = inb(dev);
 			if (c == 'D') {
 				if (cursorIndex > 0) {
 					cursorIndex -= 1;
-					c = ' ';
 				}
-				continue;
 			}else if (c == 'C') {
 				if (cursorIndex < bufferIndex) {
 					cursorIndex += 1;
-					c = buffer[cursorIndex];
 				}
-				continue;
 			}
-		}else if (c == BACKSPACE || c == DELETE) {
+			outb(dev, c);
+			continue;
+		}
+		if (c == BACKSPACE || c == DELETE) {
 			if (bufferIndex > 0) {
 				outb(dev, BACKSPACE);
 				outb(dev, ' ');
@@ -107,6 +107,14 @@ int serial_poll(device dev, char *buffer, size_t len)
 			}
 			continue;
 		}
+		if (cursorIndex < bufferIndex) {
+    		for (size_t i = bufferIndex; i > cursorIndex; i--) {
+      			char tmp = buffer[i - 1];
+      			buffer[i] = tmp;
+      			buffer[i - 1] = 0;
+    		}
+    		buffer[cursorIndex] = 0;
+  		}
 		outb(dev, c);
 		buffer[cursorIndex] = c;
 		bufferIndex++;
