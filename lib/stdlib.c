@@ -32,25 +32,31 @@ int atoi(const char *s)
 	return res;
 }
 
-char *iota(int n) 
+// still getting strange output for negative numbers but it works for positive numbers
+char *itoa(int n) 
 {
-	int tmp = n;
+  	int tmp = n;
 	int digits = 0;
 
-	while (tmp < 0) {
-		tmp /= 10;
-		digits++;
-	}
+  	while (tmp > 0) {
+    	tmp /= 10;
+   	 	digits++;
+  	}
 
-	char *res = sys_alloc_mem(digits + 1);
-	res[digits] = '\0';
+  	int negative = 0;
+  	if (n < 0) {
+   		negative = 1;
+  	}
 
-	for (int i = digits - 1; i >= 0; i--) {
-		res[i] = (n % 10) + '0';
-		n /= 10;
-	}
+	char *res = sys_alloc_mem(digits + 1 + negative);
+  	res[digits + negative] = '\0';
 
-	return res;
+  	for (int i = digits - 1 + negative; i >= negative; i--) {
+    	res[i] = (n % 10) + '0';
+    	n /= 10;
+  	}
+
+  	return res;
 }
 
 int println(const char* message)
