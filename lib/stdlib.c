@@ -32,7 +32,7 @@ int atoi(const char *s)
 	return res;
 }
 
-char *iota(int n) 
+char *itoa(int n) 
 {
 	int tmp = n;
 	int digits = 0;

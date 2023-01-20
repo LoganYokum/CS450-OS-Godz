@@ -47,4 +47,12 @@ size_t strlen(const char *s);
 */
 char* strtok(char * restrict s1, const char * restrict s2);
 
+/**
+ Copies the string pointed to by s2 into s1
+ @param s1 The destination string
+ @param s2 The source string
+ @return A pointer to the destination string
+ */
+char* strcpy(char * restrict destination, const char * restrict source);
+
 #endif

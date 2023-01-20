@@ -1,2 +1,8 @@
 *.o
 kernel.bin
+
+
+## Miscellaneous
+.vscode
+Dockerfile
+run-docker.sh

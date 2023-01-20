@@ -92,3 +92,22 @@ char *strtok(char * restrict s1, const char * restrict s2)
 	tok_tmp = NULL;
 	return s1;
 }
+
+char* strcpy(char * restrict destination, const char * restrict source)
+{
+    if (destination == NULL) {
+        return NULL;
+    }
+ 
+    char *ptr = destination;
+
+    while (*source != '\0')
+    {
+        *destination = *source;
+        destination++;
+        source++;
+    }
+    *destination = '\0';
+ 
+    return ptr;
+}
