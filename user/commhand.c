@@ -17,9 +17,7 @@ void commhand() {
         buffer[99] = '\0';
 
         sys_req(WRITE, COM1, prompt, sizeof(prompt));
-        //int nread = 
         sys_req(READ, COM1, buffer, len);
-        //sys_req(WRITE, COM1, buffer, nread);
 
         //begin parsing
         int i = 0;
@@ -50,22 +48,20 @@ void commhand() {
            }
         }
         else if(strcmp(command_str,"time")==0){
-            const char delimeter[2] = {' '}; //parse by spaces to get each param of the command.
-            char* token; 
-            token = strtok(buffer,delimeter);
-            while(token!=NULL){
-                token = strtok(NULL,delimeter);
-
-            }
+            strtok(buffer," ");//capture parameter args
+            char *param_str = strtok(NULL," ");//capture argument after help
+            char args[strlen(param_str)]; //set argument
+            memcpy(args,param_str,strlen(param_str)); //copy param char* to args array
+            args[(int)sizeof(args)-3] = '\0';//set null terminator to cut of \r,\n,enter key
+            time(args);
         }
         else if(strcmp(command_str,"date")==0){
-            const char delimeter[2] = {' '}; //parse by spaces to get each param of the command.
-            char* token; 
-            token = strtok(buffer,delimeter);
-            while(token!=NULL){
-                token = strtok(NULL,delimeter);
-
-            }
+            strtok(buffer," ");//capture parameter args
+            char *param_str = strtok(NULL," ");//capture argument after help
+            char args[strlen(param_str)]; //set argument
+            memcpy(args,param_str,strlen(param_str)); //copy param char* to args array
+            args[(int)sizeof(args)-3] = '\0';//set null terminator to cut of \r,\n,enter key
+            date(args);
         }
         else{
             println("The command you entered is not recognized. Try again.");

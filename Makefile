@@ -18,6 +18,7 @@ user/system.o\
 user/commhand.o\
 user/version.o\
 user/time.o\
+user/date.o\
 user/shutdown.o\
 user/help.o\
 
