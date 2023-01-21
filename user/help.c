@@ -8,7 +8,8 @@ void help(char str[]){
         println("1. help");
         println("2. shutdown");
         println("3. time");
-        println("4. version");
+        println("4. date");
+        println("5. version");
         return;
     }
     else{//the param string contains a argument
