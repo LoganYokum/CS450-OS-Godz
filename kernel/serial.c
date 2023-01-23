@@ -102,17 +102,27 @@ int serial_poll(device dev, char *buffer, size_t len)
 				outb(dev, BACKSPACE);
 				outb(dev, ' ');
 				outb(dev, BACKSPACE);
-				bufferIndex--;
 				cursorIndex--;
-				buffer[cursorIndex] = 0;
+				bufferIndex--;
+
+				for (size_t i = cursorIndex; i < bufferIndex; i++) {
+					buffer[i] = buffer[i + 1];
+					buffer[i + 1] = 0;
+				}
+				for (size_t i = cursorIndex; i < bufferIndex; i++) {
+					outb(dev, buffer[i]);
+				}
+				outb(dev, ' ');
+				outb(dev, BACKSPACE);
+				for (size_t i = bufferIndex; i > cursorIndex; i--) {
+					outb(dev, BACKSPACE);
+				}
 			}
 			continue;
 		}
 		if (cursorIndex < bufferIndex) {
     		for (size_t i = bufferIndex; i > cursorIndex; i--) {
-      			char tmp = buffer[i - 1];
-      			buffer[i] = tmp;
-      			buffer[i - 1] = 0;
+				buffer[i] = buffer[i - 1];
     		}
     		buffer[cursorIndex] = c;
 			bufferIndex++;
