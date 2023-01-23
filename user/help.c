@@ -1,9 +1,11 @@
 #include <help.h>
 #include <stdlib.h>
 #include <string.h>
+#include <mpx/io.h>
+#include <sys_req.h>
 
-void help(char str[]){
-    if(strlen(str)==2){//only the argument string contains \r and \n
+void help(char *str){
+    if((int)strlen(str)==1||(int)strlen(str)==2){//only the argument string contains \r and \n
         println("The list of commands you can recieve help on include:");
         println("1. help");
         println("2. shutdown");
@@ -35,6 +37,7 @@ void help(char str[]){
         }
         else{
             println("Incorrect parameter(s) for command: help. Try again.");
+            return;
         }
         return;
     }    

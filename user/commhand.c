@@ -10,7 +10,7 @@
 
 void commhand() {
     char prompt[] = "> ";
-
+    
     while (1) {
         char buffer[100] = {0};
         int len = 100;
@@ -19,13 +19,12 @@ void commhand() {
         sys_req(WRITE, COM1, prompt, sizeof(prompt));
         sys_req(READ, COM1, buffer, len);
 
+        buffer[strlen(buffer)-2] = ' ';
         //begin parsing
-        int i = 0;
         char command_str[20] = {0}; //init char array
         command_str[19] = '\0'; //null terminator at end of string
-        while(isspace(buffer[i])==0){ //while not a space
+        for(int i = 0;isspace(buffer[i])==0;i++){//while not a space
             command_str[i] = buffer[i];
-            i++;
         }
         if(strcmp(command_str,"version")==0){
             version();
@@ -33,10 +32,7 @@ void commhand() {
         else if(strcmp(command_str,"help")==0){
             strtok(buffer," ");//capture parameter args
             char *param_str = strtok(NULL," ");//capture argument after help
-            char args[strlen(param_str)]; //set argument
-            memcpy(args,param_str,strlen(param_str)); //copy param char* to args array
-            args[(int)sizeof(args)-3] = '\0';//set null terminator to cut of \r,\n,enter key
-            help(args);
+            help(param_str);
         }
         else if(strcmp(command_str,"shutdown")==0){
            int code = shutdown();
@@ -58,7 +54,7 @@ void commhand() {
             char *param_str = strtok(NULL," ");//capture argument after help
             char args[strlen(param_str)]; //set argument
             memcpy(args,param_str,strlen(param_str)); //copy param char* to args array
-            args[(int)sizeof(args)-3] = '\0';//set null terminator to cut of \r,\n,enter key
+            args[(int)strlen(args)-2] = '\0';//set null terminator to cut of \r,\n,enter key
             date(args);
         }
         else{
