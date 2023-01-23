@@ -2,7 +2,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-void date(char *args) {
+void date(char *args, char* extra_arg) {
+    println("extra args size:");
+    println(itoa((int)strlen(extra_arg)));//for testing and prevent unused error
     if (strcmp(args, "") == 0) {
         // need to implement getting date from RTC
         println("current date");

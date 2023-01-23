@@ -6,7 +6,7 @@
 #include <ctype.h>
 #include <shutdown.h>
 #include <time.h>
-#include <mpx/io.h>
+#include <date.h>
 
 void commhand() {
     char prompt[] = "> ";
@@ -44,18 +44,14 @@ void commhand() {
         else if(strcmp(command_str,"time")==0){
             strtok(buffer," ");//capture parameter args
             char *param_str = strtok(NULL," ");//capture argument after help
-            char args[strlen(param_str)]; //set argument
-            memcpy(args,param_str,strlen(param_str)); //copy param char* to args array
-            args[(int)sizeof(args)-3] = '\0';//set null terminator to cut of \r,\n,enter key
-            time(args);
+            char *extra_arg = strtok(NULL," ");//test for extra args
+            time(param_str,extra_arg);
         }
         else if(strcmp(command_str,"date")==0){
             strtok(buffer," ");//capture parameter args
             char *param_str = strtok(NULL," ");//capture argument after help
-            char args[strlen(param_str)]; //set argument
-            memcpy(args,param_str,strlen(param_str)); //copy param char* to args array
-            args[(int)strlen(args)-2] = '\0';//set null terminator to cut of \r,\n,enter key
-            date(args);
+            char *extra_arg = strtok(NULL," ");//test for extra args
+            date(param_str,extra_arg);
         }
         else{
             println("The command you entered is not recognized. Try again.");

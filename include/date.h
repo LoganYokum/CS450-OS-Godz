@@ -1,1 +1,1 @@
-void date(char* args);
+void date(char* args, char* extra_arg);
