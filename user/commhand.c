@@ -13,11 +13,10 @@ void commhand() {
     
     while (1) {
         char buffer[100] = {0};
-        int len = 100;
         buffer[99] = '\0';
 
         sys_req(WRITE, COM1, prompt, sizeof(prompt));
-        sys_req(READ, COM1, buffer, len);
+        sys_req(READ, COM1, buffer, sizeof(buffer));
 
         buffer[strlen(buffer)-2] = ' ';
         //begin parsing
@@ -32,7 +31,8 @@ void commhand() {
         else if(strcmp(command_str,"help")==0){
             strtok(buffer," ");//capture parameter args
             char *param_str = strtok(NULL," ");//capture argument after help
-            help(param_str);
+            char *extra_arg = strtok(NULL," ");//test for extra args
+            help(param_str,extra_arg);
         }
         else if(strcmp(command_str,"shutdown")==0){
            int code = shutdown();
