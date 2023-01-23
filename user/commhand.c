@@ -43,9 +43,7 @@ void commhand() {
            if(code==0){
                 break;
            }
-           else{
-                continue;
-           }
+           continue;
         }
         else if(strcmp(command_str,"time")==0){
             strtok(buffer," ");//capture parameter args
