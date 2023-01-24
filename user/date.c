@@ -1,6 +1,10 @@
-#include <date.h>
+#include <time.h>
 #include <string.h>
 #include <stdlib.h>
+#include <mpx/io.h>
+#include <mpx/interrupts.h>
+#include <string.h>
+#include <sys_req.h>
 
 void date(char *args) {
     if (strcmp(args, "\n") == 0) {

@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <mpx/io.h>
 #include <mpx/interrupts.h>
+#include <string.h>
+#include <sys_req.h>
 
 void time(char *args) {
     /**
@@ -11,17 +13,26 @@ void time(char *args) {
     // get seconds
     outb(0x70,0x00);
     unsigned char sec = inb(0x71);
-    println(itoa(sec));
+    sys_req(WRITE,COM1,sec,sizeof(sec));
+    sys_req(WRITE,COM1,"\n",sizeof("\n"));
+    // int sec1 = sec;
+    // int a = sec1%16;
+    // int b = sec1/16;
+    // char *a = atoi(a);
+    // char *b = atoi(b);
+    // println(a);
 
     //get minutes
     outb(0x70,0x02);
     unsigned char min = inb(0x71);
-    println(itoa(min));
+    sys_req(WRITE,COM1,min,sizeof(min));
+    sys_req(WRITE,COM1,"\n",sizeof("\n"));
 
     //get hours
     outb(0x70,0x04);
     unsigned char hour = inb(0x71);
-    println(itoa(hour));
+    sys_req(WRITE,COM1,hour,sizeof(hour));
+    sys_req(WRITE,COM1,"\n",sizeof("\n"));
 
     /**
         WRITE CLOCK
