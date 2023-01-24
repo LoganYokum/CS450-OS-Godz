@@ -18,8 +18,8 @@ void commhand() {
         sys_req(WRITE, COM1, prompt, sizeof(prompt));
         sys_req(READ, COM1, buffer, sizeof(buffer));
 
-        buffer[strlen(buffer)-2] = ' ';
         //begin parsing
+        buffer[strlen(buffer)-2] = ' ';
         char command_str[20] = {0}; //init char array
         command_str[19] = '\0'; //null terminator at end of string
 

@@ -1,9 +1,46 @@
 #include <time.h>
 #include <string.h>
 #include <stdlib.h>
+#include <mpx/io.h>
+#include <mpx/interrupts.h>
 
 void time(char *args) {
-   if (strcmp(args, "\n") == 0) {
+    /**
+        READ CLOCK
+    */
+    // get seconds
+    outb(0x70,0x00);
+    unsigned char sec = inb(0x71);
+    println(itoa(sec));
+
+    //get minutes
+    outb(0x70,0x02);
+    unsigned char min = inb(0x71);
+    println(itoa(min));
+
+    //get hours
+    outb(0x70,0x04);
+    unsigned char hour = inb(0x71);
+    println(itoa(hour));
+
+    /**
+        WRITE CLOCK
+    */
+    //write sec
+    cli();
+    outb(0x70,0x00);
+    outb(0x71,0x00);
+    
+    // write min
+    outb(0x70,0x02);
+    outb(0x71,0x00);
+    
+    //write hour
+    outb(0x70,0x04);
+    outb(0x71,0x80);
+    sti();
+
+    if (strcmp(args, "\n") == 0) { 
         // need to implement getting time from RTC
         println("current time");
     }else {
