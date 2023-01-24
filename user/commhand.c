@@ -22,36 +22,43 @@ void commhand() {
         //begin parsing
         char command_str[20] = {0}; //init char array
         command_str[19] = '\0'; //null terminator at end of string
-        for(int i = 0;isspace(buffer[i])==0;i++){//while not a space
-            command_str[i] = buffer[i];
+
+        int spaces = 0;
+        while (isspace(buffer[spaces])) {
+            spaces++;
         }
+        
+        for (int i = 0; !isspace(buffer[spaces + i]); i++) {
+            command_str[i] = buffer[spaces + i];
+        }
+
+        strtok(buffer," ");//capture parameter args
+        char *param_str = strtok(NULL," ");//capture argument after help
+        char *extra_arg = strtok(NULL," ");//test for extra args
+
+        if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) {
+            println("Command not recognized. Try again.");
+            continue;
+        }
+
         if(strcmp(command_str,"version")==0){
             version();
         }
         else if(strcmp(command_str,"help")==0){
-            strtok(buffer," ");//capture parameter args
-            char *param_str = strtok(NULL," ");//capture argument after help
-            char *extra_arg = strtok(NULL," ");//test for extra args
-            help(param_str,extra_arg);
+            help(param_str);
         }
         else if(strcmp(command_str,"shutdown")==0){
            int code = shutdown();
-           if(code==0){
+           if (code == 0) {
                 break;
            }
            continue;
         }
         else if(strcmp(command_str,"time")==0){
-            strtok(buffer," ");//capture parameter args
-            char *param_str = strtok(NULL," ");//capture argument after help
-            char *extra_arg = strtok(NULL," ");//test for extra args
-            time(param_str,extra_arg);
+            time(param_str);
         }
         else if(strcmp(command_str,"date")==0){
-            strtok(buffer," ");//capture parameter args
-            char *param_str = strtok(NULL," ");//capture argument after help
-            char *extra_arg = strtok(NULL," ");//test for extra args
-            date(param_str,extra_arg);
+            date(param_str);
         }
         else{
             println("The command you entered is not recognized. Try again.");

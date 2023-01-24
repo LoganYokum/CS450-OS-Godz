@@ -8,4 +8,4 @@ struct Clock {
 }; 
 
 // Command to read/write the current time
-void time(char* args, char* extra_arg);
+void time(char* args);
