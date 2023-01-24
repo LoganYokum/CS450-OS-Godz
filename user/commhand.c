@@ -6,60 +6,59 @@
 #include <ctype.h>
 #include <shutdown.h>
 #include <time.h>
-#include <mpx/io.h>
+#include <date.h>
 
 void commhand() {
     char prompt[] = "> ";
-
+    
     while (1) {
         char buffer[100] = {0};
-        int len = 100;
         buffer[99] = '\0';
 
         sys_req(WRITE, COM1, prompt, sizeof(prompt));
-        sys_req(READ, COM1, buffer, len);
+        sys_req(READ, COM1, buffer, sizeof(buffer));
 
         //begin parsing
-        int i = 0;
+        buffer[strlen(buffer)-2] = ' ';
         char command_str[20] = {0}; //init char array
         command_str[19] = '\0'; //null terminator at end of string
-        while(isspace(buffer[i])==0){ //while not a space
-            command_str[i] = buffer[i];
-            i++;
+
+        int spaces = 0;
+        while (isspace(buffer[spaces])) {
+            spaces++;
         }
+        
+        for (int i = 0; !isspace(buffer[spaces + i]); i++) {
+            command_str[i] = buffer[spaces + i];
+        }
+
+        strtok(buffer," ");//capture parameter args
+        char *param_str = strtok(NULL," ");//capture argument after help
+        char *extra_arg = strtok(NULL," ");//test for extra args
+
+        if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) {
+            println("Command not recognized. Try again.");
+            continue;
+        }
+
         if(strcmp(command_str,"version")==0){
             version();
         }
         else if(strcmp(command_str,"help")==0){
-            strtok(buffer," ");//capture parameter args
-            char *param_str = strtok(NULL," ");//capture argument after help
-            char args[strlen(param_str)]; //set argument
-            memcpy(args,param_str,strlen(param_str)); //copy param char* to args array
-            args[(int)sizeof(args)-3] = '\0';//set null terminator to cut of \r,\n,enter key
-            help(args);
+            help(param_str);
         }
         else if(strcmp(command_str,"shutdown")==0){
            int code = shutdown();
-           if(code==0){
+           if (code == 0) {
                 break;
            }
            continue;
         }
         else if(strcmp(command_str,"time")==0){
-            strtok(buffer," ");//capture parameter args
-            char *param_str = strtok(NULL," ");//capture argument after help
-            char args[strlen(param_str)]; //set argument
-            memcpy(args,param_str,strlen(param_str)); //copy param char* to args array
-            args[(int)sizeof(args)-3] = '\0';//set null terminator to cut of \r,\n,enter key
-            time(args);
+            time(param_str);
         }
         else if(strcmp(command_str,"date")==0){
-            strtok(buffer," ");//capture parameter args
-            char *param_str = strtok(NULL," ");//capture argument after help
-            char args[strlen(param_str)]; //set argument
-            memcpy(args,param_str,strlen(param_str)); //copy param char* to args array
-            args[(int)sizeof(args)-3] = '\0';//set null terminator to cut of \r,\n,enter key
-            date(args);
+            date(param_str);
         }
         else{
             println("The command you entered is not recognized. Try again.");

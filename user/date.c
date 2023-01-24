@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 void date(char *args) {
-    if (strcmp(args, "") == 0) {
+    if (strcmp(args, "\n") == 0) {
         // need to implement getting date from RTC
         println("current date");
     } else {
