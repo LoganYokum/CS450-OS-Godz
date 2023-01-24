@@ -17,10 +17,8 @@ int shutdown(){
     sys_req(WRITE, COM1, prompt, sizeof(prompt)); //add prompt
     sys_req(READ,COM1,shutdown_buf,strlen(shutdown_buf)); //read in buffer for confirmation
 
-    int i = 0;
-    while(isspace(shutdown_buf[i])==0){ //while not a space
+    for(int i = 0;isspace(shutdown_buf[i])==0;i++){//while not a space
         compare_str[i] = shutdown_buf[i];
-        i++;
     }
 
     if(strcmp(compare_str,"shutdown")==0) //compare string for shutdown
