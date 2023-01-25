@@ -34,9 +34,9 @@ void date(char *args) {
         outb(COM1,'\n');
 
     } else {
-        int month = atoi(strtok(args,":"));
-        int day = atoi(strtok(NULL,":"));
-        int year = atoi(strtok(NULL," "));
+        unsigned char month = atoi(strtok(args,":"));
+        unsigned char day = atoi(strtok(NULL,":"));
+        unsigned char year = atoi(strtok(NULL," "));
         if (strlen(args) > 10) {
             println("Invalid date format. Use mm:dd:yyyy");
             return;
@@ -58,30 +58,24 @@ void date(char *args) {
         else if ((month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) && day > 31) {
             println("Invalid date. Use 1-31 for days of month given");
         }
-        else if (year < 1970 || year > 2023) {
+        else if (year > 99 || year < 0) {
             println("Invalid year. Use 1970-2023");
             return;
         }
         else{
-            println("here");
-            //CONVERT VALUES INTO BCD
-
-
-            /**
-                WRITE CLOCK
-            */
+            println("Setting Date.");
             //write month
             cli();
             outb(0x70,0x07);
-            outb(0x71,0x00); //fill in 0x00 with write value
+            outb(0x71,htod(month)); //fill in 0x00 with write value
             
             // write day
             outb(0x70,0x06);
-            outb(0x71,0x00); //fill in 0x00 with write value
+            outb(0x71,htod(day)); //fill in 0x00 with write value
             
             //write year
             outb(0x70,0x09);
-            outb(0x71,0x80); //fill in 0x00 with write value
+            outb(0x71,htod(year)); //fill in 0x00 with write value
             sti();
         }
     }

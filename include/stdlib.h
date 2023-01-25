@@ -22,6 +22,7 @@ char *itoa(int n);
 
 int dtoh(int dec);
 
+int htod(int hex);
 /**
 */
 int println(const char *message);

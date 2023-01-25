@@ -5,8 +5,7 @@
 #include <mpx/device.h>
 #include <string.h>
 
-int atoi(const char *s)
-{
+int atoi(const char *s){
 	int res = 0;
 	char sign = ' ';
 
@@ -33,8 +32,7 @@ int atoi(const char *s)
 }
 
 // still getting strange output for negative numbers but it works for positive numbers
-char *itoa(int n) 
-{
+char *itoa(int n) {
   	int tmp = n;
 	int digits = 0;
 
@@ -72,16 +70,28 @@ int dtoh(int dec) {
     return hex;
 }
 
-int println(const char* message)
-{
+int htod(int hex) {
+    int dec = 0;
+	int i = 0; 
+	int rem;
+    while (hex != 0) {
+        rem = hex % 10;
+        hex = hex / 10;
+        dec += rem * (1 << (4*i));
+        i++;
+    }
+    return dec;
+}
+
+int println(const char* message){
         //TODO: possible that com1 will not always be the default device. may need to use a provided function to get the current
         //      device?
-        int index = 0;
-        while(*(index+message)!='\0'){ //pointer arithmetic to outb each byte in the message to COM1.
-                outb(COM1,*(index+message));
-                index++;
-        }
-        outb(COM1,'\r'); //carrage return
-        outb(COM1,'\n'); //new line
-        return (int)strlen(message);
+    int index = 0;
+    while(*(index+message)!='\0'){ //pointer arithmetic to outb each byte in the message to COM1.
+            outb(COM1,*(index+message));
+            index++;
+    }
+    outb(COM1,'\r'); //carrage return
+    outb(COM1,'\n'); //new line
+    return (int)strlen(message);
 }
