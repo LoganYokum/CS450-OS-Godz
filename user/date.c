@@ -9,34 +9,30 @@
 void date(char *args) {
     if (strcmp(args, "\n") == 0) {
         println("Current Date: ");
-        /**
-            READ CLOCK
-        */
+
         // get month
         outb(0x70,0x08);
         unsigned char month = inb(0x71);//BCD 8bit 0x01
-        char* month_str = itoa(month);
-        sys_req(WRITE,COM1,month_str,sizeof(month_str));
-        sys_req(WRITE,COM1,"\n",sizeof("\n"));
-
+        char* month_str =  itoa(dtoh(month));
+        
         //get day
         outb(0x70,0x07);
         unsigned char day = inb(0x71);
-        char* day_str = itoa(day);
-        sys_req(WRITE,COM1,day_str,sizeof(day_str));
-        sys_req(WRITE,COM1,"\n",sizeof("\n"));
+        char* day_str = itoa(dtoh(day));
 
         //get year
         outb(0x70,0x09);
         unsigned char year = inb(0x71);
-        char* year_str = itoa(year);
-        outb(0x70,0x09);
-        unsigned char year1 = inb(0x71);
-        char* year_str_1 = itoa(year1);
-        sys_req(WRITE,COM1,year_str,sizeof(year_str));
-        sys_req(WRITE,COM1,"\n",sizeof("\n"));
-        sys_req(WRITE,COM1,year_str_1,sizeof(year_str_1));
-        sys_req(WRITE,COM1,"\n",sizeof("\n"));
+        char* year_str = itoa(dtoh(year));
+
+        sys_req(WRITE,COM1,month_str,strlen(month_str));
+        sys_req(WRITE,COM1,":",strlen(":"));
+        sys_req(WRITE,COM1,day_str,strlen(day_str));
+        sys_req(WRITE,COM1,":",strlen(":"));
+        sys_req(WRITE,COM1,year_str,strlen(year_str));
+        outb(COM1,'\r');
+        outb(COM1,'\n');
+
     } else {
         int month = atoi(strtok(args,":"));
         int day = atoi(strtok(NULL,":"));
