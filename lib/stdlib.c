@@ -59,6 +59,19 @@ char *itoa(int n)
   	return res;
 }
 
+int dtoh(int dec) {
+    int hex = 0;
+    int i = 1;
+    int rem;
+    while (dec != 0) {
+        rem = dec % 16;
+        dec /= 16;
+        hex += rem * i;
+        i *= 10;
+    }
+    return hex;
+}
+
 int println(const char* message)
 {
         //TODO: possible that com1 will not always be the default device. may need to use a provided function to get the current

@@ -20,6 +20,8 @@ int atoi(const char *s);
  */
 char *itoa(int n);
 
+int dtoh(int dec);
+
 /**
 */
 int println(const char *message);
