@@ -67,15 +67,15 @@ void date(char *args) {
             //write month
             cli();
             outb(0x70,0x07);
-            outb(0x71,htod(month)); //fill in 0x00 with write value
+            outb(0x71,(unsigned char)htod(month)); //fill in 0x00 with write value
             
             // write day
             outb(0x70,0x06);
-            outb(0x71,htod(day)); //fill in 0x00 with write value
+            outb(0x71,(unsigned char)htod(day)); //fill in 0x00 with write value
             
             //write year
             outb(0x70,0x09);
-            outb(0x71,htod(year)); //fill in 0x00 with write value
+            outb(0x71,(unsigned char)htod(year)); //fill in 0x00 with write value
             sti();
         }
     }
