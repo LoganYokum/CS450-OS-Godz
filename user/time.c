@@ -15,20 +15,22 @@ void time(char *args) {
         // get seconds
         outb(0x70,0x00);
         unsigned char sec = inb(0x71);
-        int ascii = sec;
-        sys_req(WRITE,COM1,ascii,sizeof(ascii));
+        char *sec_str = itoa(sec);
+        sys_req(WRITE,COM1,sec_str,sizeof(sec_str));
         sys_req(WRITE,COM1,"\n",sizeof("\n"));
 
         //get minutes
         outb(0x70,0x02);
         unsigned char min = inb(0x71);
-        sys_req(WRITE,COM1,min,sizeof(min));
+        char *min_str = itoa(min);
+        sys_req(WRITE,COM1,min_str,sizeof(min_str));
         sys_req(WRITE,COM1,"\n",sizeof("\n"));
 
         //get hours
         outb(0x70,0x04);
         unsigned char hour = inb(0x71);
-        sys_req(WRITE,COM1,hour,sizeof(hour));
+        char *hour_str = itoa(hour);
+        sys_req(WRITE,COM1,hour_str,sizeof(hour_str));
         sys_req(WRITE,COM1,"\n",sizeof("\n"));
     }
     else {
