@@ -14,10 +14,9 @@
 int atoi(const char *s);
 
 /**
- 
  Convert an integer to an ASCII string
  @param n An arbitrary integer
- @return char* A pointer to a NUL-terminated string
+ @return A pointer to a NULL-terminated string
  */
 char *itoa(int n);
 
