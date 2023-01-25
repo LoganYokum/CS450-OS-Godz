@@ -34,9 +34,9 @@ void time(char *args) {
         sys_req(WRITE,COM1,"\n",sizeof("\n"));
     }
     else {
-        int hour = atoi(strtok(args,":"));
-        int min = atoi(strtok(NULL,":"));
-        int second = atoi(strtok(NULL," "));
+        unsigned char hour = atoi(strtok(args,":"));
+        unsigned char min = atoi(strtok(NULL,":"));
+        unsigned char second = atoi(strtok(NULL," "));
         if (strlen(args) > 8) {
             println("Invalid time format. Use hh:mm:ss");
             return;
@@ -54,25 +54,19 @@ void time(char *args) {
             return;
         }
         else{
-
-            //CONVERT VALUES INTO BCD
-
-
-            /**
-                WRITE CLOCK
-            */
+            println("Setting Time.");
             //write sec
             cli();
             outb(0x70,0x00);
-            outb(0x71,0x00); //fill in 0x00 with write value
+            outb(0x71,(unsigned char)htod(second)); //fill in 0x00 with write value
             
             // write min
             outb(0x70,0x02);
-            outb(0x71,0x00); //fill in 0x00 with write value
+            outb(0x71,(unsigned char)htod(min)); //fill in 0x00 with write value
             
             //write hour
             outb(0x70,0x04);
-            outb(0x71,0x80); //fill in 0x00 with write value
+            outb(0x71,(unsigned char)htod(hour)); //fill in 0x00 with write value
             sti();
         }
     }
