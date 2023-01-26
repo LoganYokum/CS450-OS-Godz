@@ -17,8 +17,22 @@ int shutdown(){
     sys_req(WRITE, COM1, prompt, sizeof(prompt));           // add prompt to output    
     sys_req(READ,COM1,shutdown_buf,strlen(shutdown_buf));   // read in buffer for confirmation
 
-    for(int i = 0;isspace(shutdown_buf[i])==0;i++){         // while not a space
-        compare_str[i] = shutdown_buf[i];
+    shutdown_buf[strlen(shutdown_buf)-2] = ' ';                   //for strtok 
+
+    int spaces = 0;
+    while (isspace(shutdown_buf[spaces])) { // count leading spaces infront of command in the buffer
+        spaces++;
+    }
+
+    strtok(shutdown_buf," ");
+    char *extra_arg = strtok(NULL," ");
+    if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
+        println("You did not confirm shutdown. Too many arguments passed.");
+        return 1;
+    }
+
+    for (int i = 0; !isspace(shutdown_buf[spaces + i]); i++) { // capture the command on buffer
+        compare_str[i] = shutdown_buf[spaces + i];
     }
 
     if(strcmp(compare_str,"shutdown")==0){                  // compare string for shutdown
