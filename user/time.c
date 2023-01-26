@@ -27,7 +27,6 @@ void time(char *args) {
         int hour = dtoh(inb(0x71));
         char *hour_str = itoa(hour);
 
-        sys_req(WRITE,COM1,"Current Time: ",strlen("Current Time: "));
         if (hour < 10) {
             outb(COM1, '0');
         }
