@@ -1,8 +1,10 @@
 #include <mpx/io.h>
 #include <mpx/serial.h>
 #include <sys_req.h>
+#include <stdlib.h>
 
 #define BACKSPACE 0x08
+#define DELETE 0x7F
 #define CARRIAGE_RETURN 0x0D
 #define NEWLINE 0x0A
 
@@ -67,27 +69,76 @@ int serial_out(device dev, const char *buffer, size_t len)
 int serial_poll(device dev, char *buffer, size_t len)
 {
 	size_t bufferIndex = 0;
+	size_t cursorIndex = 0;
 	while (bufferIndex < len-3) {
 		if (!(inb(dev + LSR) & 0x01)) {
 			continue;
 		}
 		char c = inb(dev);
-		if (c == BACKSPACE) {
-			if (bufferIndex > 0) {
+		if (c == NEWLINE || c == CARRIAGE_RETURN) break;
+
+		if (c == '\033' && inb(dev) == '[') {
+			c = inb(dev);
+			if (c == 'A' || c == 'B') {
+				continue;
+			}
+			if (c == 'D') {
+				if (cursorIndex == 0) {
+					continue;
+				}
+				cursorIndex -= 1;
+			}else if (c == 'C') {
+				if (cursorIndex == bufferIndex) {
+					continue;
+				}
+				cursorIndex += 1;
+			}
+			outb(dev, '\033');
+			outb(dev, '[');
+			outb(dev, c);
+			continue;
+		}else if (c == BACKSPACE || c == DELETE) {
+			if (cursorIndex > 0) {
 				outb(dev, BACKSPACE);
 				outb(dev, ' ');
 				outb(dev, BACKSPACE);
+				cursorIndex--;
 				bufferIndex--;
-				buffer[bufferIndex] = 0;
-				
+
+				for (size_t i = cursorIndex; i < bufferIndex; i++) {
+					buffer[i] = buffer[i + 1];
+					buffer[i + 1] = 0;
+				}
+				for (size_t i = cursorIndex; i < bufferIndex; i++) {
+					outb(dev, buffer[i]);
+				}
+				outb(dev, ' ');
+				outb(dev, BACKSPACE);
+				for (size_t i = bufferIndex; i > cursorIndex; i--) {
+					outb(dev, BACKSPACE);
+				}
 			}
 			continue;
 		}
-		outb(dev, c);
-		buffer[bufferIndex] = c;
-		bufferIndex++;
-		if (c == NEWLINE || c == CARRIAGE_RETURN) break;
-		
+		if (cursorIndex < bufferIndex) {
+    		for (size_t i = bufferIndex; i > cursorIndex; i--) {
+				buffer[i] = buffer[i - 1];
+    		}
+    		buffer[cursorIndex] = c;
+			bufferIndex++;
+
+			for (size_t i = cursorIndex; i < bufferIndex; i++) {
+				outb(dev, buffer[i]);
+			}
+			for (size_t i = bufferIndex; i > cursorIndex + 1; i--) {
+				outb(dev, BACKSPACE);
+			}
+  		}else {
+			outb(dev, c);
+			buffer[cursorIndex] = c;
+			bufferIndex++;
+		}
+		cursorIndex++;
 	}
 	buffer[bufferIndex] = '\r';
 	buffer[bufferIndex + 1] = '\n';
@@ -96,6 +147,5 @@ int serial_poll(device dev, char *buffer, size_t len)
 
 	outb(dev, '\r');
 	outb(dev, '\n');
-
 	return bufferIndex;
 }

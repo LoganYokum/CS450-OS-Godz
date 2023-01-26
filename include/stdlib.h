@@ -16,6 +16,18 @@ int atoi(const char *s);
 char *itoa(int n) ;
 
 /**
+ Convert an integer to an ASCII string
+ @param n An arbitrary integer
+ @return A pointer to a NULL-terminated string
+ */
+char *itoa(int n);
+
+int dtoh(int dec);
+
+int htod(int hex);
+
+int isnum(unsigned char args);
+/**
 */
 int println(const char *message);
 #endif
