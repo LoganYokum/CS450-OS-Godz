@@ -23,6 +23,8 @@ char *itoa(int n);
 int dtoh(int dec);
 
 int htod(int hex);
+
+int isnum(unsigned char args);
 /**
 */
 int println(const char *message);

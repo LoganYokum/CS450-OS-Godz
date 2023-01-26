@@ -8,8 +8,6 @@
 
 void date(char *args) {
     if (strcmp(args, "\n") == 0) {
-        println("Current Date: ");
-
         // get month
         outb(0x70,0x08);
         unsigned char month = inb(0x71);//BCD 8bit 0x01
@@ -25,10 +23,20 @@ void date(char *args) {
         unsigned char year = inb(0x71);
         char* year_str = itoa(dtoh(year));
 
+        sys_req(WRITE,COM1,"Current Date: ",strlen("Current Date: "));
+        if(month<10){
+            outb(COM1,'0');
+        }
         sys_req(WRITE,COM1,month_str,strlen(month_str));
         sys_req(WRITE,COM1,":",strlen(":"));
+        if(day<10){
+            outb(COM1,'0');
+        }
         sys_req(WRITE,COM1,day_str,strlen(day_str));
         sys_req(WRITE,COM1,":",strlen(":"));
+        if(year<10){
+            outb(COM1,'0');
+        }
         sys_req(WRITE,COM1,year_str,strlen(year_str));
         outb(COM1,'\r');
         outb(COM1,'\n');
@@ -63,7 +71,7 @@ void date(char *args) {
             return;
         }
         else{
-            println("Setting Date.");
+            println("Date Set.");
             //write month
             cli();
             outb(0x70,0x08);

@@ -83,6 +83,14 @@ int htod(int hex) {
     return dec;
 }
 
+int isnum(unsigned char args){
+	int ascii = (int) args;
+	if(ascii<48 || ascii>57)
+		return 0;
+	else
+		return 1;
+}
+
 int println(const char* message){
         //TODO: possible that com1 will not always be the default device. may need to use a provided function to get the current
         //      device?

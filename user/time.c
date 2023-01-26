@@ -27,6 +27,7 @@ void time(char *args) {
         int hour = dtoh(inb(0x71));
         char *hour_str = itoa(hour);
 
+        sys_req(WRITE,COM1,"Current Time: ",strlen("Current Time: "));
         if (hour < 10) {
             outb(COM1, '0');
         }
@@ -66,7 +67,7 @@ void time(char *args) {
             return;
         }
         else{
-            println("Set time.");
+            println("Time Set.");
             //write sec
             cli();
             outb(0x70, SEC_INDEX);
