@@ -38,7 +38,7 @@ void date(char *args) {
         unsigned char day = atoi(strtok(NULL,":"));
         unsigned char year = atoi(strtok(NULL," "));
         if (strlen(args) > 10) {
-            println("Invalid date format. Use mm:dd:yyyy");
+            println("Invalid date format. Use mm:dd:yy");
             return;
         }
         else if (month < 1 || month > 12) {

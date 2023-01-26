@@ -61,7 +61,7 @@ int dtoh(int dec) {
     int hex = 0;
     int i = 1;
     int rem;
-    while (dec != 0) {
+    while (dec > 0) {
         rem = dec % 16;
         dec /= 16;
         hex += rem * i;
@@ -72,13 +72,13 @@ int dtoh(int dec) {
 
 int htod(int hex) {
     int dec = 0;
-	int i = 0; 
+	int i = 1; 
 	int rem;
-    while (hex != 0) {
+    while (hex > 0) {
         rem = hex % 10;
-        hex = hex / 10;
-        dec += rem * (1 << (4*i));
-        i++;
+        hex /= 10;
+        dec += rem * i;
+        i *= 16;
     }
     return dec;
 }

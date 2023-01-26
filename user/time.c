@@ -6,32 +6,44 @@
 #include <string.h>
 #include <sys_req.h>
 
+#define SEC_INDEX 0x00
+#define MIN_INDEX 0x02
+#define HOUR_INDEX 0x04
+
 void time(char *args) {
     if (strcmp(args, "\n") == 0) { 
-        println("Curent time: ");
-        /**
-            READ CLOCK
-        */
         // get seconds
-        outb(0x70,0x00);
-        unsigned char sec = inb(0x71);
+        outb(0x70, SEC_INDEX);
+        int sec = dtoh(inb(0x71));
         char *sec_str = itoa(sec);
-        sys_req(WRITE,COM1,sec_str,sizeof(sec_str));
-        sys_req(WRITE,COM1,"\n",sizeof("\n"));
 
         //get minutes
-        outb(0x70,0x02);
-        unsigned char min = inb(0x71);
+        outb(0x70, MIN_INDEX);
+        int min = dtoh(inb(0x71));
         char *min_str = itoa(min);
-        sys_req(WRITE,COM1,min_str,sizeof(min_str));
-        sys_req(WRITE,COM1,"\n",sizeof("\n"));
 
         //get hours
-        outb(0x70,0x04);
-        unsigned char hour = inb(0x71);
+        outb(0x70, HOUR_INDEX);
+        int hour = dtoh(inb(0x71));
         char *hour_str = itoa(hour);
-        sys_req(WRITE,COM1,hour_str,sizeof(hour_str));
-        sys_req(WRITE,COM1,"\n",sizeof("\n"));
+
+        if (hour < 10) {
+            outb(COM1, '0');
+        }
+        sys_req(WRITE, COM1, hour_str, strlen(hour_str));
+        outb(COM1, ':');
+
+        if (min < 10) {
+            outb(COM1, '0');
+        }
+        sys_req(WRITE, COM1, min_str, strlen(min_str));
+        outb(COM1, ':');
+
+        if (sec < 10) {
+            outb(COM1, '0');
+        }
+        sys_req(WRITE, COM1, sec_str, strlen(sec_str));
+        sys_req(WRITE, COM1, "\r\n", 2);
     }
     else {
         unsigned char hour = atoi(strtok(args,":"));
@@ -54,19 +66,19 @@ void time(char *args) {
             return;
         }
         else{
-            println("Setting Time.");
+            println("Set time.");
             //write sec
             cli();
-            outb(0x70,0x00);
-            outb(0x71,(unsigned char)htod(second)); //fill in 0x00 with write value
+            outb(0x70, SEC_INDEX);
+            outb(0x71, (unsigned char)htod(second)); //fill in 0x00 with write value
             
             // write min
-            outb(0x70,0x02);
-            outb(0x71,(unsigned char)htod(min)); //fill in 0x00 with write value
+            outb(0x70, MIN_INDEX);
+            outb(0x71, (unsigned char)htod(min)); //fill in 0x00 with write value
             
             //write hour
-            outb(0x70,0x04);
-            outb(0x71,(unsigned char)htod(hour)); //fill in 0x00 with write value
+            outb(0x70, HOUR_INDEX);
+            outb(0x71, (unsigned char)htod(hour)); //fill in 0x00 with write value
             sti();
         }
     }
