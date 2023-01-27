@@ -13,7 +13,7 @@
 
 void time(char *args) {
     if (strcmp(args, "\n") == 0) { 
-        // get seconds
+        // get secs
         outb(0x70, SEC_INDEX);
         int sec = dtoh(inb(0x71));
         char *sec_str = itoa(sec);
@@ -52,41 +52,44 @@ void time(char *args) {
         
     }
     else {
-        unsigned char hour = atoi(strtok(args, ":"));
-        unsigned char min = atoi(strtok(NULL, ":"));
-        unsigned char second = atoi(strtok(NULL, " "));
-        
-        if (strlen(args) > 8) {
+        if (strlen(args) > 8 || (args[2] != ':' || args[5] != ':')) {
             println("Invalid time format. Use hh:mm:ss");
             return;
         }
-        else if (hour < 0 || hour > 23) {
+
+        unsigned char hour = atoi(strtok(args, ":"));
+        unsigned char min = atoi(strtok(NULL, ":"));
+        unsigned char sec = atoi(strtok(NULL, " "));
+        
+        if (!(isnum(hour) && isnum(min) && isnum(sec))) {
+            println("Invalid character format. Must use numbers.");
+            return;
+        }
+        if (hour < 0 || hour > 23) {
             println("Invalid hour. Use 0-23");
             return;
         }
-        else if (min < 0 || min > 59) {
+        if (min < 0 || min > 59) {
             println("Invalid minute. Use 0-59");
             return;
         }
-        else if (second < 0 || second > 59) {
-            println("Invalid second. Use 0-59");
+        if (sec < 0 || sec > 59) {
+            println("Invalid sec. Use 0-59");
             return;
         }
-        else{
-            println("Time Set.");
-            //write sec
-            cli();
-            outb(0x70, SEC_INDEX);
-            outb(0x71, (unsigned char)htod(second)); //fill in 0x00 with write value
-            
-            // write min
-            outb(0x70, MIN_INDEX);
-            outb(0x71, (unsigned char)htod(min)); //fill in 0x00 with write value
-            
-            //write hour
-            outb(0x70, HOUR_INDEX);
-            outb(0x71, (unsigned char)htod(hour)); //fill in 0x00 with write value
-            sti();
-        }
+        println("Time Set.");
+        //write sec
+        cli();
+        outb(0x70, SEC_INDEX);
+        outb(0x71, (unsigned char)htod(sec)); //fill in 0x00 with write value
+        
+        // write min
+        outb(0x70, MIN_INDEX);
+        outb(0x71, (unsigned char)htod(min)); //fill in 0x00 with write value
+        
+        //write hour
+        outb(0x70, HOUR_INDEX);
+        outb(0x71, (unsigned char)htod(hour)); //fill in 0x00 with write value
+        sti();
     }
 }

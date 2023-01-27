@@ -2,6 +2,7 @@
 #include <mpx/serial.h>
 #include <sys_req.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define BACKSPACE 0x08
 #define DELETE 0x7F
@@ -70,6 +71,10 @@ int serial_poll(device dev, char *buffer, size_t len)
 {
 	size_t bufferIndex = 0;
 	size_t cursorIndex = 0;
+
+	// char history[50][80] = {{0}};
+	// size_t historyIndex = sizeof(history) / (80 * sizeof(char)) - 1;
+
 	while (bufferIndex < len-3) {
 		if (!(inb(dev + LSR) & 0x01)) {
 			continue;
@@ -79,9 +84,28 @@ int serial_poll(device dev, char *buffer, size_t len)
 
 		if (c == '\033' && inb(dev) == '[') {
 			c = inb(dev);
-			if (c == 'A' || c == 'B') {
+			if (c == 'B') {
 				continue;
 			}
+			// if (c == 'A') {
+			// 	if (historyIndex == 0) {
+			// 		continue;
+			// 	}
+			// 	historyIndex -= 1;
+			// 	char *prevCommand = history[historyIndex];
+			// 	for (size_t i = strlen(prevCommand); i > 0; i--) {
+			// 		outb(COM1, BACKSPACE);
+			// 		outb(COM1, ' ');
+			// 		outb(COM1, BACKSPACE);
+			// 	}
+
+			// 	for (size_t i = 0; i < strlen(prevCommand); i++) {
+			// 		outb(COM1, prevCommand[i]);
+			// 	}
+			// 	cursorIndex = strlen(prevCommand);
+			// 	bufferIndex = strlen(prevCommand);
+			// 	continue;
+			// }
 			if (c == 'D') {
 				if (cursorIndex == 0) {
 					continue;
@@ -140,6 +164,13 @@ int serial_poll(device dev, char *buffer, size_t len)
 		}
 		cursorIndex++;
 	}
+	// historyIndex = sizeof(history) / (80 * sizeof(char)) - 1;
+	// for (size_t i = 0; i < historyIndex - 1; i++) {
+	// 	if (history[i + 1]) continue;
+	// 	memcpy(history[i], history[i + 1], sizeof(history[i + 1]));
+	// }
+	// memcpy(history[historyIndex], buffer, bufferIndex);
+
 	buffer[bufferIndex] = '\r';
 	buffer[bufferIndex + 1] = '\n';
 	buffer[bufferIndex + 2] = '\0';

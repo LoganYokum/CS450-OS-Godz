@@ -51,28 +51,40 @@ void date(char *args) {
         sys_free_mem(year_str);
 
     } else {
+        if (strlen(args) > 8 || (args[2] != '/' || args[5] != '/')) {
+            println("Invalid date format. Use mm/dd/yy");
+            return;
+        }
+
         unsigned char month = atoi(strtok(args,"/"));
         unsigned char day = atoi(strtok(NULL,"/"));
         unsigned char year = atoi(strtok(NULL," "));
-        if (strlen(args) > 10) {
-            println("Invalid date format. Use mm/dd/yy");
+
+        if (!(isnum(month)  && isnum(day)  && isnum(year))) {
+            println("Invalid character format. Must use numbers.");
             return;
-        }else if (month < 1 || month > 12) {
+        }
+        if (month < 1 || month > 12) {
             println("Invalid month. Use 1-12");
             return;
-        }else if (day < 1 || day > 31) {
+        }
+        if (day < 1 || day > 31) {
             println("Invalid day. Use 1-31");
             return;
-        }else if (month == 2 && day > 28) {
+        }
+        if (month == 2 && day > 28) {
             println("Invalid date. Use 1-28 for days of February");
             return;
-        } else if ((month == 4 || month == 6 || month == 9 || month == 11) && day > 30) {
+        }
+        if ((month == 4 || month == 6 || month == 9 || month == 11) && day > 30) {
             println("Invalid date. Use 1-30 for days of month given");
             return;
-        }else if ((month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) && day > 31) {
+        }
+        if ((month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) && day > 31) {
             println("Invalid date. Use 1-31 for days of month given");
             return;
-        }else if (year > 99 || year < 0) {
+        }
+        if (year > 99 || year < 0) {
             println("Invalid year. Use 1970-2023");
             return;
         }

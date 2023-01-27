@@ -44,13 +44,13 @@ void commhand()
 
         if(strcmp(command_str, "version") == 0) { // buffer command is version
             version();
-        }else if(strcmp(command_str,"help") == 0) { // buffer command is help
+        }else if(strcmp(command_str, "help") == 0) { // buffer command is help
             help(param_str);
-        }else if(strcmp(command_str,"shutdown") == 0) { // buffer command is shutdown
+        }else if(strcmp(command_str, "shutdown") == 0) { // buffer command is shutdown
            if (shutdown() == 0) break;
-        }else if(strcmp(command_str,"time") == 0) { // buffer command is time
+        }else if(strcmp(command_str, "time") == 0) { // buffer command is time
             time(param_str);
-        }else if(strcmp(command_str,"date") == 0) { // buffer command is date
+        }else if(strcmp(command_str, "date") == 0) { // buffer command is date
             date(param_str);
         }else{                                   // not a command
             println("The command you entered is not recognized. Try again.");
