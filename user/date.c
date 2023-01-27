@@ -88,3 +88,28 @@ void date(char *args) {
         }
     }
 }
+char* compilation_date(){
+    // get month
+    outb(0x70,0x08);
+    unsigned char month = inb(0x71);//BCD 8bit 0x01
+    char* month_str =  itoa(dtoh(month));
+        
+    //get day
+    outb(0x70,0x07);
+    unsigned char day = inb(0x71);
+    char* day_str = itoa(dtoh(day));
+
+    //get year
+    outb(0x70,0x09);
+    unsigned char year = inb(0x71);
+    char* year_str = itoa(dtoh(year));
+
+    //concat all char* string together into one using memcpy
+    char *compilation_date_str = NULL;
+    memcpy(compilation_date_str,month_str,strlen(month_str));
+    memcpy(compilation_date_str+strlen(month_str),"/",strlen("/")+1);
+    memcpy(compilation_date_str+strlen(month_str)+strlen("/"),day_str,strlen(day_str)+2);
+    memcpy(compilation_date_str+strlen(month_str)+strlen("/")+strlen(day_str),"/",strlen("/")+3);
+    memcpy(compilation_date_str+strlen(month_str)+strlen("/")+strlen(day_str)+strlen("/"),year_str,strlen(year_str)+4);
+    return compilation_date_str;
+}

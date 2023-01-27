@@ -1,4 +1,4 @@
 /**
- * Prints the version (or current module) of MPX with the current time
+ * Prints the version (or current module) of MPX with the current date
  */
-void version(char* compilation);
+void version(char* compilation_date_str);
