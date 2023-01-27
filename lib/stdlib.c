@@ -85,7 +85,7 @@ int htod(int hex) {
 
 int isnum(unsigned char args){
 	int ascii = (int) args;
-	if(ascii<48 || ascii>57)
+	if (ascii < 48 || ascii > 57)
 		return 0;
 	else
 		return 1;

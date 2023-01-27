@@ -5,6 +5,7 @@
 #include <mpx/interrupts.h>
 #include <string.h>
 #include <sys_req.h>
+#include <memory.h>
 
 #define MONTH_INDEX 0x08
 #define DAY_INDEX 0x07
@@ -45,12 +46,16 @@ void date(char *args) {
         sys_req(WRITE, COM1, year_str, strlen(year_str));
         sys_req(WRITE, COM1, "\r\n", 2);
 
+        sys_free_mem(month_str);
+        sys_free_mem(day_str);
+        sys_free_mem(year_str);
+
     } else {
-        unsigned char month = atoi(strtok(args,":"));
-        unsigned char day = atoi(strtok(NULL,":"));
+        unsigned char month = atoi(strtok(args,"/"));
+        unsigned char day = atoi(strtok(NULL,"/"));
         unsigned char year = atoi(strtok(NULL," "));
         if (strlen(args) > 10) {
-            println("Invalid date format. Use mm:dd:yy");
+            println("Invalid date format. Use mm/dd/yy");
             return;
         }else if (month < 1 || month > 12) {
             println("Invalid month. Use 1-12");

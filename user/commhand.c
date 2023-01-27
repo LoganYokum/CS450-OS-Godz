@@ -20,7 +20,7 @@ void commhand()
         sys_req(READ, COM1, buffer, sizeof(buffer));
 
         // begin parsing buffer
-        buffer[strlen(buffer)-2] = ' ';
+        buffer[strlen(buffer) - 2] = ' ';
         char command_str[20] = {0}; // init char array
         command_str[19] = '\0'; // null terminator at end of string
 
@@ -33,34 +33,26 @@ void commhand()
             command_str[i] = buffer[spaces + i];
         }
 
-        strtok(buffer," ");                // capture parameter args
-        char *param_str = strtok(NULL," ");// capture argument after help
-        char *extra_arg = strtok(NULL," ");// test for extra args
+        strtok(buffer, " ");                // capture parameter args
+        char *param_str = strtok(NULL, " ");// capture argument after help
+        char *extra_arg = strtok(NULL, " ");// test for extra args
 
         if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
             println("The command you entered is not recognized. Try again.");
             continue;
         }
 
-        if(strcmp(command_str,"version")==0){ // buffer command is version
+        if(strcmp(command_str, "version") == 0) { // buffer command is version
             version();
-        }
-        else if(strcmp(command_str,"help")==0){ // buffer command is help
+        }else if(strcmp(command_str,"help") == 0) { // buffer command is help
             help(param_str);
-        }
-        else if(strcmp(command_str,"shutdown")==0){ // buffer command is shutdown
-           int code = shutdown();
-           if (code == 0) 
-                break;
-           continue;
-        }
-        else if(strcmp(command_str,"time")==0){ // buffer command is time
+        }else if(strcmp(command_str,"shutdown") == 0) { // buffer command is shutdown
+           if (shutdown() == 0) break;
+        }else if(strcmp(command_str,"time") == 0) { // buffer command is time
             time(param_str);
-        }
-        else if(strcmp(command_str,"date")==0){ // buffer command is date
+        }else if(strcmp(command_str,"date") == 0) { // buffer command is date
             date(param_str);
-        }
-        else{                                   // not a command
+        }else{                                   // not a command
             println("The command you entered is not recognized. Try again.");
         }
     }

@@ -5,6 +5,7 @@
 #include <mpx/interrupts.h>
 #include <string.h>
 #include <sys_req.h>
+#include <memory.h>
 
 #define SEC_INDEX 0x00
 #define MIN_INDEX 0x02
@@ -44,11 +45,16 @@ void time(char *args) {
         }
         sys_req(WRITE, COM1, sec_str, strlen(sec_str));
         sys_req(WRITE, COM1, "\r\n", 2);
+
+        sys_free_mem(hour_str);
+        sys_free_mem(min_str);
+        sys_free_mem(sec_str);
+        
     }
     else {
-        unsigned char hour = atoi(strtok(args,":"));
-        unsigned char min = atoi(strtok(NULL,":"));
-        unsigned char second = atoi(strtok(NULL," "));
+        unsigned char hour = atoi(strtok(args, ":"));
+        unsigned char min = atoi(strtok(NULL, ":"));
+        unsigned char second = atoi(strtok(NULL, " "));
         
         if (strlen(args) > 8) {
             println("Invalid time format. Use hh:mm:ss");
