@@ -84,3 +84,29 @@ void time(char *args) {
         }
     }
 }
+
+char* compilation_time(){
+    // get seconds
+    outb(0x70, SEC_INDEX);
+    int sec = dtoh(inb(0x71));
+    char *sec_str = itoa(sec);
+
+    // //get minutes
+    outb(0x70, MIN_INDEX);
+    int min = dtoh(inb(0x71));
+    char *min_str = itoa(min);
+
+    //get hours
+    outb(0x70, HOUR_INDEX);
+    int hour = dtoh(inb(0x71));
+    char *hour_str = itoa(hour);
+
+    //concat all char* string together into one using memcpy
+    char *compilation_time_str = NULL;
+    memcpy(compilation_time_str,hour_str,strlen(hour_str));
+    memcpy(compilation_time_str+strlen(hour_str),":",strlen(":")+1);
+    memcpy(compilation_time_str+strlen(hour_str)+strlen(":"),min_str,strlen(min_str)+2);
+    memcpy(compilation_time_str+strlen(hour_str)+strlen(":")+strlen(min_str),":",strlen(":")+3);
+    memcpy(compilation_time_str+strlen(hour_str)+strlen(":")+strlen(min_str)+strlen(":"),sec_str,strlen(sec_str)+4);
+    return compilation_time_str;
+}

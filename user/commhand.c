@@ -10,7 +10,7 @@
 
 void commhand() {
     char prompt[] = "> ";
-    
+    char* compilation = compilation_time();
     while (1) {
         char buffer[100] = {0};
         buffer[99] = '\0';
@@ -42,7 +42,7 @@ void commhand() {
         }
 
         if(strcmp(command_str,"version")==0){ // buffer command is version
-            version();
+            version(compilation);
         }
         else if(strcmp(command_str,"help")==0){ // buffer command is help
             help(param_str);
