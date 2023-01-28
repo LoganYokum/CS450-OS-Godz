@@ -1,4 +1,5 @@
 /**
- * Prints the version (or current module) of MPX with the current time
+ * Prints the version of the system.
+ * @param comp_date Current date the system was compiled.
  */
-void version();
+void version(char *comp_date);

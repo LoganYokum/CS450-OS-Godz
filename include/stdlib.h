@@ -27,7 +27,13 @@ int dtoh(int dec);
 int htod(int hex);
 
 int isnum(unsigned char args);
+
 /**
-*/
+ * Determines if a string is a valid number
+ * @param s A NUL-terminated string
+ * @return 1 if the string is a valid number, 0 otherwise
+ */
+int validnum(const char *s);
+
 int println(const char *message);
 #endif

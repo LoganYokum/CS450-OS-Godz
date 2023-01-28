@@ -91,6 +91,15 @@ int isnum(unsigned char args){
 		return 1;
 }
 
+int validnum(const char *s) {
+	for (size_t i = 0; i < strlen(s); i++) {
+		if (s[i] < '0' || s[i] > '9') {
+			return 0;
+		}
+	}
+	return 1;
+}
+
 int println(const char* message){
         //TODO: possible that com1 will not always be the default device. may need to use a provided function to get the current
         //      device?

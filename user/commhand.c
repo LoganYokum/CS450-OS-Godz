@@ -7,10 +7,12 @@
 #include <shutdown.h>
 #include <time.h>
 #include <date.h>
+#include <memory.h>
 
 void commhand()
 {
     char prompt[] = "> ";
+    char *comp_date = getdate();
     
     while (1) {
         char buffer[100] = {0};
@@ -43,7 +45,7 @@ void commhand()
         }
 
         if(strcmp(command_str, "version") == 0) { // buffer command is version
-            version();
+            version(comp_date);
         }else if(strcmp(command_str, "help") == 0) { // buffer command is help
             help(param_str);
         }else if(strcmp(command_str, "shutdown") == 0) { // buffer command is shutdown
@@ -56,4 +58,5 @@ void commhand()
             println("The command you entered is not recognized. Try again.");
         }
     }
+    sys_free_mem(comp_date);
 }

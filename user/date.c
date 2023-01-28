@@ -11,59 +11,33 @@
 #define DAY_INDEX 0x07
 #define YEAR_INDEX 0x09
 
+char *getdate();
+
 void date(char *args) {
     if (strcmp(args, "\n") == 0) {
-        // get month
-        outb(0x70, MONTH_INDEX);
-        unsigned char month = inb(0x71);//BCD 8bit 0x01
-        char *month_str =  itoa(dtoh(month));
+        char *date = getdate();
+        println(date);
         
-        //get day
-        outb(0x70, DAY_INDEX);
-        unsigned char day = inb(0x71);
-        char *day_str = itoa(dtoh(day));
-
-        //get year
-        outb(0x70, YEAR_INDEX);
-        unsigned char year = inb(0x71);
-        char *year_str = itoa(dtoh(year));
-
-        if(month < 10){
-            outb(COM1, '0');
-        }
-        sys_req(WRITE, COM1, month_str, strlen(month_str));
-        outb(COM1,'/');
-
-        if(day < 10){
-            outb(COM1, '0');
-        }
-        sys_req(WRITE, COM1, day_str, strlen(day_str));
-        outb(COM1, '/');
-
-        if(year < 10){
-            outb(COM1,'0');
-        }
-        sys_req(WRITE, COM1, year_str, strlen(year_str));
-        sys_req(WRITE, COM1, "\r\n", 2);
-
-        sys_free_mem(month_str);
-        sys_free_mem(day_str);
-        sys_free_mem(year_str);
-
+        sys_free_mem(date);
     } else {
         if (strlen(args) > 8 || (args[2] != '/' || args[5] != '/')) {
             println("Invalid date format. Use mm/dd/yy");
             return;
         }
 
-        unsigned char month = atoi(strtok(args,"/"));
-        unsigned char day = atoi(strtok(NULL,"/"));
-        unsigned char year = atoi(strtok(NULL," "));
+        char *month_str = strtok(args, "/");
+        char *day_str = strtok(NULL, "/");
+        char *year_str = strtok(NULL, " ");
 
-        if (!(isnum(month)  && isnum(day)  && isnum(year))) {
-            println("Invalid character format. Must use numbers.");
+        if (!validnum(month_str) || !validnum(day_str) || !validnum(year_str)) {
+            println("Invalid character format. Must use numbers only.");
             return;
         }
+
+        int month = atoi(month_str);
+        int day = atoi(day_str);
+        int year = atoi(year_str);
+
         if (month < 1 || month > 12) {
             println("Invalid month. Use 1-12");
             return;
@@ -103,4 +77,56 @@ void date(char *args) {
         outb(0x71,(unsigned char)htod(year)); 
         sti();
     }
+}
+
+char *getdate() {
+    char *date = sys_alloc_mem(9);
+    date[8] = '\0';
+
+    // get month
+    outb(0x70, MONTH_INDEX);
+    unsigned char month = inb(0x71); 
+    char *month_str =  itoa(dtoh(month));
+    
+    //get day
+    outb(0x70, DAY_INDEX);
+    unsigned char day = inb(0x71);
+    char *day_str = itoa(dtoh(day));
+
+    //get year
+    outb(0x70, YEAR_INDEX);
+    unsigned char year = inb(0x71);
+    char *year_str = itoa(dtoh(year));
+
+    if (month < 10){
+        date[0] = '0';
+        date[1] = month_str[0];
+    }else {
+        date[0] = month_str[0];
+        date[1] = month_str[1];
+    }
+    date[2] = '/';
+
+    if (day < 10){
+       date[3] = '0';
+       date[4] = day_str[0];
+    }else {
+         date[3] = day_str[0];
+         date[4] = day_str[1];
+    }
+    date[5] = '/';
+
+    if (year < 10){
+       date[6] = '0';
+       date[7] = year_str[0];
+    }else {
+        date[6] = year_str[0];
+        date[7] = year_str[1];
+    }
+
+    sys_free_mem(month_str);
+    sys_free_mem(day_str);
+    sys_free_mem(year_str);
+
+    return date;
 }

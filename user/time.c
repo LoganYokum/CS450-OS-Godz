@@ -11,44 +11,14 @@
 #define MIN_INDEX 0x02
 #define HOUR_INDEX 0x04
 
+char *gettime();
+
 void time(char *args) {
     if (strcmp(args, "\n") == 0) { 
-        // get secs
-        outb(0x70, SEC_INDEX);
-        int sec = dtoh(inb(0x71));
-        char *sec_str = itoa(sec);
-
-        //get minutes
-        outb(0x70, MIN_INDEX);
-        int min = dtoh(inb(0x71));
-        char *min_str = itoa(min);
-
-        //get hours
-        outb(0x70, HOUR_INDEX);
-        int hour = dtoh(inb(0x71));
-        char *hour_str = itoa(hour);
-
-        if (hour < 10) {
-            outb(COM1, '0');
-        }
-        sys_req(WRITE, COM1, hour_str, strlen(hour_str));
-        outb(COM1, ':');
-
-        if (min < 10) {
-            outb(COM1, '0');
-        }
-        sys_req(WRITE, COM1, min_str, strlen(min_str));
-        outb(COM1, ':');
-
-        if (sec < 10) {
-            outb(COM1, '0');
-        }
-        sys_req(WRITE, COM1, sec_str, strlen(sec_str));
-        sys_req(WRITE, COM1, "\r\n", 2);
-
-        sys_free_mem(hour_str);
-        sys_free_mem(min_str);
-        sys_free_mem(sec_str);
+        char *date = gettime();
+        println(date);
+        
+        sys_free_mem(date);
         
     }
     else {
@@ -57,14 +27,19 @@ void time(char *args) {
             return;
         }
 
-        unsigned char hour = atoi(strtok(args, ":"));
-        unsigned char min = atoi(strtok(NULL, ":"));
-        unsigned char sec = atoi(strtok(NULL, " "));
-        
-        if (!(isnum(hour) && isnum(min) && isnum(sec))) {
-            println("Invalid character format. Must use numbers.");
+        char *hour_str = strtok(args, ":");
+        char *min_str = strtok(NULL, ":");
+        char *sec_str = strtok(NULL, " ");
+
+        if (!validnum(hour_str) || !validnum(min_str) || !validnum(sec_str)) {
+            println("Invalid character format. Must use numbers only.");
             return;
         }
+
+        int hour = atoi(hour_str);
+        int min = atoi(min_str);
+        int sec = atoi(sec_str);
+        
         if (hour < 0 || hour > 23) {
             println("Invalid hour. Use 0-23");
             return;
@@ -92,4 +67,56 @@ void time(char *args) {
         outb(0x71, (unsigned char)htod(hour)); //fill in 0x00 with write value
         sti();
     }
+}
+
+char *gettime() {
+    char *time = sys_alloc_mem(9);
+    time[8] = '\0';
+
+    // get hour
+    outb(0x70, HOUR_INDEX);
+    unsigned char hour = inb(0x71); 
+    char *hour_str =  itoa(dtoh(hour));
+    
+    //get min
+    outb(0x70, MIN_INDEX);
+    unsigned char min = inb(0x71);
+    char *min_str = itoa(dtoh(min));
+
+    //get sec
+    outb(0x70, SEC_INDEX);
+    unsigned char sec = inb(0x71);
+    char *sec_str = itoa(dtoh(sec));
+
+    if (hour < 10){
+        time[0] = '0';
+        time[1] = hour_str[0];
+    }else {
+        time[0] = hour_str[0];
+        time[1] = hour_str[1];
+    }
+    time[2] = ':';
+
+    if (min < 10){
+       time[3] = '0';
+       time[4] = (strcmp(min_str, "") == 0) ? '0' : min_str[0];
+    }else {
+         time[3] = min_str[0];
+         time[4] = min_str[1];
+    }
+    time[5] = ':';
+
+    if (sec < 10){
+       time[6] = '0';
+       time[7] = (strcmp(sec_str, "") == 0) ? '0' : sec_str[0];
+    }else {
+        time[6] = sec_str[0];
+        time[7] = sec_str[1];
+    }
+
+    sys_free_mem(hour_str);
+    sys_free_mem(min_str);
+    sys_free_mem(sec_str);
+
+    return time;
 }
