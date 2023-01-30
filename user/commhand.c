@@ -43,8 +43,10 @@ void commhand()
             println("The command you entered is not recognized. Try again.");
             continue;
         }
-        if(strcmp(command_str, "version") == 0) { // buffer command is version
-            version(comp_date);
+        if(strcmp(command_str, "version") == 0 && strcmp(param_str, "\n") == 0) { // buffer command is version
+            version();
+            sys_req(WRITE, COM1, comp_date, strlen(comp_date));
+            sys_req(WRITE, COM1, "\r\n", 2);
         }else if(strcmp(command_str, "help") == 0) { // buffer command is help
             help(param_str);
         }else if(strcmp(command_str, "shutdown") == 0) { // buffer command is shutdown

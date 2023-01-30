@@ -6,8 +6,6 @@
 /**
     Manually update version function upon each module release.
 */
-void version(char *comp_date) {
+void version() {
     sys_req(WRITE, COM1, "R1: ", strlen("R1: "));
-    sys_req(WRITE, COM1, comp_date, strlen(comp_date));
-    sys_req(WRITE, COM1, "\r\n", 2);
 }
