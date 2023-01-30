@@ -13,7 +13,7 @@ void commhand()
 {
     char prompt[] = "> ";
     char *comp_date = getdate();
-    
+
     while (1) {
         char buffer[100] = {0};
         buffer[99] = '\0';
@@ -43,7 +43,6 @@ void commhand()
             println("The command you entered is not recognized. Try again.");
             continue;
         }
-
         if(strcmp(command_str, "version") == 0) { // buffer command is version
             version(comp_date);
         }else if(strcmp(command_str, "help") == 0) { // buffer command is help

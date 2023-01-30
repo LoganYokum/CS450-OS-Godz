@@ -105,6 +105,7 @@ char *getdate() {
         date[0] = month_str[0];
         date[1] = month_str[1];
     }
+    
     date[2] = '/';
 
     if (day < 10){
