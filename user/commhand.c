@@ -40,7 +40,7 @@ void commhand()
         char *extra_arg = strtok(NULL, " ");// test for extra args
 
         if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
-            println("The command you entered is not recognized. Try again.");
+            error("The command you entered is not recognized. Try again.");
             continue;
         }
         if(strcmp(command_str, "version") == 0 && strcmp(param_str, "\n") == 0) { // buffer command is version
@@ -56,7 +56,7 @@ void commhand()
         }else if(strcmp(command_str, "date") == 0) { // buffer command is date
             date(param_str);
         }else{                                   // not a command
-            println("The command you entered is not recognized. Try again.");
+            error("The command you entered is not recognized. Try again.");
         }
     }
     sys_free_mem(comp_date);

@@ -72,9 +72,6 @@ int serial_poll(device dev, char *buffer, size_t len)
 	size_t bufferIndex = 0;
 	size_t cursorIndex = 0;
 
-	// char history[50][80] = {{0}};
-	// size_t historyIndex = sizeof(history) / (80 * sizeof(char)) - 1;
-
 	while (bufferIndex < len-3) {
 		if (!(inb(dev + LSR) & 0x01)) {
 			continue;
@@ -84,28 +81,9 @@ int serial_poll(device dev, char *buffer, size_t len)
 
 		if (c == '\033' && inb(dev) == '[') {
 			c = inb(dev);
-			if (c == 'B') {
+			if (c == 'A' || c == 'B') {
 				continue;
 			}
-			// if (c == 'A') {
-			// 	if (historyIndex == 0) {
-			// 		continue;
-			// 	}
-			// 	historyIndex -= 1;
-			// 	char *prevCommand = history[historyIndex];
-			// 	for (size_t i = strlen(prevCommand); i > 0; i--) {
-			// 		outb(COM1, BACKSPACE);
-			// 		outb(COM1, ' ');
-			// 		outb(COM1, BACKSPACE);
-			// 	}
-
-			// 	for (size_t i = 0; i < strlen(prevCommand); i++) {
-			// 		outb(COM1, prevCommand[i]);
-			// 	}
-			// 	cursorIndex = strlen(prevCommand);
-			// 	bufferIndex = strlen(prevCommand);
-			// 	continue;
-			// }
 			if (c == 'D') {
 				if (cursorIndex == 0) {
 					continue;

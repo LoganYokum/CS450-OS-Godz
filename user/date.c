@@ -20,8 +20,8 @@ void date(char *args) {
         
         sys_free_mem(date);
     } else {
-        if (strlen(args) > 8 || (args[2] != '/' || args[5] != '/')) {
-            println("Invalid date format. Use mm/dd/yy");
+        if (strlen(args) != 8 || (args[2] != '/' || args[5] != '/')) {
+            error("Invalid date format. Use MM/DD/YY");
             return;
         }
 
@@ -30,7 +30,7 @@ void date(char *args) {
         char *year_str = strtok(NULL, " ");
 
         if (!validnum(month_str) || !validnum(day_str) || !validnum(year_str)) {
-            println("Invalid character format. Must use numbers only.");
+            error("Invalid character format. Must use numbers only.");
             return;
         }
 
@@ -39,30 +39,34 @@ void date(char *args) {
         int year = atoi(year_str);
 
         if (month < 1 || month > 12) {
-            println("Invalid month. Use 1-12");
+            error("Invalid month. Use 1-12");
             return;
         }
         if (day < 1 || day > 31) {
-            println("Invalid day. Use 1-31");
+            error("Invalid day. Use 1-31");
             return;
         }
-        if (month == 2 && day > 28) {
-            println("Invalid date. Use 1-28 for days of February");
+        if (month == 2 && day > 29 && year % 4 == 0) {
+            error("Invalid date. Use 1-28 for days of February on non-leap years, 1-29 for days of February on leap years.");
+            return;
+        }
+        if (month == 2 && day > 28 && year % 4 != 0) {
+            error("Invalid date. Use 1-28 for days of February on non-leap years, 1-29 for days of February on leap years.");
             return;
         }
         if ((month == 4 || month == 6 || month == 9 || month == 11) && day > 30) {
-            println("Invalid date. Use 1-30 for days of month given");
+            error("Invalid date. Use 1-30 for days of month given");
             return;
         }
         if ((month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) && day > 31) {
-            println("Invalid date. Use 1-31 for days of month given");
+            error("Invalid date. Use 1-31 for days of month given");
             return;
         }
         if (year > 99 || year < 0) {
-            println("Invalid year. Use 1970-2023");
+            error("Invalid year. Use 1970-2023");
             return;
         }
-        println("Date Set.");
+        success("Date Set.");
         //write month
         cli();
         outb(0x70, MONTH_INDEX);

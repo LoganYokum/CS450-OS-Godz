@@ -36,4 +36,16 @@ int isnum(unsigned char args);
 int validnum(const char *s);
 
 int println(const char *message);
+
+/**
+ * Outputs an error string to the console in red
+ * @param message the error message to print
+ */
+void error(const char *message);
+
+/**
+ * Outputs a success string to the console in green
+ * @param message the success message to print
+ */
+void success(const char *message);
 #endif

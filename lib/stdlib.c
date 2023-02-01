@@ -4,6 +4,11 @@
 #include <mpx/io.h>
 #include <mpx/device.h>
 #include <string.h>
+#include <sys_req.h>
+
+#define RED "\033[0;31m"
+#define GREEN "\033[0;32m"
+#define RESET "\033[0m"
 
 int atoi(const char *s){
 	int res = 0;
@@ -103,4 +108,16 @@ int println(const char* message){
     outb(COM1,'\r'); //carrage return
     outb(COM1,'\n'); //new line
     return (int)strlen(message);
+}
+
+void error(const char *message){
+	sys_req(WRITE, COM1, RED, strlen(RED));
+	println(message);
+	sys_req(WRITE, COM1, RESET, strlen(RESET));
+}
+
+void success(const char *message){
+	sys_req(WRITE, COM1, GREEN, strlen(GREEN));
+	println(message);
+	sys_req(WRITE, COM1, RESET, strlen(RESET));
 }

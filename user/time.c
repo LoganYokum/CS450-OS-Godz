@@ -23,7 +23,7 @@ void time(char *args) {
     }
     else {
         if (strlen(args) > 8 || (args[2] != ':' || args[5] != ':')) {
-            println("Invalid time format. Use hh:mm:ss");
+            error("Invalid time format. Use hh:mm:ss");
             return;
         }
 
@@ -32,7 +32,7 @@ void time(char *args) {
         char *sec_str = strtok(NULL, " ");
 
         if (!validnum(hour_str) || !validnum(min_str) || !validnum(sec_str)) {
-            println("Invalid character format. Must use numbers only.");
+            error("Invalid character format. Must use numbers only.");
             return;
         }
 
@@ -41,18 +41,18 @@ void time(char *args) {
         int sec = atoi(sec_str);
         
         if (hour < 0 || hour > 23) {
-            println("Invalid hour. Use 0-23");
+            error("Invalid hour. Use 0-23");
             return;
         }
         if (min < 0 || min > 59) {
-            println("Invalid minute. Use 0-59");
+            error("Invalid minute. Use 0-59");
             return;
         }
         if (sec < 0 || sec > 59) {
-            println("Invalid sec. Use 0-59");
+            error("Invalid sec. Use 0-59");
             return;
         }
-        println("Time Set.");
+        success("Time Set.");
         //write sec
         cli();
         outb(0x70, SEC_INDEX);
