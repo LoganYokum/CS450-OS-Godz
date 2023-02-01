@@ -67,18 +67,19 @@ void date(char *args) {
             return;
         }
         success("Date Set.");
-        //write month
-        cli();
-        outb(0x70, MONTH_INDEX);
-        outb(0x71,(unsigned char)htod(month)); 
-            
-        // write day
-        outb(0x70, DAY_INDEX);
-        outb(0x71,(unsigned char)htod(day)); 
-            
+    
         //write year
+        cli();
         outb(0x70, YEAR_INDEX);
         outb(0x71,(unsigned char)htod(year)); 
+
+        // write day
+        outb(0x70, DAY_INDEX);
+        outb(0x71,(unsigned char)htod(day));
+
+        //write month
+        outb(0x70, MONTH_INDEX);
+        outb(0x71,(unsigned char)htod(month)); 
         sti();
     }
 }
