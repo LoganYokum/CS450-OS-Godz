@@ -27,7 +27,7 @@ int shutdown(){
     strtok(shutdown_buf, " ");
     char *extra_arg = strtok(NULL, " ");
     if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
-        println("You did not confirm shutdown. Too many arguments passed.");
+        error("You did not confirm shutdown. Too many arguments passed.");
         return 1;
     }
 
@@ -38,7 +38,7 @@ int shutdown(){
     if(strcmp(compare_str, "shutdown") == 0) {                  // compare string for shutdown
         return 0;
     }else {                                                   // shutdown not confirmed
-        println("Shutdown cancelled.");
+        error("Shutdown cancelled.");
         return 1;
     }
 }

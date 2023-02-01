@@ -142,12 +142,6 @@ int serial_poll(device dev, char *buffer, size_t len)
 		}
 		cursorIndex++;
 	}
-	// historyIndex = sizeof(history) / (80 * sizeof(char)) - 1;
-	// for (size_t i = 0; i < historyIndex - 1; i++) {
-	// 	if (history[i + 1]) continue;
-	// 	memcpy(history[i], history[i + 1], sizeof(history[i + 1]));
-	// }
-	// memcpy(history[historyIndex], buffer, bufferIndex);
 
 	buffer[bufferIndex] = '\r';
 	buffer[bufferIndex + 1] = '\n';
