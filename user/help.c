@@ -24,11 +24,11 @@ void help(char *args){
         println("To use version, simply type version and the current version and compilation will display.");
         println("Example: version");
     }else if (strcmp(args, "time") == 0){     // param = time
-        println("To use time, simply type time (followed by the hours, minutes, and seconds separated by colons).");
-        println("Example: time or time 08:45:59");
+        println("To use time, simply type time followed by the hours, minutes, and seconds separated by colons) or\njust type time to display the current time");
+        println("Example: time OR time 08:45:59");
     }else if (strcmp(args, "date") == 0){     // param = date
-        println("To use date, simply type date (followed by the month, day, and year separated by colons).");
-        println("Example: date or date 09/25/01");
+        println("To use date, simply type date followed by the month, day, and year separated by slashes or\njust type date to display the current date");
+        println("Example: date OR date 09/25/01");
     }else {                                //param doesnt have any matching string
         println("Incorrect parameter(s) for command: help. Try again.");
     }
