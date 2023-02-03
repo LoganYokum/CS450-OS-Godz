@@ -23,3 +23,25 @@ typedef struct queue {
     pcb *head;
     pcb *tail;
 } queue;
+
+/**
+ * Allocates a new instance of pcb struct
+ * @return pointer to the new pcb struct
+ */
+pcb *pcb_allocate();
+
+/**
+ * Frees the memory associated with a pcb struct
+ * @param p the pcb struct to free
+ * @return 0 on success, non-zero on failure
+ */
+int pcb_free(pcb *p);
+
+/**
+ * Initializes a pcb struct with the given parameters
+ * @param name the name of the process
+ * @param type the type of the process
+ * @param priority the priority of the process
+ * @return pointer to the initialized pcb struct
+ */
+pcb *pcb_setup(const char *name, int type, int priority);
