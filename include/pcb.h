@@ -19,11 +19,6 @@ typedef struct pcb {
     struct pcb *next;
 } pcb;
 
-typedef struct queue {
-    pcb *head;
-    pcb *tail;
-} queue;
-
 /**
  * Allocates a new instance of pcb struct
  * @return pointer to the new pcb struct
@@ -38,15 +33,15 @@ pcb *pcb_allocate();
 int pcb_free(pcb *p);
 
 /**
- * Finds an element in a specified queue by name
- * @param q the queue to search
+ * Finds an element in a specified list by name
+ * @param head the list to search
  * @param name the name of the pcb to find
  * @return pointer to the pcb struct if found, NULL otherwise
  */
-pcb *queue_find(queue *q, const char *name);
+pcb *list_find(pcb *head, const char *name);
 
 /**
- * Finds a pcb struct by name
+ * Finds a pcb struct by name in any list
  * @param name the name of the pcb to find
  * @return pointer to the pcb struct if found, NULL otherwise 
  */
@@ -63,28 +58,28 @@ pcb *pcb_setup(const char *name, int type, int priority);
 
 
 /**
- * Inserts a pcb struct into a specified queue
- * @param q the struct to insert into
+ * Inserts a pcb struct into a specified list
+ * @param head the struct to insert into
  * @param p the pcb to insert
  */
-void queue_insert(queue *q, pcb *p);
+void list_insert(pcb *head, pcb *p);
 
 /**
- * Inserts a pcb struct into the appropriate queue
+ * Inserts a pcb struct into the appropriate list
  * @param p the pcb to insert
  */
 void pcb_insert(pcb *p);
 
 /**
- * Removes a pcb struct from a specified queue
- * @param q the queue to remove from
+ * Removes a pcb struct from a specified list
+ * @param head the list to remove from
  * @param p the pcb to remove
  * @return 1 on success, 0 on failure 
  */
-int queue_remove(queue *q, pcb *p);
+int list_remove(pcb *head, pcb *p);
 
 /**
- * Removes a pcb struct from the appropriate queue
+ * Removes a pcb struct from the appropriate list
  * @param p the pcb to remove
  * @return 1 on success, 0 on failure
  */

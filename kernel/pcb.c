@@ -4,28 +4,10 @@
 
 #define STACK_SIZE 1024
 
-queue *ready;
-queue *blocked;
-queue *suspended_ready;
-queue *suspended_blocked;
-
-queue *queue_allocate() {
-    queue *q = (queue *) sys_alloc_mem(sizeof(queue));
-    if (q == NULL) {
-        return NULL;
-    }
-    q->head = NULL;
-    q->tail = NULL;
-
-    return q;
-}
-
-void queue_init() {
-    ready = queue_allocate();
-    blocked = queue_allocate();
-    suspended_ready = queue_allocate();
-    suspended_blocked = queue_allocate();
-}
+pcb *ready_head;
+pcb *blocked_head;
+pcb *suspended_ready_head;
+pcb *suspended_blocked_head;
 
 pcb *pcb_allocate() {
     pcb *p = (pcb *) sys_alloc_mem(sizeof(pcb));
@@ -53,8 +35,8 @@ int pcb_free(pcb *p) {
     return sys_free_mem(p);
 }
 
-pcb *queue_find(queue *q, const char *name) {
-    pcb *cur = q->head;
+pcb *list_find(pcb *head, const char *name) {
+    pcb *cur = head;
     while (cur != NULL) {
         if (strcmp(cur->name, name) == 0) {
             return cur;
@@ -65,22 +47,22 @@ pcb *queue_find(queue *q, const char *name) {
 }
 
 pcb *pcb_find(const char *name) {
-    pcb *p = queue_find(ready, name);
+    pcb *p = list_find(ready_head, name);
     if (p != NULL) {
         return p;
     }
 
-    p = queue_find(blocked, name);
+    p = list_find(blocked_head, name);
     if (p != NULL) {
         return p;
     }
 
-    p = queue_find(suspended_ready, name);
+    p = list_find(suspended_ready_head, name);
     if (p != NULL) {
         return p;
     }
 
-    p = queue_find(suspended_blocked, name);
+    p = list_find(suspended_blocked_head, name);
     if (p != NULL) {
         return p;
     }
@@ -100,16 +82,15 @@ pcb *pcb_setup(const char *name, int type, int priority) {
     memcpy(p->name, name, sizeof(name));
     p->type = type;
     p->priority = priority;
-    p->state = 1;
+    p->state = 1; //ready, not suspended
 
     return p;
 }
 
-void queue_insert(queue *q, pcb *p) {
-    pcb *cur = q->head;
+void list_insert(pcb *head, pcb *p) {
+    pcb *cur = head;
     if (cur == NULL) {
-        q->head = p;
-        q->tail = p;
+        head = p;
         return;
     }
     while (cur->next != NULL && cur->next->priority <= p->priority) {
@@ -117,7 +98,6 @@ void queue_insert(queue *q, pcb *p) {
     }
     if (cur->next == NULL) {
         cur->next = p;
-        ready->tail = p;
     }else {
         pcb *tmp = cur->next;
         cur->next = p;
@@ -127,18 +107,18 @@ void queue_insert(queue *q, pcb *p) {
 
 void pcb_insert(pcb *p) {
     if (p->state == 1) {  // pcb state is ready, not suspended (0x01)
-        queue_insert(ready, p);
+        list_insert(ready_head, p);
     }else if (p->state == 2) { // pcb state is blocked, not suspended (0x02)
-        queue_insert(blocked, p);
+        list_insert(blocked_head, p);
     }else if (p->state == 17) { // pcb state is ready, suspended (0x11)
-        queue_insert(suspended_ready, p);
+        list_insert(suspended_ready_head, p);
     }else if (p->state == 18) { // pcb state is blocked, suspended (0x12)
-        queue_insert(suspended_blocked, p);
+        list_insert(suspended_blocked_head, p);
     }
 }
 
-int queue_remove(queue *q, pcb *p) {
-    pcb *cur = q->head;
+int list_remove(pcb *head, pcb *p) {
+    pcb *cur = head;
     if (cur == NULL) {
         return 0;
     }
@@ -152,24 +132,21 @@ int queue_remove(queue *q, pcb *p) {
         pcb *rear = mid->next;
         cur->next = rear;
         mid->next = NULL;
-        if (rear == NULL) {
-            q->tail = cur;
-        }
     }
     return 1;
 }
 
 int pcb_remove(pcb *p) {
     if (p->state == 1) {
-        return queue_remove(ready, p);
+        return list_remove(ready_head, p);
     }
     if (p->state == 2) {
-        return queue_remove(blocked, p);
+        return list_remove(blocked_head, p);
     }
     if (p->state == 17) {
-        return queue_remove(suspended_ready, p);
+        return list_remove(suspended_ready_head, p);
     }
     if (p->state == 18) {
-        return queue_remove(suspended_blocked, p);
+        return list_remove(suspended_blocked_head, p);
     }
 }
