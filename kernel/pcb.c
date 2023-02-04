@@ -9,7 +9,23 @@ queue *blocked;
 queue *suspended_ready;
 queue *suspended_blocked;
 
-pcb *pcb_find(const char *name);
+queue *queue_allocate() {
+    queue *q = (queue *) sys_alloc_mem(sizeof(queue));
+    if (q == NULL) {
+        return NULL;
+    }
+    q->head = NULL;
+    q->tail = NULL;
+
+    return q;
+}
+
+void queue_init() {
+    ready = queue_allocate();
+    blocked = queue_allocate();
+    suspended_ready = queue_allocate();
+    suspended_blocked = queue_allocate();
+}
 
 pcb *pcb_allocate() {
     pcb *p = (pcb *) sys_alloc_mem(sizeof(pcb));
@@ -37,6 +53,41 @@ int pcb_free(pcb *p) {
     return sys_free_mem(p);
 }
 
+pcb *queue_find(queue *q, const char *name) {
+    pcb *cur = q->head;
+    while (cur != NULL) {
+        if (strcmp(cur->name, name) == 0) {
+            return cur;
+        }
+        cur = cur->next;
+    }
+    return NULL;
+}
+
+pcb *pcb_find(const char *name) {
+    pcb *p = queue_find(ready, name);
+    if (p != NULL) {
+        return p;
+    }
+
+    p = queue_find(blocked, name);
+    if (p != NULL) {
+        return p;
+    }
+
+    p = queue_find(suspended_ready, name);
+    if (p != NULL) {
+        return p;
+    }
+
+    p = queue_find(suspended_blocked, name);
+    if (p != NULL) {
+        return p;
+    }
+
+    return NULL;
+}
+
 pcb *pcb_setup(const char *name, int type, int priority) {
     pcb *p = pcb_allocate();
     if (p == NULL || strlen(name) > 16 || pcb_find(name) != NULL) {
@@ -52,40 +103,6 @@ pcb *pcb_setup(const char *name, int type, int priority) {
     p->state = 1;
 
     return p;
-}
-
-// may shorten later by putting the queues in an array
-pcb *pcb_find(const char *name) {
-    pcb *cur = ready->head;
-    while (cur != NULL) {
-        if (strcmp(cur->name, name) == 0) {
-            return cur;
-        }
-        cur = cur->next;
-    }
-    cur = blocked->head;
-    while (cur != NULL) {
-        if (strcmp(cur->name, name) == 0) {
-            return cur;
-        }
-        cur = cur->next;
-    }
-    cur = suspended_ready->head;
-    while (cur != NULL) {
-        if (strcmp(cur->name, name) == 0) {
-            return cur;
-        }
-        cur = cur->next;
-    }
-    cur = suspended_blocked->head;
-    while (cur != NULL) {
-        if (strcmp(cur->name, name) == 0) {
-            return cur;
-        }
-        cur = cur->next;
-    }
-
-    return NULL;
 }
 
 void queue_insert(queue *q, pcb *p) {
@@ -120,6 +137,39 @@ void pcb_insert(pcb *p) {
     }
 }
 
-int pcb_remove(pcb *p) {
+int queue_remove(queue *q, pcb *p) {
+    pcb *cur = q->head;
+    if (cur == NULL) {
+        return 0;
+    }
+    while (cur->next != NULL && cur->next != p) {
+        cur = cur->next;
+    }
+    if (cur->next == NULL) {
+        return 0;
+    }else {
+        pcb *mid = cur->next;
+        pcb *rear = mid->next;
+        cur->next = rear;
+        mid->next = NULL;
+        if (rear == NULL) {
+            q->tail = cur;
+        }
+    }
+    return 1;
+}
 
+int pcb_remove(pcb *p) {
+    if (p->state == 1) {
+        return queue_remove(ready, p);
+    }
+    if (p->state == 2) {
+        return queue_remove(blocked, p);
+    }
+    if (p->state == 17) {
+        return queue_remove(suspended_ready, p);
+    }
+    if (p->state == 18) {
+        return queue_remove(suspended_blocked, p);
+    }
 }
