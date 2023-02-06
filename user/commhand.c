@@ -9,6 +9,7 @@
 #include <date.h>
 #include <memory.h>
 #include <mpx/io.h>
+#include <pcb.h>
 
 #define YELLOW "\033[0;33m"
 #define RESET "\033[0m"
@@ -65,12 +66,16 @@ outb(COM1, '\n');
         strtok(buffer, " ");                // capture parameter args
         char *param_str = strtok(NULL, " ");// capture argument after help
         char *extra_arg = strtok(NULL, " ");// test for extra args
-
-        if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
+        char *extra_arg_pcb = strtok(NULL, " ");// test for extra args on pcb
+        if (strcmp(extra_arg_pcb, NULL) != 0 && strcmp(extra_arg_pcb, "\n") != 0) { // check for extra arguments in buffer
             error("The command you entered is not recognized. Try again.");
             continue;
-        }
-        if(strcmp(command_str, "version") == 0 && strcmp(param_str, "\n") == 0) { // buffer command is version
+        }else if(strcmp(command_str,"pcb") == 0){ //command is PCB
+            pcb(param_str, extra_arg);
+        }else if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
+            error("The command you entered is not recognized. Try again.");
+            continue;
+        }else if(strcmp(command_str, "version") == 0 && strcmp(param_str, "\n") == 0) { // buffer command is version
             version();
             sys_req(WRITE, COM1, comp_date, strlen(comp_date));
             sys_req(WRITE, COM1, "\r\n", 2);

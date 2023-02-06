@@ -29,7 +29,10 @@ void help(char *args){
     }else if (strcmp(args, "date") == 0){     // param = date
         println("To use date, simply type date followed by the month, day, and year separated by slashes or\njust type date to display the current date");
         println("Example: date OR date 09/25/01");
-    }else {                                //param doesnt have any matching string
+    }else if(strcmp(args, "pcb") == 0){       // param = pcb
+        
+    }
+    else {                                //param doesnt have any matching string
         println("Incorrect parameter(s) for command: help. Try again.");
     }
 }

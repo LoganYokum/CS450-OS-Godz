@@ -21,6 +21,7 @@ user/time.o\
 user/date.o\
 user/shutdown.o\
 user/help.o\
+user/pcb.o\
 
 ########################################################################
 ### Nothing below here needs to be changed
