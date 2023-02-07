@@ -72,10 +72,7 @@ pcb *pcb_find(const char *name) {
 
 pcb *pcb_setup(const char *name, int type, int priority) {
     pcb *p = pcb_allocate();
-    if (p == NULL || strlen(name) > 16 || pcb_find(name) != NULL) {
-        return NULL;
-    }
-    if (type < 0 || type > 2 || priority < 0 || priority > 10) {
+    if (p == NULL) {
         return NULL;
     }
 
@@ -87,10 +84,10 @@ pcb *pcb_setup(const char *name, int type, int priority) {
     return p;
 }
 
-void list_insert(pcb *head, pcb *p) {
+void list_insert(pcb **head, pcb *p) {
     pcb *cur = head;
     if (cur == NULL) {
-        head = p;
+        *head = p;
         return;
     }
     while (cur->next != NULL && cur->next->priority <= p->priority) {
@@ -107,18 +104,18 @@ void list_insert(pcb *head, pcb *p) {
 
 void pcb_insert(pcb *p) {
     if (p->state == 1) {  // pcb state is ready, not suspended (0x01)
-        list_insert(ready_head, p);
+        list_insert(&ready_head, p);
     }else if (p->state == 2) { // pcb state is blocked, not suspended (0x02)
-        list_insert(blocked_head, p);
+        list_insert(&blocked_head, p);
     }else if (p->state == 17) { // pcb state is ready, suspended (0x11)
-        list_insert(suspended_ready_head, p);
+        list_insert(&suspended_ready_head, p);
     }else if (p->state == 18) { // pcb state is blocked, suspended (0x12)
-        list_insert(suspended_blocked_head, p);
+        list_insert(&suspended_blocked_head, p);
     }
 }
 
-int list_remove(pcb *head, pcb *p) {
-    pcb *cur = head;
+int list_remove(pcb **head, pcb *p) {
+    pcb *cur = &head;
     if (cur == NULL) {
         return 0;
     }
@@ -138,15 +135,15 @@ int list_remove(pcb *head, pcb *p) {
 
 int pcb_remove(pcb *p) {
     if (p->state == 1) {
-        return list_remove(ready_head, p);
+        return list_remove(&ready_head, p);
     }
     if (p->state == 2) {
-        return list_remove(blocked_head, p);
+        return list_remove(&blocked_head, p);
     }
     if (p->state == 17) {
-        return list_remove(suspended_ready_head, p);
+        return list_remove(&suspended_ready_head, p);
     }
     if (p->state == 18) {
-        return list_remove(suspended_blocked_head, p);
+        return list_remove(&suspended_blocked_head, p);
     }
 }
