@@ -70,15 +70,13 @@ outb(COM1, '\n');
             char *pcb_name = strtok(NULL, " ");
             char *pcb_class = strtok(NULL, " ");
             char *pcb_priority = strtok(NULL, " ");
-            char *pcb_state = strtok(NULL, " ");
-            char *pcb_suspended_status = strtok(NULL, " ");
             char *extra_arg_pcb = strtok(NULL, " ");// test for extra args on pcb command
             if (strcmp(extra_arg_pcb, NULL) != 0 && strcmp(extra_arg_pcb, "\n") != 0) { // check for extra arguments in buffer
                 error("The command you entered is not recognized. Too many arguments. Try again.");
                 continue;
             }
             else
-                pcb(param_str, pcb_name, pcb_class, pcb_priority, pcb_state, pcb_suspended_status);
+                pcb(param_str, pcb_name, pcb_class, pcb_priority);
         }
         else{
             char *extra_arg = strtok(NULL, " ");// test for extra args

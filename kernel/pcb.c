@@ -79,7 +79,7 @@ pcb *pcb_setup(const char *name, int type, int priority) {
         return NULL;
     }
 
-    memcpy(p->name, name, sizeof(name));
+    memcpy(p->name, name, strlen(name));
     p->type = type;
     p->priority = priority;
     p->state = 1; //ready, not suspended
@@ -149,4 +149,5 @@ int pcb_remove(pcb *p) {
     if (p->state == 18) {
         return list_remove(suspended_blocked_head, p);
     }
+    return -1;
 }
