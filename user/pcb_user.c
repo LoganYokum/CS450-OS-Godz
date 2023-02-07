@@ -9,7 +9,7 @@
 void pcb(const char* param_str, const char* pcb_name, const char* pcb_class,
             const char* pcb_priority, const char* pcb_state, const char* pcb_suspended_status){
     if(strcmp(param_str, "create") == 0)
-        pcb_create(pcb_name, pcb_class, pcb_priority);
+        pcb_create(pcb_name, atoi(pcb_class), atoi(pcb_priority));
     else if(strcmp(param_str, "delete") == 0)
         pcb_delete(pcb_name);
     else if(strcmp(param_str, "block") == 0)
@@ -21,15 +21,15 @@ void pcb(const char* param_str, const char* pcb_name, const char* pcb_class,
     else if(strcmp(param_str, "resume") == 0)
         pcb_resume(pcb_name);
     else if(strcmp(param_str, "set_priority") == 0)
-        pcb_set_priority(pcb_name, pcb_class, pcb_priority, pcb_state, pcb_suspended_status);
+        pcb_set_priority(pcb_name, atoi(pcb_class), atoi(pcb_priority), atoi(pcb_state), atoi(pcb_suspended_status));
     else if(strcmp(param_str, "show_pcb") == 0)
-        pcb_show_pcb(pcb_name, pcb_class, pcb_priority, pcb_state, pcb_suspended_status);
+        pcb_show_pcb(pcb_name, atoi(pcb_class), atoi(pcb_priority), atoi(pcb_state), atoi(pcb_suspended_status));
     else if(strcmp(param_str, "show_ready") == 0)
-        pcb_show_ready(pcb_name, pcb_class, pcb_priority, pcb_state, pcb_suspended_status);
+        pcb_show_ready(pcb_name, atoi(pcb_class), atoi(pcb_priority), atoi(pcb_state), atoi(pcb_suspended_status));
     else if(strcmp(param_str, "show_blocked") == 0)
-        pcb_show_blocked(pcb_name, pcb_class, pcb_priority, pcb_state, pcb_suspended_status);
+        pcb_show_blocked(pcb_name, atoi(pcb_class), atoi(pcb_priority), atoi(pcb_state), atoi(pcb_suspended_status));
     else if(strcmp(param_str, "show_all") == 0)
-        pcb_show_all(pcb_name, pcb_class, pcb_priority, pcb_state, pcb_suspended_status);
+        pcb_show_all(pcb_name, atoi(pcb_class), atoi(pcb_priority), atoi(pcb_state), atoi(pcb_suspended_status));
     else
         error("Incorrect parameter(s) for command: pcb. Try again.");
 }
