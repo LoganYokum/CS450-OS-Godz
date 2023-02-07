@@ -7,6 +7,7 @@ kernel/irq.o\
 kernel/core.o\
 kernel/kmain.o\
 kernel/serial.o\
+kernel/pcb.o\
 
 LIB_OBJECTS =\
 lib/ctype.o\
@@ -21,7 +22,7 @@ user/time.o\
 user/date.o\
 user/shutdown.o\
 user/help.o\
-user/pcb.o\
+user/pcb_user.o\
 
 ########################################################################
 ### Nothing below here needs to be changed

@@ -30,7 +30,17 @@ void help(char *args){
         println("To use date, simply type date followed by the month, day, and year separated by slashes or\njust type date to display the current date");
         println("Example: date OR date 09/25/01");
     }else if(strcmp(args, "pcb") == 0){       // param = pcb
-        
+        println("To use pcb, type pcb followed by an argument. The arguments for pcb are:\n
+                 1. create name (to create a pcb by name)\n
+                 2. delete name (to delete a pcb by name)\n
+                 3. block name  (to block a pcb by name)\n
+                 4. suspend name(to suspend a pcb by name)\n
+                 5. resume name (to resume a pcb by name after suspended)\n
+                 6. set_priority name class priority state (to set the priority of a pcb)\n
+                 7. show_pcb     name class priority state (to show all details of a pcb)\n
+                 8. show_ready   name class priority state (to show all ready pcb's)\n
+                 9. show_blocked name class priority state (to show all blocked pcb's)\n
+                 10. show_all    name class priority state (to show all pcb's)");
     }
     else {                                //param doesnt have any matching string
         println("Incorrect parameter(s) for command: help. Try again.");
