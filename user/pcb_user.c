@@ -11,14 +11,21 @@
 #define BLOCKED_AND_SUSPENDED 18
 
 void pcb(char[] pcb_str, int length){
+    // initiate pointers for data from pcb_str
     char* param_str = strtok(pcb_str, " ");
+    char* arg_str = NULL;
+    char* pcb_name = NULL;
+    char* pcb_class = NULL;
+    char* pcb_priority = NULL;
+    char* extra_arg_test = NULL;
+
     if(strcmp(param_str, "set")){
         arg_str = strtok(NULL, " ");
         if(strcmp(arg_str, "priority") == 0){
-            char* pcb_name = strtok(NULL, " ");
-            char* pcb_priority = strtok(NULL, " ");
-            char* extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) == 0)
+            pcb_name = strtok(NULL, " ");
+            pcb_priority = strtok(NULL, " ");
+            extra_arg_test = strtok(NULL, " ");
+            if(strcmp(extra_arg_test, NULL) != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_set_priority(pcb_name, atoi(pcb_priority));
@@ -27,31 +34,32 @@ void pcb(char[] pcb_str, int length){
             error("Incorrect parameter(s) for command: pcb. Try again.");    
     }
     else if(strcmp(param_str, "show")){
+        arg_str = strtok(NULL, " ");
         if(strcmp(arg_str, "pcb") == 0){
-            char* pcb_name = strtok(NULL, " ");
-            char* extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) == 0)
+            pcb_name = strtok(NULL, " ");
+            extra_arg_test = strtok(NULL, " ");
+            if(strcmp(extra_arg_test, NULL) != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_show_pcb(pcb_name);
         }
         else if(strcmp(arg_str, "ready") == 0){
-            char* extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) == 0)
+            extra_arg_test = strtok(NULL, " ");
+            if(strcmp(extra_arg_test, NULL) != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_show_ready();
         }
         else if(strcmp(arg_str, "blocked") == 0){
-            char* extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) == 0)
+            extra_arg_test = strtok(NULL, " ");
+            if(strcmp(extra_arg_test, NULL) != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_show_blocked();
         }
         else if(strcmp(arg_str, "all") == 0){
-            char* extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) == 0)
+            extra_arg_test = strtok(NULL, " ");
+            if(strcmp(extra_arg_test, NULL) != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_show_all();
@@ -60,47 +68,47 @@ void pcb(char[] pcb_str, int length){
             error("Incorrect parameter(s) for command: pcb. Try again.");
     }
     else{
-        char* pcb_name = strtok(NULL, " ");
+        pcb_name = strtok(NULL, " ");
         if(strcmp(param_str, "create") == 0){
-            char* pcb_class = strtok(NULL, " ");
-            char* pcb_priority = strtok(NULL, " ");
-            char* extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) == 0)
+            pcb_class = strtok(NULL, " ");
+            pcb_priority = strtok(NULL, " ");
+            extra_arg_test = strtok(NULL, " ");
+            if(strcmp(extra_arg_test, NULL) != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_create(pcb_name, atoi(pcb_class), atoi(pcb_priority));
         }
         else if(strcmp(param_str, "delete") == 0){
-            char* extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) == 0)
+            extra_arg_test = strtok(NULL, " ");
+            if(strcmp(extra_arg_test, NULL) != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_delete(pcb_name);
         }
         else if(strcmp(param_str, "block") == 0){
-            char* extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) == 0)
+            extra_arg_test = strtok(NULL, " ");
+            if(strcmp(extra_arg_test, NULL) != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_block(pcb_name);
         }
         else if(strcmp(param_str, "unblock") == 0){
-            char* extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) == 0)
+            extra_arg_test = strtok(NULL, " ");
+            if(strcmp(extra_arg_test, NULL) != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_unblock(pcb_name);
         }
         else if(strcmp(param_str, "suspend") == 0){
-            char* extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) == 0)
+            extra_arg_test = strtok(NULL, " ");
+            if(strcmp(extra_arg_test, NULL) != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_suspend(pcb_name);
         }
         else if(strcmp(param_str, "resume") == 0){
-            char* extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) == 0)
+            extra_arg_test = strtok(NULL, " ");
+            if(strcmp(extra_arg_test, NULL) != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_resume(pcb_name);
@@ -108,6 +116,12 @@ void pcb(char[] pcb_str, int length){
         else
             error("Incorrect parameter(s) for command: pcb. Try again.");
     }
+    sys_free_mem(param_str);
+    sys_free_mem(arg_str);
+    sys_free_mem(pcb_name);
+    sys_free_mem(pcb_class);
+    sys_free_mem(pcb_priority);
+    sys_free_mem(extra_arg_test);
 }
 
 void pcb_create(const char* name, int class, int priority){
