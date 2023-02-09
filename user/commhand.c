@@ -63,22 +63,17 @@ outb(COM1, '\n');
             command_str[i] = buffer[spaces + i];
         }
 
-        strtok(buffer, " ");                // capture parameter args
-        char *param_str = strtok(NULL, " ");// capture argument after help
-
         if(strcmp(command_str,"pcb") == 0){ //command is PCB
-            char *pcb_name = strtok(NULL, " ");
-            char *pcb_class = strtok(NULL, " ");
-            char *pcb_priority = strtok(NULL, " ");
-            char *extra_arg_pcb = strtok(NULL, " ");// test for extra args on pcb command
-            if (strcmp(extra_arg_pcb, NULL) != 0 && strcmp(extra_arg_pcb, "\n") != 0) { // check for extra arguments in buffer
-                error("The command you entered is not recognized. Too many arguments. Try again.");
-                continue;
+            char pcb_str[50] = {0};
+            pcb_str[49] = '\0';
+            for(int i = 0;(i+spaces+strlen(command_str))<strlen(buffer);i++){
+                pcb_str[i] = buffer[(i+spaces+strlen(command_str))];
             }
-            else
-                pcb(param_str, pcb_name, pcb_class, pcb_priority);
+            pcb(pcb_str, strlen(pcb_str));
         }
         else{
+            strtok(buffer, " ");                // capture parameter args
+            char *param_str = strtok(NULL, " ");// capture argument after help
             char *extra_arg = strtok(NULL, " ");// test for extra args
             if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
                 error("The command you entered is not recognized. Too many arguments. Try again.");
@@ -91,7 +86,7 @@ outb(COM1, '\n');
             }else if(strcmp(command_str, "help") == 0) { // buffer command is help
                 help(param_str);
             }else if(strcmp(command_str, "shutdown") == 0) { // buffer command is shutdown
-            if (shutdown() == 0) break;
+                if (shutdown() == 0) break;
             }else if(strcmp(command_str, "time") == 0) { // buffer command is time
                 time(param_str);
             }else if(strcmp(command_str, "date") == 0) { // buffer command is date

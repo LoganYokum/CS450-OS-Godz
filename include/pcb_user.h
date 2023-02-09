@@ -1,4 +1,4 @@
-void pcb(const char* param_str, const char* pcb_name, const char* pcb_class, const char* pcb_priority);
+void pcb(char[] pcb_str, int lenght);
 void pcb_create(const char* name, int class, int priority);
 void pcb_delete(const char* name);
 void pcb_block(const char* name);
