@@ -23,10 +23,8 @@ void pcb_show_ready();
 void pcb_show_blocked();
 
 void pcb_op(char *pcb_str){
-    println(pcb_str);
     // initiate pointers for data from pcb_str
     char* param_str = strtok(pcb_str, " ");
-    println(param_str);
     char* arg_str = NULL;
     char* pcb_name = NULL;
     char* pcb_class = NULL;
@@ -34,7 +32,6 @@ void pcb_op(char *pcb_str){
     char* extra_arg_test = NULL;
 
     if(strcmp(param_str, "set")==0){
-        println("here");
         arg_str = strtok(NULL, " ");
         println(arg_str);
         if(strcmp(arg_str, "priority") == 0){
@@ -52,7 +49,7 @@ void pcb_op(char *pcb_str){
         else
             error("Incorrect parameter(s) for command: pcb. Try again.");    
     }
-    else if(strcmp(param_str, "show") == 0){
+    else if(strcmp(param_str, "show")==0){
         arg_str = strtok(NULL, " ");
         if(strcmp(arg_str, "pcb") == 0){
             pcb_name = strtok(NULL, " ");
@@ -259,13 +256,16 @@ void pcb_show_pcb(const char* name){
     }
     pcb *p = pcb_find(name);
     sys_req(WRITE, COM1, "Name: ", sizeof("Name: "));
-    sys_req(WRITE, COM1, p->name, sizeof(p->name));
+    sys_req(WRITE, COM1, p->name, strlen(p->name));
+    sys_req(WRITE, COM1, ", ", sizeof(", "));
 
     sys_req(WRITE, COM1, "Class: ", sizeof("Class: "));
-    sys_req(WRITE, COM1, p->class, sizeof(p->class));
+    sys_req(WRITE, COM1, p->class, strlen(p->class));
+    sys_req(WRITE, COM1, ", ", sizeof(", "));
 
     sys_req(WRITE, COM1, "Priority: ", sizeof("Priority: "));
-    sys_req(WRITE, COM1, p->priority, sizeof(p->priority));
+    sys_req(WRITE, COM1, p->priority, strlen(p->priority));
+    sys_req(WRITE, COM1, ", ", sizeof(", "));
 
     sys_req(WRITE, COM1, "State: ", sizeof("State: "));
     if (p->state == READY_NOT_SUSPENDED) {
