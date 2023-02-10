@@ -129,7 +129,7 @@ void pcb_create(const char* name, int class, int priority){
     if(strlen(name) > 16)
         error("Name too long. Must be 8 characters or less.");
     else if(class < 0 || class > 1)
-        error("Invalid class. Must be 0 or 1.");
+        error("Invalid type. Must be 0 or 1.");
     else if(priority < 0 || priority > 9)
         error("Invalid priority. Must be 0-9.");
     else if(pcb_find(name) != NULL)
@@ -143,10 +143,9 @@ void pcb_create(const char* name, int class, int priority){
 void pcb_delete(const char* name){ 
     if(pcb_find(name) == NULL)
         error("Process does not exist.");
-    else if(pcb_find(name)->class == 1) //system process not allowed to be deleted
+    else if(pcb_find(name)->class == READY_NOT_SUSPENDED)
         error("Cannot delete system process.");
     else{
-        //process should be deleted.
         pcb* p = pcb_find(name);
         pcb_remove(p);
         pcb_free(p);
@@ -199,21 +198,22 @@ void pcb_suspend(const char* name){
         pcb_insert(p); // insert PCB into suspended queue
     }
 }
-void pcb_resume(const char* name){
 
-}
-void pcb_set_priority(const char* name, int priority){
+// void pcb_resume(const char* name){
 
-}
-void pcb_show_pcb(const char* name){
+// }
+// void pcb_set_priority(const char* name, int priority){
 
-}
-void pcb_show_ready(){
+// }
+// void pcb_show_pcb(const char* name){
 
-}
-void pcb_show_blocked(){
+// }
+// void pcb_show_ready(){
 
-}
-void pcb_show_all(){
+// }
+// void pcb_show_blocked(){
 
-}
+// }
+// void pcb_show_all(){
+
+// }

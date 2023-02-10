@@ -19,6 +19,11 @@ typedef struct pcb {
     struct pcb *next;
 } pcb;
 
+extern pcb *ready_head;
+extern pcb *blocked_head;
+extern pcb *suspended_ready_head;
+extern pcb *suspended_blocked_head;
+
 /**
  * Allocates a new instance of pcb struct
  * @return pointer to the new pcb struct
@@ -62,7 +67,7 @@ pcb *pcb_setup(const char *name, int type, int priority);
  * @param head the struct to insert into
  * @param p the pcb to insert
  */
-void list_insert(pcb *head, pcb *p);
+void list_insert(pcb **head, pcb *p);
 
 /**
  * Inserts a pcb struct into the appropriate list
@@ -76,7 +81,7 @@ void pcb_insert(pcb *p);
  * @param p the pcb to remove
  * @return 1 on success, 0 on failure 
  */
-int list_remove(pcb *head, pcb *p);
+int list_remove(pcb **head, pcb *p);
 
 /**
  * Removes a pcb struct from the appropriate list

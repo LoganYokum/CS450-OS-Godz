@@ -35,6 +35,17 @@ int pcb_free(pcb *p) {
     return sys_free_mem(p);
 }
 
+int list_free(pcb *head) {
+    pcb *cur = head;
+    int res = 0;
+    while (cur != NULL) {
+        pcb *tmp = cur;
+        cur = cur->next;
+        res = pcb_free(tmp);
+    }
+    return res;
+}
+
 pcb *list_find(pcb *head, const char *name) {
     pcb *cur = head;
     while (cur != NULL) {
@@ -85,7 +96,7 @@ pcb *pcb_setup(const char *name, int class, int priority) {
 }
 
 void list_insert(pcb **head, pcb *p) {
-    pcb *cur = head;
+    pcb *cur = *head;
     if (cur == NULL) {
         *head = p;
         return;
@@ -115,7 +126,7 @@ void pcb_insert(pcb *p) {
 }
 
 int list_remove(pcb **head, pcb *p) {
-    pcb *cur = &head;
+    pcb *cur = *head;
     if (cur == NULL) {
         return 0;
     }

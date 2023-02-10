@@ -9,6 +9,7 @@
 #include <date.h>
 #include <memory.h>
 #include <mpx/io.h>
+#include <mpx/pcb.h>
 #include <pcb_user.h>
 
 #define YELLOW "\033[0;33m"
@@ -97,4 +98,8 @@ outb(COM1, '\n');
         }
     }
     sys_free_mem(comp_date);
+    list_free(ready_head);
+    list_free(blocked_head);
+    list_free(suspended_ready_head);
+    list_free(suspended_blocked_head);
 }
