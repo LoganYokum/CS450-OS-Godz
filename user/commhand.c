@@ -67,8 +67,8 @@ outb(COM1, '\n');
         if(strcmp(command_str,"pcb") == 0){ //command is PCB
             char pcb_str[50] = {0};
             pcb_str[49] = '\0';
-            for(int i = 0;(i+spaces+strlen(command_str))<strlen(buffer);i++){
-                pcb_str[i] = buffer[(i+spaces+strlen(command_str))];
+            for(int i = 1;(i+spaces+strlen(command_str))<strlen(buffer);i++){
+                pcb_str[i-1] = buffer[(i+spaces+strlen(command_str))];
             }
             pcb_op(pcb_str);
         }

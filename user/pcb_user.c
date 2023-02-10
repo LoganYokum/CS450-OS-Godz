@@ -23,21 +23,28 @@ void pcb_show_ready();
 void pcb_show_blocked();
 
 void pcb_op(char *pcb_str){
+    println(pcb_str);
     // initiate pointers for data from pcb_str
     char* param_str = strtok(pcb_str, " ");
+    println(param_str);
     char* arg_str = NULL;
     char* pcb_name = NULL;
     char* pcb_class = NULL;
     char* pcb_priority = NULL;
     char* extra_arg_test = NULL;
 
-    if(strcmp(param_str, "set")){
+    if(strcmp(param_str, "set")==0){
+        println("here");
         arg_str = strtok(NULL, " ");
+        println(arg_str);
         if(strcmp(arg_str, "priority") == 0){
             pcb_name = strtok(NULL, " ");
+            println(pcb_name);
             pcb_priority = strtok(NULL, " ");
+            println(pcb_priority);
             extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) != 0)
+            println(extra_arg_test);
+            if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_set_priority(pcb_name, atoi(pcb_priority));
@@ -45,33 +52,33 @@ void pcb_op(char *pcb_str){
         else
             error("Incorrect parameter(s) for command: pcb. Try again.");    
     }
-    else if(strcmp(param_str, "show")){
+    else if(strcmp(param_str, "show") == 0){
         arg_str = strtok(NULL, " ");
         if(strcmp(arg_str, "pcb") == 0){
             pcb_name = strtok(NULL, " ");
             extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) != 0)
+            if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_show_pcb(pcb_name);
         }
         else if(strcmp(arg_str, "ready") == 0){
             extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) != 0)
+            if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_show_ready();
         }
         else if(strcmp(arg_str, "blocked") == 0){
             extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) != 0)
+            if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_show_blocked();
         }
         else if(strcmp(arg_str, "all") == 0){
             extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) != 0)
+            if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_show_all();
@@ -85,42 +92,42 @@ void pcb_op(char *pcb_str){
             pcb_class = strtok(NULL, " ");
             pcb_priority = strtok(NULL, " ");
             extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) != 0)
+            if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_create(pcb_name, atoi(pcb_class), atoi(pcb_priority));
         }
         else if(strcmp(param_str, "delete") == 0){
             extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) != 0)
+            if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_delete(pcb_name);
         }
         else if(strcmp(param_str, "block") == 0){
             extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) != 0)
+            if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_block(pcb_name);
         }
         else if(strcmp(param_str, "unblock") == 0){
             extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) != 0)
+            if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_unblock(pcb_name);
         }
         else if(strcmp(param_str, "suspend") == 0){
             extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) != 0)
+            if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_suspend(pcb_name);
         }
         else if(strcmp(param_str, "resume") == 0){
             extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) != 0)
+            if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
                 pcb_resume(pcb_name);
