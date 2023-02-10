@@ -70,14 +70,14 @@ pcb *pcb_find(const char *name) {
     return NULL;
 }
 
-pcb *pcb_setup(const char *name, int type, int priority) {
+pcb *pcb_setup(const char *name, int class, int priority) {
     pcb *p = pcb_allocate();
     if (p == NULL) {
         return NULL;
     }
 
     memcpy(p->name, name, strlen(name));
-    p->type = type;
+    p->class = class;
     p->priority = priority;
     p->state = 1; //ready, not suspended
 
