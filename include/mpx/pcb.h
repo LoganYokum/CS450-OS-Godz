@@ -45,6 +45,13 @@ int list_free(pcb *head);
 int pcb_free(pcb *p);
 
 /**
+ * Frees the memory associated with a list
+ * @param head the head of the list to free
+ * @return 0 on success, -1 on failure
+ */
+int list_free(pcb *head);
+
+/**
  * Finds an element in a specified list by name
  * @param head the list to search
  * @param name the name of the pcb to find

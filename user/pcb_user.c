@@ -11,6 +11,17 @@
 #define READY_AND_SUSPENDED 17
 #define BLOCKED_AND_SUSPENDED 18
 
+void pcb_create(const char* name, int class, int priority);
+void pcb_delete(const char* name);
+void pcb_block(const char* name);
+void pcb_unblock(const char* name);
+void pcb_suspend(const char* name);
+void pcb_resume(const char* name);
+void pcb_set_priority(const char* name, int priority);
+void pcb_show_pcb(const char* name);
+void pcb_show_ready();
+void pcb_show_blocked();
+
 void pcb_op(char *pcb_str){
     // initiate pointers for data from pcb_str
     char* param_str = strtok(pcb_str, " ");
@@ -129,7 +140,7 @@ void pcb_create(const char* name, int class, int priority){
     if(strlen(name) > 16)
         error("Name too long. Must be 8 characters or less.");
     else if(class < 0 || class > 1)
-        error("Invalid type. Must be 0 or 1.");
+        error("Invalid class. Must be 0 or 1.");
     else if(priority < 0 || priority > 9)
         error("Invalid priority. Must be 0-9.");
     else if(pcb_find(name) != NULL)
@@ -140,6 +151,7 @@ void pcb_create(const char* name, int class, int priority){
         pcb_insert(p);
     }
 }
+
 void pcb_delete(const char* name){ 
     if(pcb_find(name) == NULL)
         error("Process does not exist.");
@@ -151,6 +163,7 @@ void pcb_delete(const char* name){
         pcb_free(p);
     }
 }
+
 void pcb_block(const char* name){
     if(pcb_find(name) == NULL)
         error("Process does not exist.");
@@ -166,6 +179,7 @@ void pcb_block(const char* name){
         pcb_insert(p); // insert PCB into blocked queue
     }
 }
+
 void pcb_unblock(const char* name){
     if(pcb_find(name) == NULL)
         error("Process does not exist.");
@@ -181,6 +195,7 @@ void pcb_unblock(const char* name){
         pcb_insert(p); // insert PCB into blocked queue
     }
 }
+
 void pcb_suspend(const char* name){
     if(pcb_find(name) == NULL)
         error("Process does not exist.");
@@ -200,15 +215,64 @@ void pcb_suspend(const char* name){
 }
 
 void pcb_resume(const char* name){
-
+    if (pcb_find(name) == NULL) // checking if pcb exists
+        error("Process does not exist.");
+    else if (pcb_find(name)->state == READY_NOT_SUSPENDED || pcb_find(name)->state == BLOCKED_NOT_SUSPENDED) // checking if resumed
+        error("Process is not suspended.");
+    else if (pcb_find(name)->class == 1)
+        error("Cannot delete process.");
+    else { // changing to correct state and adding to queue
+        pcb* p = pcb_find(name);
+        pcb_remove(p);
+        if (p->state == READY_AND_SUSPENDED)
+            p->state = READY_NOT_SUSPENDED;
+        else
+            p->state = BLOCKED_NOT_SUSPENDED;
+        pcb_insert(p); 
+    }
 }
-void pcb_set_priority(const char* name, int priority){
 
+void pcb_set_priority(const char* name, int priority) {
+    if (pcb_find(name) == NULL) // checking if pcb exists
+        error("Process does not exist.");
+    else if (priority < 0 || priority > 9) // checking if priority is valid
+        error("Invalid priority value.");
+    else { // changing to parameter priority and adding to queue
+        pcb* p = pcb_find(name);
+        pcb_remove(p);
+        p->priority = priority;
+        pcb_insert(p);
+    }
 }
+
 void pcb_show_pcb(const char* name){
-    
+    if (pcb_find(name) == NULL) {
+        error("Process does not exist.");
+        return;
+    }
+    pcb *p = pcb_find(name);
+    sys_req(WRITE, COM1, "Name: ", sizeof("Name: "));
+    sys_req(WRITE, COM1, p->name, sizeof(p->name));
+
+    sys_req(WRITE, COM1, "Class: ", sizeof("Class: "));
+    sys_req(WRITE, COM1, p->class, sizeof(p->class));
+
+    sys_req(WRITE, COM1, "Priority: ", sizeof("Priority: "));
+    sys_req(WRITE, COM1, p->priority, sizeof(p->priority));
+
+    sys_req(WRITE, COM1, "State: ", sizeof("State: "));
+    if (p->state == READY_NOT_SUSPENDED) {
+        sys_req(WRITE, COM1, "Ready and not suspended\n", sizeof("Ready and not suspended\n"));
+    }else if (p->state == READY_AND_SUSPENDED) {
+        sys_req(WRITE, COM1, "Ready and suspended\n", sizeof("Ready and suspended\n"));
+    }else if (p->state == BLOCKED_NOT_SUSPENDED) {
+        sys_req(WRITE, COM1, "Blocked and not suspended\n", sizeof("Blocked and not suspended\n"));
+    }else if (p->state == BLOCKED_AND_SUSPENDED) {
+        sys_req(WRITE, COM1, "Blocked and suspended\n", sizeof("Blocked and suspended\n"));
+    }
 }
-void pcb_show_ready(){
+
+void pcb_show_ready() {
 
 }
 void pcb_show_blocked(){
