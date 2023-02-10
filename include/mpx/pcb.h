@@ -11,7 +11,7 @@
 
 typedef struct pcb {
     char name[16];
-    int type;
+    int class;
     int priority;
     int state;
     void *stack_top;

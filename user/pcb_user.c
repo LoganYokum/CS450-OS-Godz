@@ -10,7 +10,7 @@
 #define READY_AND_SUSPENDED 17
 #define BLOCKED_AND_SUSPENDED 18
 
-void pcb(char[] pcb_str, int length){
+void pcb_op(char *pcb_str){
     // initiate pointers for data from pcb_str
     char* param_str = strtok(pcb_str, " ");
     char* arg_str = NULL;
@@ -135,7 +135,7 @@ void pcb_create(const char* name, int class, int priority){
         error("Process already exists.");
     else{
         //process should be created.
-        pcb p* = pcb_setup(name, class, priority);
+        pcb *p = pcb_setup(name, class, priority);
         pcb_insert(p);
     }
 }
