@@ -10,8 +10,8 @@
  */
 
 typedef struct pcb {
-    char name[16];
-    int type;
+    char name[17];
+    int class;
     int priority;
     int state;
     void *stack_top;
