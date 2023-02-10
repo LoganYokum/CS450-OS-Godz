@@ -5,14 +5,15 @@
 #include <sys_req.h>
 #include <mpx/pcb.h>
 #include <memory.h>
+
 #define READY_NOT_SUSPENDED 1
 #define BLOCKED_NOT_SUSPENDED 2
 #define READY_AND_SUSPENDED 17
 #define BLOCKED_AND_SUSPENDED 18
 
-void pcb(const char* param_str, const char* pcb_name, const char* pcb_class, const char* pcb_priority){
+void pcb_op(const char* param_str, const char* pcb_name, const char* pcb_type, const char* pcb_priority){
     if(strcmp(param_str, "create") == 0)
-        pcb_create(pcb_name, atoi(pcb_class), atoi(pcb_priority));
+        pcb_create(pcb_name, atoi(pcb_type), atoi(pcb_priority));
     else if(strcmp(param_str, "delete") == 0)
         pcb_delete(pcb_name);
     else if(strcmp(param_str, "block") == 0)
@@ -21,44 +22,44 @@ void pcb(const char* param_str, const char* pcb_name, const char* pcb_class, con
         pcb_unblock(pcb_name);
     else if(strcmp(param_str, "suspend") == 0)
         pcb_suspend(pcb_name);
-    else if(strcmp(param_str, "resume") == 0)
-        pcb_resume(pcb_name);
-    else if(strcmp(param_str, "set_priority") == 0)
-        pcb_set_priority(pcb_name, atoi(pcb_priority));
-    else if(strcmp(param_str, "show_pcb") == 0)
-        pcb_show_pcb(pcb_name);
-    else if(strcmp(param_str, "show_ready") == 0)
-        pcb_show_ready();
-    else if(strcmp(param_str, "show_blocked") == 0)
-        pcb_show_blocked();
-    else if(strcmp(param_str, "show_all") == 0)
-        pcb_show_all();
+    // else if(strcmp(param_str, "resume") == 0)
+    //     pcb_resume(pcb_name);
+    // else if(strcmp(param_str, "set_priority") == 0)
+    //     pcb_set_priority(pcb_name, atoi(pcb_priority));
+    // else if(strcmp(param_str, "show_pcb") == 0)
+    //     pcb_show_pcb(pcb_name);
+    // else if(strcmp(param_str, "show_ready") == 0)
+    //     pcb_show_ready();
+    // else if(strcmp(param_str, "show_blocked") == 0)
+    //     pcb_show_blocked();
+    // else if(strcmp(param_str, "show_all") == 0)
+    //     pcb_show_all();
     else
         error("Incorrect parameter(s) for command: pcb. Try again.");
 }
 
-void pcb_create(const char* name, int class, int priority){
+void pcb_create(const char* name, int type, int priority){
     if(strlen(name) > 8)
         error("Name too long. Must be 8 characters or less.");
-    else if(class < 0 || class > 1)
-        error("Invalid class. Must be 0 or 1.");
+    else if(type < 0 || type > 1)
+        error("Invalid type. Must be 0 or 1.");
     else if(priority < 0 || priority > 9)
         error("Invalid priority. Must be 0-9.");
     else if(pcb_find(name) != NULL)
         error("Process already exists.");
     else{
         //process should be created.
-        pcb p* = pcb_setup(name, class, priority);
+        pcb *p = pcb_setup(name, type, priority);
         pcb_insert(p);
     }
 }
 void pcb_delete(const char* name){ 
     if(pcb_find(name) == NULL)
         error("Process does not exist.");
-    else if(pcb_find(name)->class == READY_NOT_SUSPENDED)
+    else if(pcb_find(name)->type == READY_NOT_SUSPENDED)
         error("Cannot delete system process.");
     else{
-        pcb* p = pcb_find(name);
+        pcb *p = pcb_find(name);
         pcb_remove(p);
         pcb_free(p);
     }
@@ -98,7 +99,7 @@ void pcb_suspend(const char* name){
         error("Process does not exist.");
     else if(pcb_find(name)->state == READY_AND_SUSPENDED || pcb_find(name)->state == BLOCKED_AND_SUSPENDED)
         error("Process is already suspended.");
-    else if(pcb_find(name)->class == READY_NOT_SUSPENDED)
+    else if(pcb_find(name)->type == READY_NOT_SUSPENDED)
         error("Cannot delete system process.");
     else{
         pcb* p = pcb_find(name); //find PCB
@@ -110,21 +111,22 @@ void pcb_suspend(const char* name){
         pcb_insert(p); // insert PCB into suspended queue
     }
 }
-void pcb_resume(const char* name){
 
-}
-void pcb_set_priority(const char* name, int priority){
+// void pcb_resume(const char* name){
 
-}
-void pcb_show_pcb(const char* name){
+// }
+// void pcb_set_priority(const char* name, int priority){
 
-}
-void pcb_show_ready(){
+// }
+// void pcb_show_pcb(const char* name){
 
-}
-void pcb_show_blocked(){
+// }
+// void pcb_show_ready(){
 
-}
-void pcb_show_all(){
+// }
+// void pcb_show_blocked(){
 
-}
+// }
+// void pcb_show_all(){
+
+// }

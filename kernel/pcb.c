@@ -4,11 +4,6 @@
 
 #define STACK_SIZE 1024
 
-pcb *ready_head;
-pcb *blocked_head;
-pcb *suspended_ready_head;
-pcb *suspended_blocked_head;
-
 pcb *pcb_allocate() {
     pcb *p = (pcb *) sys_alloc_mem(sizeof(pcb));
     if (p == NULL) {
@@ -33,6 +28,17 @@ int pcb_free(pcb *p) {
     sys_free_mem(p->stack_top);
 
     return sys_free_mem(p);
+}
+
+int list_free(pcb *head) {
+    pcb *cur = head;
+    int res = 0;
+    while (cur != NULL) {
+        pcb *tmp = cur;
+        cur = cur->next;
+        res = pcb_free(tmp);
+    }
+    return res;
 }
 
 pcb *list_find(pcb *head, const char *name) {
@@ -85,7 +91,7 @@ pcb *pcb_setup(const char *name, int type, int priority) {
 }
 
 void list_insert(pcb **head, pcb *p) {
-    pcb *cur = head;
+    pcb *cur = *head;
     if (cur == NULL) {
         *head = p;
         return;
@@ -115,7 +121,7 @@ void pcb_insert(pcb *p) {
 }
 
 int list_remove(pcb **head, pcb *p) {
-    pcb *cur = &head;
+    pcb *cur = *head;
     if (cur == NULL) {
         return 0;
     }

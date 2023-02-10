@@ -9,6 +9,7 @@
 #include <date.h>
 #include <memory.h>
 #include <mpx/io.h>
+#include <mpx/pcb.h>
 #include <pcb_user.h>
 
 #define YELLOW "\033[0;33m"
@@ -68,7 +69,7 @@ outb(COM1, '\n');
 
         if(strcmp(command_str,"pcb") == 0){ //command is PCB
             char *pcb_name = strtok(NULL, " ");
-            char *pcb_class = strtok(NULL, " ");
+            char *pcb_type = strtok(NULL, " ");
             char *pcb_priority = strtok(NULL, " ");
             char *extra_arg_pcb = strtok(NULL, " ");// test for extra args on pcb command
             if (strcmp(extra_arg_pcb, NULL) != 0 && strcmp(extra_arg_pcb, "\n") != 0) { // check for extra arguments in buffer
@@ -76,7 +77,7 @@ outb(COM1, '\n');
                 continue;
             }
             else
-                pcb(param_str, pcb_name, pcb_class, pcb_priority);
+                pcb_op(param_str, pcb_name, pcb_type, pcb_priority);
         }
         else{
             char *extra_arg = strtok(NULL, " ");// test for extra args
@@ -102,4 +103,8 @@ outb(COM1, '\n');
         }
     }
     sys_free_mem(comp_date);
+    list_free(ready_head);
+    list_free(blocked_head);
+    list_free(suspended_ready_head);
+    list_free(suspended_blocked_head);
 }
