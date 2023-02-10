@@ -47,13 +47,13 @@ void pcb_op(char *pcb_str){
     }
     else if(strcmp(param_str, "show")==0){
         arg_str = strtok(NULL, " ");
-        if(strcmp(arg_str, "pcb") == 0){
-            pcb_name = strtok(NULL, " ");
+        if(pcb_find(arg_str) != NULL){
+            // pcb_name = strtok(NULL, " ");
             extra_arg_test = strtok(NULL, " ");
             if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
-                pcb_show_pcb(pcb_name);
+                pcb_show_one(arg_str);
         }
         else if(strcmp(arg_str, "ready") == 0){
             extra_arg_test = strtok(NULL, " ");
@@ -149,6 +149,7 @@ void pcb_create(const char* name, int class, int priority){
         //process should be created.
         pcb *p = pcb_setup(name, class, priority);
         pcb_insert(p);
+        success("PCB created.");
     }
 }
 
@@ -161,6 +162,7 @@ void pcb_delete(const char* name){
         pcb* p = pcb_find(name);
         pcb_remove(p);
         pcb_free(p);
+        success("PCB deleted.");
     }
 }
 
@@ -177,6 +179,7 @@ void pcb_block(const char* name){
         else //ready and suspended
             p->state = BLOCKED_AND_SUSPENDED; // update PCB state to blocked and suspended
         pcb_insert(p); // insert PCB into blocked queue
+        success("PCB blocked.");
     }
 }
 
@@ -191,6 +194,7 @@ void pcb_unblock(const char* name){
         else               //blocked and suspended
             p->state = READY_AND_SUSPENDED; // update PCB state to unblocked and suspended
         pcb_insert(p); // insert PCB into blocked queue
+        success("PCB unblocked.");
     }
     else
         error("Process is not blocked.");
@@ -211,6 +215,7 @@ void pcb_suspend(const char* name){
         else               //blocked and unsuspended
             p->state = BLOCKED_AND_SUSPENDED; // update PCB state to blocked and suspended
         pcb_insert(p); // insert PCB into suspended queue
+        success("PCB suspended.");
     }
 }
 
@@ -229,6 +234,7 @@ void pcb_resume(const char* name){
         else
             p->state = BLOCKED_NOT_SUSPENDED;
         pcb_insert(p); 
+        success("PCB resumed.");
     }
 }
 
@@ -242,10 +248,11 @@ void pcb_set_priority(const char* name, int priority) {
         pcb_remove(p);
         p->priority = priority;
         pcb_insert(p);
+        success("PCB priority set.");
     }
 }
 
-void pcb_show_pcb(const char* name){
+void pcb_show_one(const char* name){
     if (pcb_find(name) == NULL) {
         error("Process does not exist.");
         return;
@@ -255,23 +262,24 @@ void pcb_show_pcb(const char* name){
     sys_req(WRITE, COM1, p->name, strlen(p->name));
     sys_req(WRITE, COM1, ", ", sizeof(", "));
 
+    char *class = p->class == 1 ? "System" : "User";
     sys_req(WRITE, COM1, "Class: ", sizeof("Class: "));
-    sys_req(WRITE, COM1, p->class, strlen(p->class));
+    sys_req(WRITE, COM1, class, strlen(class));
     sys_req(WRITE, COM1, ", ", sizeof(", "));
 
     sys_req(WRITE, COM1, "Priority: ", sizeof("Priority: "));
-    sys_req(WRITE, COM1, p->priority, strlen(p->priority));
+    sys_req(WRITE, COM1, itoa(p->priority), strlen(itoa(p->priority)));
     sys_req(WRITE, COM1, ", ", sizeof(", "));
 
     sys_req(WRITE, COM1, "State: ", sizeof("State: "));
     if (p->state == READY_NOT_SUSPENDED) {
-        sys_req(WRITE, COM1, "Ready and not suspended\n", sizeof("Ready and not suspended\n"));
+        sys_req(WRITE, COM1, "Ready, Suspended: No\n", sizeof("Ready, Suspended: No\n"));
     }else if (p->state == READY_AND_SUSPENDED) {
-        sys_req(WRITE, COM1, "Ready and suspended\n", sizeof("Ready and suspended\n"));
+        sys_req(WRITE, COM1, "Ready, Suspended: Yes\n", sizeof("Ready, Suspended: Yes\n"));
     }else if (p->state == BLOCKED_NOT_SUSPENDED) {
-        sys_req(WRITE, COM1, "Blocked and not suspended\n", sizeof("Blocked and not suspended\n"));
+        sys_req(WRITE, COM1, "Blocked, Suspended: No\n", sizeof("Blocked, Suspended: No\n"));
     }else if (p->state == BLOCKED_AND_SUSPENDED) {
-        sys_req(WRITE, COM1, "Blocked and suspended\n", sizeof("Blocked and suspended\n"));
+        sys_req(WRITE, COM1, "Blocked, Suspended: Yes\n", sizeof("Blocked, Suspended: Yes\n"));
     }
 }
 

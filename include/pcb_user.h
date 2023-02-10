@@ -7,7 +7,7 @@ void pcb_suspend(const char* name);
 
 void pcb_resume(const char* name);
 void pcb_set_priority(const char* name, int priority);
-void pcb_show_pcb(const char* name);
+void pcb_show_one(const char* name);
 void pcb_show_ready();
 void pcb_show_blocked();
 void pcb_show_all();
