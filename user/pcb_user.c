@@ -11,7 +11,7 @@
 #define READY_AND_SUSPENDED 17
 #define BLOCKED_AND_SUSPENDED 18
 
-void pcb_op(char pcb_str[], int length){
+void pcb_op(char *pcb_str){
     // initiate pointers for data from pcb_str
     char* param_str = strtok(pcb_str, " ");
     char* arg_str = NULL;
@@ -125,25 +125,25 @@ void pcb_op(char pcb_str[], int length){
     sys_free_mem(extra_arg_test);
 }
 
-void pcb_create(const char* name, int type, int priority){
+void pcb_create(const char* name, int class, int priority){
     if(strlen(name) > 16)
         error("Name too long. Must be 8 characters or less.");
-    else if(type < 0 || type > 1)
-        error("Invalid type. Must be 0 or 1.");
+    else if(class < 0 || class > 1)
+        error("Invalid class. Must be 0 or 1.");
     else if(priority < 0 || priority > 9)
         error("Invalid priority. Must be 0-9.");
     else if(pcb_find(name) != NULL)
         error("Process already exists.");
     else{
         //process should be created.
-        pcb *p = pcb_setup(name, type, priority);
+        pcb *p = pcb_setup(name, class, priority);
         pcb_insert(p);
     }
 }
 void pcb_delete(const char* name){ 
     if(pcb_find(name) == NULL)
         error("Process does not exist.");
-    else if(pcb_find(name)->type == 1) //system process not allowed to be deleted
+    else if(pcb_find(name)->class == 1) //system process not allowed to be deleted
         error("Cannot delete system process.");
     else{
         //process should be deleted.
