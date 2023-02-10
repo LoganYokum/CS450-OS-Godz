@@ -33,14 +33,10 @@ void pcb_op(char *pcb_str){
 
     if(strcmp(param_str, "set")==0){
         arg_str = strtok(NULL, " ");
-        println(arg_str);
         if(strcmp(arg_str, "priority") == 0){
             pcb_name = strtok(NULL, " ");
-            println(pcb_name);
             pcb_priority = strtok(NULL, " ");
-            println(pcb_priority);
             extra_arg_test = strtok(NULL, " ");
-            println(extra_arg_test);
             if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
@@ -187,9 +183,7 @@ void pcb_block(const char* name){
 void pcb_unblock(const char* name){
     if(pcb_find(name) == NULL)
         error("Process does not exist.");
-    else if(pcb_find(name)->state != BLOCKED_NOT_SUSPENDED || pcb_find(name)->state != BLOCKED_AND_SUSPENDED)
-        error("Process is not blocked.");
-    else{
+    else if(pcb_find(name)->state == BLOCKED_NOT_SUSPENDED || pcb_find(name)->state == BLOCKED_AND_SUSPENDED){
         pcb* p = pcb_find(name); //find PCB
         pcb_remove(p); // remove PCB from blocked queue to prevent duplicates
         if(p->state == BLOCKED_NOT_SUSPENDED) //blocked and not suspended
@@ -198,6 +192,8 @@ void pcb_unblock(const char* name){
             p->state = READY_AND_SUSPENDED; // update PCB state to unblocked and suspended
         pcb_insert(p); // insert PCB into blocked queue
     }
+    else
+        error("Process is not blocked.");
 }
 
 void pcb_suspend(const char* name){
