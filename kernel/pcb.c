@@ -4,6 +4,11 @@
 
 #define STACK_SIZE 1024
 
+pcb *ready_head;
+pcb *blocked_head;
+pcb *suspended_ready_head;
+pcb *suspended_blocked_head;
+
 pcb *pcb_allocate() {
     pcb *p = (pcb *) sys_alloc_mem(sizeof(pcb));
     if (p == NULL) {
