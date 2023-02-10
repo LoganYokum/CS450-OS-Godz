@@ -10,7 +10,7 @@
  */
 
 typedef struct pcb {
-    char name[16];
+    char name[17];
     int type;
     int priority;
     int state;

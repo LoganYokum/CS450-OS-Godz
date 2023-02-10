@@ -69,7 +69,7 @@ outb(COM1, '\n');
             for(int i = 0;(i+spaces+strlen(command_str))<strlen(buffer);i++){
                 pcb_str[i] = buffer[(i+spaces+strlen(command_str))];
             }
-            pcb(pcb_str, strlen(pcb_str));
+            pcb_op(pcb_str, strlen(pcb_str));
         }
         else{
             strtok(buffer, " ");                // capture parameter args

@@ -5,17 +5,18 @@
 #include <sys_req.h>
 #include <mpx/pcb.h>
 #include <memory.h>
+
 #define READY_NOT_SUSPENDED 1
 #define BLOCKED_NOT_SUSPENDED 2
 #define READY_AND_SUSPENDED 17
 #define BLOCKED_AND_SUSPENDED 18
 
-void pcb(char[] pcb_str, int length){
+void pcb_op(char pcb_str[], int length){
     // initiate pointers for data from pcb_str
     char* param_str = strtok(pcb_str, " ");
     char* arg_str = NULL;
     char* pcb_name = NULL;
-    char* pcb_class = NULL;
+    char* pcb_type = NULL;
     char* pcb_priority = NULL;
     char* extra_arg_test = NULL;
 
@@ -70,13 +71,13 @@ void pcb(char[] pcb_str, int length){
     else{
         pcb_name = strtok(NULL, " ");
         if(strcmp(param_str, "create") == 0){
-            pcb_class = strtok(NULL, " ");
+            pcb_type = strtok(NULL, " ");
             pcb_priority = strtok(NULL, " ");
             extra_arg_test = strtok(NULL, " ");
             if(strcmp(extra_arg_test, NULL) != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
-                pcb_create(pcb_name, atoi(pcb_class), atoi(pcb_priority));
+                pcb_create(pcb_name, atoi(pcb_type), atoi(pcb_priority));
         }
         else if(strcmp(param_str, "delete") == 0){
             extra_arg_test = strtok(NULL, " ");
@@ -119,30 +120,30 @@ void pcb(char[] pcb_str, int length){
     sys_free_mem(param_str);
     sys_free_mem(arg_str);
     sys_free_mem(pcb_name);
-    sys_free_mem(pcb_class);
+    sys_free_mem(pcb_type);
     sys_free_mem(pcb_priority);
     sys_free_mem(extra_arg_test);
 }
 
-void pcb_create(const char* name, int class, int priority){
-    if(strlen(name) > 8)
+void pcb_create(const char* name, int type, int priority){
+    if(strlen(name) > 16)
         error("Name too long. Must be 8 characters or less.");
-    else if(class < 0 || class > 1)
-        error("Invalid class. Must be 0 or 1.");
+    else if(type < 0 || type > 1)
+        error("Invalid type. Must be 0 or 1.");
     else if(priority < 0 || priority > 9)
         error("Invalid priority. Must be 0-9.");
     else if(pcb_find(name) != NULL)
         error("Process already exists.");
     else{
         //process should be created.
-        pcb p* = pcb_setup(name, class, priority);
+        pcb *p = pcb_setup(name, type, priority);
         pcb_insert(p);
     }
 }
 void pcb_delete(const char* name){ 
     if(pcb_find(name) == NULL)
         error("Process does not exist.");
-    else if(pcb_find(name)->class == 1) //system process not allowed to be deleted
+    else if(pcb_find(name)->type == 1) //system process not allowed to be deleted
         error("Cannot delete system process.");
     else{
         //process should be deleted.
@@ -186,7 +187,7 @@ void pcb_suspend(const char* name){
         error("Process does not exist.");
     else if(pcb_find(name)->state == READY_AND_SUSPENDED || pcb_find(name)->state == BLOCKED_AND_SUSPENDED)
         error("Process is already suspended.");
-    else if(pcb_find(name)->class == READY_NOT_SUSPENDED)
+    else if(pcb_find(name)->type == READY_NOT_SUSPENDED)
         error("Cannot delete system process.");
     else{
         pcb* p = pcb_find(name); //find PCB
