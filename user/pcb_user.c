@@ -158,7 +158,7 @@ void pcb_block(const char* name){
         error("Process is already blocked.");
     else{
         pcb* p = pcb_find(name); //find PCB
-        pcb_delete(name); // remove PCB from ready queue to prevent duplicates
+        pcb_remove(p); // remove PCB from ready queue to prevent duplicates
         if(p->state == READY_NOT_SUSPENDED) //ready and not suspended
             p->state = BLOCKED_NOT_SUSPENDED; // update PCB state to blocked and not suspended
         else //ready and suspended
@@ -173,7 +173,7 @@ void pcb_unblock(const char* name){
         error("Process is not blocked.");
     else{
         pcb* p = pcb_find(name); //find PCB
-        pcb_delete(name); // remove PCB from blocked queue to prevent duplicates
+        pcb_remove(p); // remove PCB from blocked queue to prevent duplicates
         if(p->state == BLOCKED_NOT_SUSPENDED) //blocked and not suspended
             p->state = READY_NOT_SUSPENDED; // update PCB state to unblocked and not suspended
         else               //blocked and suspended
@@ -190,7 +190,7 @@ void pcb_suspend(const char* name){
         error("Cannot delete system process.");
     else{
         pcb* p = pcb_find(name); //find PCB
-        pcb_delete(name); // remove PCB from suspended queue to prevent duplicates
+        pcb_remove(p); // remove PCB from suspended queue to prevent duplicates
         if(p->state == READY_NOT_SUSPENDED) //ready and not suspended
             p->state = READY_AND_SUSPENDED; // update PCB state to ready and suspended
         else               //blocked and unsuspended
@@ -199,21 +199,21 @@ void pcb_suspend(const char* name){
     }
 }
 
-// void pcb_resume(const char* name){
+void pcb_resume(const char* name){
 
-// }
-// void pcb_set_priority(const char* name, int priority){
+}
+void pcb_set_priority(const char* name, int priority){
 
-// }
-// void pcb_show_pcb(const char* name){
+}
+void pcb_show_pcb(const char* name){
+    
+}
+void pcb_show_ready(){
 
-// }
-// void pcb_show_ready(){
+}
+void pcb_show_blocked(){
 
-// }
-// void pcb_show_blocked(){
+}
+void pcb_show_all(){
 
-// }
-// void pcb_show_all(){
-
-// }
+}
