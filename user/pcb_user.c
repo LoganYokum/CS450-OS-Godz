@@ -284,11 +284,52 @@ void pcb_show_one(const char* name){
 }
 
 void pcb_show_ready() {
+    pcb *ready_cur = ready_head;
+    pcb *suspended_ready_cur = suspended_ready_head;
 
+    sys_req(WRITE, COM1, "Ready Processes:\n", sizeof("Ready Processes:\n"));
+    while (ready_cur != NULL && suspended_ready_cur != NULL) {
+        if (ready_cur->priority < suspended_ready_cur->priority) {
+            pcb_show_one(ready_cur->name);
+            ready_cur = ready_cur->next;
+        }else {
+            pcb_show_one(suspended_ready_cur->name);
+            suspended_ready_cur = suspended_ready_cur->next;
+        }
+    }
+    while (ready_cur != NULL) {
+        pcb_show_one(ready_cur->name);
+        ready_cur = ready_cur->next;
+    }
+    while (suspended_ready_cur != NULL) {
+        pcb_show_one(suspended_ready_cur->name);
+        suspended_ready_cur = suspended_ready_cur->next;
+    }
 }
-void pcb_show_blocked(){
+void pcb_show_blocked() {
+    pcb *blocked_cur = ready_head;
+    pcb *suspended_blocked_cur = suspended_ready_head;
 
+    sys_req(WRITE, COM1, "Ready Processes:\n", sizeof("Ready Processes:\n"));
+    while (blocked_cur != NULL && suspended_blocked_cur != NULL) {
+        if (blocked_cur->priority < suspended_blocked_cur->priority) {
+            pcb_show_one(blocked_cur->name);
+            blocked_cur = blocked_cur->next;
+        }else {
+            pcb_show_one(suspended_blocked_cur->name);
+            suspended_blocked_cur = suspended_blocked_cur->next;
+        }
+    }
+    while (blocked_cur != NULL) {
+        pcb_show_one(blocked_cur->name);
+        blocked_cur = blocked_cur->next;
+    }
+    while (suspended_blocked_cur != NULL) {
+        pcb_show_one(suspended_blocked_cur->name);
+        suspended_blocked_cur = suspended_blocked_cur->next;
+    }
 }
+
 void pcb_show_all(){
 
 }
