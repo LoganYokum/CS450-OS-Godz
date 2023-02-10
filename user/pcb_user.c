@@ -16,7 +16,7 @@ void pcb_op(char pcb_str[], int length){
     char* param_str = strtok(pcb_str, " ");
     char* arg_str = NULL;
     char* pcb_name = NULL;
-    char* pcb_type = NULL;
+    char* pcb_class = NULL;
     char* pcb_priority = NULL;
     char* extra_arg_test = NULL;
 
@@ -71,13 +71,13 @@ void pcb_op(char pcb_str[], int length){
     else{
         pcb_name = strtok(NULL, " ");
         if(strcmp(param_str, "create") == 0){
-            pcb_type = strtok(NULL, " ");
+            pcb_class = strtok(NULL, " ");
             pcb_priority = strtok(NULL, " ");
             extra_arg_test = strtok(NULL, " ");
             if(strcmp(extra_arg_test, NULL) != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
             else
-                pcb_create(pcb_name, atoi(pcb_type), atoi(pcb_priority));
+                pcb_create(pcb_name, atoi(pcb_class), atoi(pcb_priority));
         }
         else if(strcmp(param_str, "delete") == 0){
             extra_arg_test = strtok(NULL, " ");
@@ -120,7 +120,7 @@ void pcb_op(char pcb_str[], int length){
     sys_free_mem(param_str);
     sys_free_mem(arg_str);
     sys_free_mem(pcb_name);
-    sys_free_mem(pcb_type);
+    sys_free_mem(pcb_class);
     sys_free_mem(pcb_priority);
     sys_free_mem(extra_arg_test);
 }
@@ -187,7 +187,7 @@ void pcb_suspend(const char* name){
         error("Process does not exist.");
     else if(pcb_find(name)->state == READY_AND_SUSPENDED || pcb_find(name)->state == BLOCKED_AND_SUSPENDED)
         error("Process is already suspended.");
-    else if(pcb_find(name)->type == READY_NOT_SUSPENDED)
+    else if(pcb_find(name)->class == 1)
         error("Cannot delete system process.");
     else{
         pcb* p = pcb_find(name); //find PCB
