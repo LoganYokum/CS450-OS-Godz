@@ -5,6 +5,7 @@
 #include <sys_req.h>
 #include <mpx/pcb.h>
 #include <memory.h>
+
 #define READY_NOT_SUSPENDED 1
 #define BLOCKED_NOT_SUSPENDED 2
 #define READY_AND_SUSPENDED 17
@@ -125,7 +126,7 @@ void pcb_op(char *pcb_str){
 }
 
 void pcb_create(const char* name, int class, int priority){
-    if(strlen(name) > 8)
+    if(strlen(name) > 16)
         error("Name too long. Must be 8 characters or less.");
     else if(class < 0 || class > 1)
         error("Invalid class. Must be 0 or 1.");
