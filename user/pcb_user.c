@@ -140,7 +140,7 @@ void pcb_create(const char* name, int class, int priority){
     if(strlen(name) > 16)
         error("Name too long. Must be 8 characters or less.");
     else if(class < 0 || class > 1)
-        error("Invalid type. Must be 0 or 1.");
+        error("Invalid class. Must be 0 or 1.");
     else if(priority < 0 || priority > 9)
         error("Invalid priority. Must be 0-9.");
     else if(pcb_find(name) != NULL)
@@ -215,12 +215,36 @@ void pcb_suspend(const char* name){
 }
 
 void pcb_resume(const char* name){
-    
+    if (pcb_find(name) == NULL) // checking if pcb exists
+        error("Process does not exist.");
+    else if (pcb_find(name)->state == READY_NOT_SUSPENDED || pcb_find(name)->state == BLOCKED_NOT_SUSPENDED) // checking if resumed
+        error("Process is not suspended.");
+    else if (pcb_find(name)->class == 1)
+        error("Cannot delete process.");
+    else { // changing to correct state and adding to queue
+        pcb* p = pcb_find(name);
+        pcb_remove(p);
+        if (p->state == READY_AND_SUSPENDED)
+            p->state = READY_NOT_SUSPENDED;
+        else
+            p->state = BLOCKED_NOT_SUSPENDED;
+        pcb_insert(p); 
+    }
 }
 
-void pcb_set_priority(const char* name, int priority){
-
+void pcb_set_priority(const char* name, int priority) {
+    if (pcb_find(name) == NULL) // checking if pcb exists
+        error("Process does not exist.");
+    else if (priority < 0 || priority > 9) // checking if priority is valid
+        error("Invalid priority value.");
+    else { // changing to parameter priority and adding to queue
+        pcb* p = pcb_find(name);
+        pcb_remove(p);
+        p->priority = priority;
+        pcb_insert(p);
+    }
 }
+
 void pcb_show_pcb(const char* name){
     if (pcb_find(name) == NULL) {
         error("Process does not exist.");
@@ -246,9 +270,9 @@ void pcb_show_pcb(const char* name){
     }else if (p->state == BLOCKED_AND_SUSPENDED) {
         sys_req(WRITE, COM1, "Blocked and suspended\n", sizeof("Blocked and suspended\n"));
     }
-
 }
-void pcb_show_ready(){
+
+void pcb_show_ready() {
 
 }
 void pcb_show_blocked(){
