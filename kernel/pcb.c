@@ -37,13 +37,12 @@ int pcb_free(pcb *p) {
 
 int list_free(pcb *head) {
     pcb *cur = head;
-    int res = 0;
     while (cur != NULL) {
         pcb *tmp = cur;
         cur = cur->next;
-        res = pcb_free(tmp);
+        if (pcb_free(tmp) != 0) return -1;
     }
-    return res;
+    return 0;
 }
 
 pcb *list_find(pcb *head, const char *name) {
