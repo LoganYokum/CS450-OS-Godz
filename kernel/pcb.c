@@ -100,6 +100,11 @@ void list_insert(pcb **head, pcb *p) {
         *head = p;
         return;
     }
+    if (cur->priority > p->priority) {
+        p->next = cur;
+        *head = p;
+        return;
+    }
     while (cur->next != NULL && cur->next->priority <= p->priority) {
         cur = cur->next;
     }
@@ -134,12 +139,11 @@ int list_remove(pcb **head, pcb *p) {
     }
     if (cur->next == NULL) {
         return 0;
-    }else {
-        pcb *mid = cur->next;
-        pcb *rear = mid->next;
-        cur->next = rear;
-        mid->next = NULL;
     }
+    pcb *mid = cur->next;
+    pcb *rear = mid->next;
+    cur->next = rear;
+    mid->next = NULL;
     return 1;
 }
 
