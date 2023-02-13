@@ -287,6 +287,10 @@ void pcb_show_ready() {
     pcb *ready_cur = ready_head;
     pcb *suspended_ready_cur = suspended_ready_head;
 
+    if (ready_cur == NULL && suspended_ready_cur == NULL) {
+        sys_req(WRITE, COM1, "No ready processes.\n", sizeof("No ready processes.\n"));
+        return;
+    }
     sys_req(WRITE, COM1, "Ready Processes:\n", sizeof("Ready Processes:\n"));
     while (ready_cur != NULL && suspended_ready_cur != NULL) {
         if (ready_cur->priority < suspended_ready_cur->priority) {
@@ -307,9 +311,13 @@ void pcb_show_ready() {
     }
 }
 void pcb_show_blocked() {
-    pcb *blocked_cur = ready_head;
-    pcb *suspended_blocked_cur = suspended_ready_head;
+    pcb *blocked_cur = blocked_head;
+    pcb *suspended_blocked_cur = suspended_blocked_head;
 
+    if (blocked_cur == NULL && suspended_blocked_cur == NULL) {
+        sys_req(WRITE, COM1, "No blocked processes.\n", sizeof("No blocked processes.\n"));
+        return;
+    }
     sys_req(WRITE, COM1, "Ready Processes:\n", sizeof("Ready Processes:\n"));
     while (blocked_cur != NULL && suspended_blocked_cur != NULL) {
         if (blocked_cur->priority < suspended_blocked_cur->priority) {

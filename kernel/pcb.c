@@ -134,6 +134,11 @@ int list_remove(pcb **head, pcb *p) {
     if (cur == NULL) {
         return 0;
     }
+    if (cur == p) {
+        *head = cur->next;
+        cur->next = NULL;
+        return 1;
+    }
     while (cur->next != NULL && cur->next != p) {
         cur = cur->next;
     }
