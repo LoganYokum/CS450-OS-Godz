@@ -36,6 +36,10 @@ void pcb_op(char *pcb_str){
         if(strcmp(arg_str, "priority") == 0){
             pcb_name = strtok(NULL, " ");
             pcb_priority = strtok(NULL, " ");
+            if (!validnum(pcb_priority)) {
+                error("Invalid priority value. Try 0-9.");
+                return;
+            }
             extra_arg_test = strtok(NULL, " ");
             if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
@@ -48,7 +52,6 @@ void pcb_op(char *pcb_str){
     else if(strcmp(param_str, "show")==0){
         arg_str = strtok(NULL, " ");
         if(pcb_find(arg_str) != NULL){
-            // pcb_name = strtok(NULL, " ");
             extra_arg_test = strtok(NULL, " ");
             if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
@@ -83,7 +86,15 @@ void pcb_op(char *pcb_str){
         pcb_name = strtok(NULL, " ");
         if(strcmp(param_str, "create") == 0){
             pcb_class = strtok(NULL, " ");
+            if (!validnum(pcb_class)) {
+                error("Invalid class. Try 0 (user) or 1 (system).");
+                return;
+            }
             pcb_priority = strtok(NULL, " ");
+            if (!validnum(pcb_priority)) {
+                error("Invalid priority. Try 0-9.");
+                return;
+            }
             extra_arg_test = strtok(NULL, " ");
             if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
@@ -138,9 +149,9 @@ void pcb_op(char *pcb_str){
 
 void pcb_create(const char* name, int class, int priority){
     if(strlen(name) > 16)
-        error("Name too long. Must be 8 characters or less.");
+        error("Name too long. Must be 16 characters or less.");
     else if(class < 0 || class > 1)
-        error("Invalid class. Must be 0 or 1.");
+        error("Invalid class. Must be 0 (user) or 1 (system).");
     else if(priority < 0 || priority > 9)
         error("Invalid priority. Must be 0-9.");
     else if(pcb_find(name) != NULL)
@@ -339,5 +350,10 @@ void pcb_show_blocked() {
 }
 
 void pcb_show_all(){
-
+    if (ready_head == NULL && suspended_ready_head == NULL && blocked_head == NULL && suspended_blocked_head == NULL) {
+        sys_req(WRITE, COM1, "No processes.\n", sizeof("No processes.\n"));
+    }
+    pcb_show_ready();
+    sys_req(WRITE, COM1, "\n", sizeof("\n"));
+    pcb_show_blocked();
 }
