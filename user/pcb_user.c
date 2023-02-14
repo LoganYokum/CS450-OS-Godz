@@ -330,7 +330,7 @@ void pcb_show_blocked() {
         sys_req(WRITE, COM1, "No blocked processes.\n", sizeof("No blocked processes.\n"));
         return;
     }
-    sys_req(WRITE, COM1, "Ready Processes:\n", sizeof("Ready Processes:\n"));
+    sys_req(WRITE, COM1, "Blocked Processes:\n", sizeof("Blocked Processes:\n"));
     while (blocked_cur != NULL && suspended_blocked_cur != NULL) {
         if (blocked_cur->priority < suspended_blocked_cur->priority) {
             pcb_show_one(blocked_cur->name);
