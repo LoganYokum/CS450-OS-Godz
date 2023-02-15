@@ -169,7 +169,7 @@ void pcb_delete(const char* name){
     if(pcb_find(name) == NULL)
         error("Process does not exist.");
     else if(pcb_find(name)->class == READY_NOT_SUSPENDED)
-        error("Cannot delete system process.");
+        error("Cannot delete a system process.");
     else{
         pcb* p = pcb_find(name);
         pcb_remove(p);
@@ -218,7 +218,7 @@ void pcb_suspend(const char* name){
     else if(pcb_find(name)->state == READY_AND_SUSPENDED || pcb_find(name)->state == BLOCKED_AND_SUSPENDED)
         error("Process is already suspended.");
     else if(pcb_find(name)->class == 1)
-        error("Cannot delete system process.");
+        error("Cannot suspend a system process.");
     else{
         pcb* p = pcb_find(name); //find PCB
         pcb_remove(p); // remove PCB from suspended queue to prevent duplicates
