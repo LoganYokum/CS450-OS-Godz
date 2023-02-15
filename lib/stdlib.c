@@ -42,7 +42,10 @@ char *itoa(int n) {
 	int digits = 0;
 
 	if (n == 0) {
-		return "0";
+		char *res = sys_alloc_mem(2);
+		res[0] = '0';
+		res[1] = '\0';
+		return res;
 	}
 
   	while (tmp > 0) {
