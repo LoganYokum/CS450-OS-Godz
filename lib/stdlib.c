@@ -41,6 +41,10 @@ char *itoa(int n) {
   	int tmp = n;
 	int digits = 0;
 
+	if (n == 0) {
+		return "0";
+	}
+
   	while (tmp > 0) {
     	tmp /= 10;
    	 	digits++;
@@ -98,13 +102,6 @@ int validnum(const char *s) {
 }
 
 int println(const char* message){
-    // int index = 0;
-    // while(*(index+message)!='\0'){ //pointer arithmetic to outb each byte in the message to COM1.
-    //         outb(COM1,*(index+message));
-    //         index++;
-    // }
-    // outb(COM1,'\r'); //carrage return
-    // outb(COM1,'\n'); //new line
 	sys_req(WRITE, COM1, message, strlen(message));
 	sys_req(WRITE, COM1, "\r\n", 2);
     return (int)strlen(message);
