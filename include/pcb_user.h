@@ -1,53 +1,54 @@
 /**
- * Executes the apporpriate pcb operation based on the passed operation string.
- * @param pcb_str PCB operation with potential arguments.
+ * Function for determining which pcb command needs to be run and test if the command is valid.
+ * @param pcb_str Unparsed string containing the pcb command and arguments to parse.
  */
 void pcb_op(char *pcb_str);
 
 /**
- * Creates a new PCB with the given name, class, and priority.
- * @param name Name of the new PCB.
- * @param class Class of the new PCB.
- * @param priority Priority of the new PCB.
- */
+ * Creates a new process with the given name, class, and priority.
+ * @param name The name of the process to create.
+ * @param class The class of the process to create.
+ * @param priority The priority of the process to create.
+*/
 void pcb_create(const char* name, int class, int priority);
 
 /**
- * Deletes the PCB with the given name.
- * @param name Name of the PCB to delete.
+ * Deletes the process with the given name.
+ * @param name The name of the process to delete.
  */
 void pcb_delete(const char* name);
 
 /**
- * Blocks the PCB with the given name.
- * @param name Name of the PCB to block.
- */
+ * Blocks the process with the given name.
+ * @param name The name of the process to block.
+*/
 void pcb_block(const char* name);
 
 /**
- * Unblocks the PCB with the given name.
- * @param name Name of the PCB to unblock.
- */
+ * Unblocks the process with the given name.
+ * @param name The name of the process to unblock.
+*/
 void pcb_unblock(const char* name);
 
 /**
- * Suspends the PCB with the given name.
- * @param name Name of the PCB to suspend.
- */
+ * Suspends the process with the given name.
+ * @param name The name of the process to suspend.
+*/
 void pcb_suspend(const char* name);
 
 /**
- * Resumes the PCB with the given name.
- * @param name Name of the PCB to resume.
- */
+ * Resumes the process with the given name.
+ * @param name The name of the process to resume.
+*/
 void pcb_resume(const char* name);
 
 /**
- * Changes the priority of the PCB with the given name.
- * @param name Name of the PCB to change priority.
- * @param priority New priority of the PCB.
- */
+ * Changes the priority of the process with the given name.
+ * @param name The name of the process to change the priority of.
+ * @param priority The new priority of the process.
+*/
 void pcb_set_priority(const char* name, int priority);
+
 
 /**
  * Displays the contents of the PCB with the given name.
