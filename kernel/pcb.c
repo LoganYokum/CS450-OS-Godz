@@ -21,7 +21,7 @@ pcb *pcb_allocate() {
         return NULL;
     }
     memset(p->stack_top, 0, STACK_SIZE);
-    p->stack_ptr = p->stack_top + STACK_SIZE - 1;
+    p->stack_ptr = p->stack_top;
 
     return p;
 }
