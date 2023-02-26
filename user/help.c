@@ -31,7 +31,7 @@ void help(char *args){
         println("To use date, simply type date followed by the month, day, and year separated by slashes or\njust type date to display the current date");
         println("Example: date OR date 09/25/01");
     }else if(strcmp(args, "pcb") == 0){       // param = pcb
-        println("To use pcb, type pcb followed by an argument. The arguments for pcb are:\n1. create name (to create a pcb by name)\n2. delete name (to delete a pcb by name)\n3. block name  (to block a pcb by name)\n4. suspend name(to suspend a pcb by name)\n5. resume name (to resume a pcb by name after suspended)\n6. set priority name priority number (to set the priority of a pcb)\n7. show pcb name (to show all details of a pcb)\n8. show ready   (to show all ready pcb's)\n9. show blocked     (to show all blocked pcb's)\n10. show all    (to show all pcb's)");
+        println("To use pcb, type pcb followed by an argument. The arguments for pcb are:\n1. create name (to create a pcb by name) *NOT SUPPORTED*\n2. delete name (to delete a pcb by name)\n3. block name  (to block a pcb by name)\n4. suspend name(to suspend a pcb by name)\n5. resume name (to resume a pcb by name after suspended)\n6. set priority name priority number (to set the priority of a pcb)\n7. show pcb name (to show all details of a pcb)\n8. show ready   (to show all ready pcb's)\n9. show blocked     (to show all blocked pcb's)\n10. show all    (to show all pcb's)");
     }
     else {                                //param doesnt have any matching string
         println("Incorrect parameter(s) for command: help. Try again.");
