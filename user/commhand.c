@@ -11,6 +11,8 @@
 #include <mpx/io.h>
 #include <mpx/pcb.h>
 #include <pcb_user.h>
+#include <LoadR3.h>
+#include <yield.h>
 
 #define YELLOW "\033[0;33m"
 #define RESET "\033[0m"
@@ -71,6 +73,12 @@ outb(COM1, '\n');
                 pcb_str[i-1] = buffer[(i+spaces+strlen(command_str))];
             }
             pcb_op(pcb_str);
+        }
+        else if(strcmp(command_str,"yield")){
+            yield();
+        }
+        else if(strcmp(command_str,"loadr3")){
+            loadr3();
         }
         else{
             strtok(buffer, " ");                // capture parameter args

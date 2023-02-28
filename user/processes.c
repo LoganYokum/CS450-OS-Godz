@@ -2,6 +2,7 @@
 #include <mpx/pcb.h>
 #include <stdlib.h>
 #include <sys_req.h>
+#include <yield.h>
 
 void proc1(void){
     pcb *p = pcb_setup("proc1", 1, 1);

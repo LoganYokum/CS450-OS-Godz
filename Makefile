@@ -23,6 +23,8 @@ user/date.o\
 user/shutdown.o\
 user/help.o\
 user/pcb_user.o\
+user/LoadR3.o\
+user/processes.o\
 
 ########################################################################
 ### Nothing below here needs to be changed
