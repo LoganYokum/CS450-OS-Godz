@@ -23,7 +23,7 @@ user/date.o\
 user/shutdown.o\
 user/help.o\
 user/pcb_user.o\
-user/LoadR3.o\
+user/loadr3.o\
 user/yield.o\
 
 ########################################################################
