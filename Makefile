@@ -24,7 +24,7 @@ user/shutdown.o\
 user/help.o\
 user/pcb_user.o\
 user/LoadR3.o\
-user/processes.o\
+user/yield.o\
 
 ########################################################################
 ### Nothing below here needs to be changed
