@@ -11,7 +11,7 @@
 #define READY_AND_SUSPENDED 17
 #define BLOCKED_AND_SUSPENDED 18
 
-void pcb_create(const char* name, int class, int priority);
+//void pcb_create(const char* name, int class, int priority);
 void pcb_delete(const char* name);
 void pcb_block(const char* name);
 void pcb_unblock(const char* name);
@@ -84,25 +84,25 @@ void pcb_op(char *pcb_str){
             error("Incorrect parameter(s) for command: pcb. Try again.");
     }
     else{
-        pcb_name = strtok(NULL, " ");
-        if(strcmp(param_str, "create") == 0){
-            pcb_class = strtok(NULL, " ");
-            if (!validnum(pcb_class)) {
-                error("Invalid class. Try 0 (user) or 1 (system).");
-                return;
-            }
-            pcb_priority = strtok(NULL, " ");
-            if (!validnum(pcb_priority)) {
-                error("Invalid priority. Try 0-9.");
-                return;
-            }
-            extra_arg_test = strtok(NULL, " ");
-            if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
-                error("Incorrect parameter(s) for command: pcb. Try again.");
-            else
-                pcb_create(pcb_name, atoi(pcb_class), atoi(pcb_priority));
-        }
-        else if(strcmp(param_str, "delete") == 0){
+        // pcb_name = strtok(NULL, " ");
+        // if(strcmp(param_str, "create") == 0){
+        //     pcb_class = strtok(NULL, " ");
+        //     if (!validnum(pcb_class)) {
+        //         error("Invalid class. Try 0 (user) or 1 (system).");
+        //         return;
+        //     }
+        //     pcb_priority = strtok(NULL, " ");
+        //     if (!validnum(pcb_priority)) {
+        //         error("Invalid priority. Try 0-9.");
+        //         return;
+        //     }
+        //     extra_arg_test = strtok(NULL, " ");
+        //     if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
+        //         error("Incorrect parameter(s) for command: pcb. Try again.");
+        //     else
+        //         pcb_create(pcb_name, atoi(pcb_class), atoi(pcb_priority));
+        // }
+        if(strcmp(param_str, "delete") == 0){
             extra_arg_test = strtok(NULL, " ");
             if(strcmp(extra_arg_test, NULL) != 0 && strcmp(extra_arg_test, "\n") != 0)
                 error("Incorrect parameter(s) for command: pcb. Try again.");
@@ -148,22 +148,22 @@ void pcb_op(char *pcb_str){
     sys_free_mem(extra_arg_test);
 }
 
-void pcb_create(const char* name, int class, int priority){
-    if(strlen(name) > 16)
-        error("Name too long. Must be 16 characters or less.");
-    else if(class < 0 || class > 1)
-        error("Invalid class. Must be 0 (user) or 1 (system).");
-    else if(priority < 0 || priority > 9)
-        error("Invalid priority. Must be 0-9.");
-    else if(pcb_find(name) != NULL)
-        error("Process already exists.");
-    else{
-        //process should be created.
-        pcb *p = pcb_setup(name, class, priority);
-        pcb_insert(p);
-        success("PCB created.");
-    }
-}
+// void pcb_create(const char* name, int class, int priority){
+//     if(strlen(name) > 16)
+//         error("Name too long. Must be 16 characters or less.");
+//     else if(class < 0 || class > 1)
+//         error("Invalid class. Must be 0 (user) or 1 (system).");
+//     else if(priority < 0 || priority > 9)
+//         error("Invalid priority. Must be 0-9.");
+//     else if(pcb_find(name) != NULL)
+//         error("Process already exists.");
+//     else{
+//         //process should be created.
+//         pcb *p = pcb_setup(name, class, priority);
+//         pcb_insert(p);
+//         success("PCB created.");
+//     }
+// }
 
 void pcb_delete(const char* name){ 
     if(pcb_find(name) == NULL)
