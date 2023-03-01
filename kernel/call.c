@@ -1,12 +1,11 @@
-#include <stdint.h>
 #include <sys_req.h>
 #include <pcb.h>
+#include <pcb_user.h>
 
 typedef struct context {
-    int esp; // stack pointer
-    int ds, es, fs, gs, ss; // segment registers
-    int edi, esi, edp, ebx, edx, ecx, eax; // general purpose registers
-    int eip, cs, eflags; // control registers
+    uint32_t ds, es, fs, gs, ss; // segment registers
+    uint32_t eax, ebx, ecx, edx, esi, edi, ebp; // general registers
+    uint32_t eip, cs, eflags; // control registers
 }context;
 
 pcb *executing_process;
@@ -18,6 +17,7 @@ context *sys_call(context *c) {
     }
 
     pcb *next_process;
+    context *next_context;
     op_code op = c->eax;
     if (op == IDLE) {
         if (ready_head == NULL) {
@@ -25,15 +25,30 @@ context *sys_call(context *c) {
         }else {
             next_process = ready_head; // get head of ready queue
             pcb_remove(next_process);  // and remove it
-            // still need save context of current pcb by updating stack pointer
-            pcb_insert(executing_process); // insert current pcb back into queue
-            // still need return context of the next process
 
+            executing_process->stack_ptr = sizeof(context); // update stack pointer
+            pcb_insert(executing_process); // insert current pcb back into queue
+            
+            next_context = (context *) next_process->stack_ptr; // get context of next process
         }
-        
+        next_context->eax = 0;
+        return next_context;
     }else if (op == EXIT) {
-        
-    }else {
-       
+        pcb_free(executing_process); // delete current process
+        if (ready_head == NULL) {
+            return first_context;
+        }else {
+            next_process = ready_head; // get head of ready queue
+            pcb_remove(next_process);  // and remove it
+
+            executing_process->stack_ptr = sizeof(context); // update stack pointer
+            pcb_insert(executing_process); // insert current pcb back into queue
+            
+            next_context = (context *) next_process->stack_ptr; // get context of next process
+        }
+        next_context->eax = 0;
+        return next_context;
     }
+    c->eax = -1; // invalid op code
+    return c;
 }

@@ -88,7 +88,7 @@ void pcb_op(char *pcb_str){
         // if(strcmp(param_str, "create") == 0){
         //     pcb_class = strtok(NULL, " ");
         //     if (!validnum(pcb_class)) {
-        //         error("Invalid class. Try 0 (user) or 1 (system).");
+        //         error("Invalid class. Try 0 (system) or 1 (user).");
         //         return;
         //     }
         //     pcb_priority = strtok(NULL, " ");
@@ -152,7 +152,7 @@ void pcb_op(char *pcb_str){
 //     if(strlen(name) > 16)
 //         error("Name too long. Must be 16 characters or less.");
 //     else if(class < 0 || class > 1)
-//         error("Invalid class. Must be 0 (user) or 1 (system).");
+//         error("Invalid class. Must be 0 (system) or 1 (user).");
 //     else if(priority < 0 || priority > 9)
 //         error("Invalid priority. Must be 0-9.");
 //     else if(pcb_find(name) != NULL)
@@ -168,7 +168,7 @@ void pcb_op(char *pcb_str){
 void pcb_delete(const char* name){ 
     if(pcb_find(name) == NULL)
         error("Process does not exist.");
-    else if(pcb_find(name)->class == READY_NOT_SUSPENDED)
+    else if(pcb_find(name)->class == 0)
         error("Cannot delete a system process.");
     else{
         pcb* p = pcb_find(name);
@@ -217,7 +217,7 @@ void pcb_suspend(const char* name){
         error("Process does not exist.");
     else if(pcb_find(name)->state == READY_AND_SUSPENDED || pcb_find(name)->state == BLOCKED_AND_SUSPENDED)
         error("Process is already suspended.");
-    else if(pcb_find(name)->class == 1)
+    else if(pcb_find(name)->class == 0)
         error("Cannot suspend a system process.");
     else{
         pcb* p = pcb_find(name); //find PCB
@@ -236,7 +236,7 @@ void pcb_resume(const char* name){
         error("Process does not exist.");
     else if (pcb_find(name)->state == READY_NOT_SUSPENDED || pcb_find(name)->state == BLOCKED_NOT_SUSPENDED) // checking if resumed
         error("Process is not suspended.");
-    else if (pcb_find(name)->class == 1)
+    else if (pcb_find(name)->class == 0)
         error("Cannot delete process.");
     else { // changing to correct state and adding to queue
         pcb* p = pcb_find(name);
@@ -274,7 +274,7 @@ void pcb_show_one(const char* name){
     sys_req(WRITE, COM1, p->name, strlen(p->name));
     sys_req(WRITE, COM1, ", ", sizeof(", "));
 
-    char *class = p->class == 1 ? "System" : "User";
+    char *class = p->class == 0 ? "System" : "User";
     sys_req(WRITE, COM1, "Class: ", sizeof("Class: "));
     sys_req(WRITE, COM1, class, strlen(class));
     sys_req(WRITE, COM1, ", ", sizeof(", "));
