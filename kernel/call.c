@@ -1,9 +1,7 @@
 #include <sys_req.h>
-#include <stdint.h>
 #include <stddef.h>
 #include <mpx/pcb.h>
 #include <pcb_user.h>
-#include <stddef.h>
 #include <stdint.h>
 
 typedef struct context {
