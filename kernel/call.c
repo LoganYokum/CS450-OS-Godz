@@ -1,4 +1,3 @@
-#include <stdint.h>
 #include <stddef.h>
 #include <sys_req.h>
 #include <mpx/call.h>

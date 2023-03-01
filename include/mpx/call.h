@@ -1,3 +1,4 @@
+#include <stdint.h>
 typedef struct context {
     uint32_t ds, es, fs, gs, ss; // segment registers
     uint32_t eax, ebx, ecx, edx, esi, edi, ebp; // general registers
