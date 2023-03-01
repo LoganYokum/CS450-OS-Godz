@@ -30,6 +30,7 @@ sys_call_isr:
 	push esp
 	call sys_call
 	mov esp eax
+	;;; pop esp
 	pop ds
 	pop es
 	pop fs

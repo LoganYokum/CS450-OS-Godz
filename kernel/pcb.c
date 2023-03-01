@@ -81,11 +81,13 @@ pcb *pcb_find(const char *name) {
 }
 
 pcb *pcb_setup(const char *name, int class, int priority) {
+    if (strlen(name) > 16 || pcb_find(name) != NULL || class < 0 || class > 2 || priority < 0 || priority > 9) {
+        return NULL;
+    }
     pcb *p = pcb_allocate();
     if (p == NULL) {
         return NULL;
     }
-
     memcpy(p->name, name, strlen(name));
     p->class = class;
     p->priority = priority;
@@ -94,7 +96,7 @@ pcb *pcb_setup(const char *name, int class, int priority) {
     return p;
 }
 
-void list_insert(pcb **head, pcb *p) {
+void list_insert_ready(pcb **head, pcb *p) {
     pcb *cur = *head;
     if (cur == NULL) {
         *head = p;
@@ -117,15 +119,28 @@ void list_insert(pcb **head, pcb *p) {
     }
 }
 
+void list_insert_blocked(pcb **head, pcb *p) {
+    pcb *cur = *head;
+    if (cur == NULL) {
+        *head = p;
+        return;
+    }
+
+    while (cur->next != NULL) {
+        cur = cur->next;
+    }
+    cur->next = p;
+}
+
 void pcb_insert(pcb *p) {
     if (p->state == 1) {  // pcb state is ready, not suspended (0x01)
-        list_insert(&ready_head, p);
+        list_insert_ready(&ready_head, p);
     }else if (p->state == 2) { // pcb state is blocked, not suspended (0x02)
-        list_insert(&blocked_head, p);
+        list_insert_blocked(&blocked_head, p);
     }else if (p->state == 17) { // pcb state is ready, suspended (0x11)
-        list_insert(&suspended_ready_head, p);
+        list_insert_ready(&suspended_ready_head, p);
     }else if (p->state == 18) { // pcb state is blocked, suspended (0x12)
-        list_insert(&suspended_blocked_head, p);
+        list_insert_blocked(&suspended_blocked_head, p);
     }
 }
 

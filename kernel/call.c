@@ -30,7 +30,7 @@ context *sys_call(context *c) {
             // still need return context of the next process
 
         }
-        c->eax = 0;
+        
     }else if (op == EXIT) {
         
     }else {
