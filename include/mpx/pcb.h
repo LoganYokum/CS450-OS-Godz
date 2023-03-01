@@ -31,6 +31,13 @@ extern pcb *suspended_blocked_head;
 pcb *pcb_allocate();
 
 /**
+ * Frees the memory associated with a list by head reference
+ * @param head the list to free head reference
+ * @return 0 on success, non-zero on failure
+ */
+int list_free(pcb *head);
+
+/**
  * Frees the memory associated with a pcb struct
  * @param p the pcb struct to free
  * @return 0 on success, non-zero on failure
@@ -96,3 +103,4 @@ int list_remove(pcb **head, pcb *p);
  * @return 1 on success, 0 on failure
  */
 int pcb_remove(pcb *p);
+

@@ -11,6 +11,8 @@
 #include <mpx/io.h>
 #include <mpx/pcb.h>
 #include <pcb_user.h>
+#include <LoadR3.h>
+#include <yield.h>
 
 #define YELLOW "\033[0;33m"
 #define RESET "\033[0m"
@@ -67,10 +69,16 @@ outb(COM1, '\n');
         if(strcmp(command_str,"pcb") == 0){ //command is PCB
             char pcb_str[50] = {0};
             pcb_str[49] = '\0';
-            for(int i = 0;(i+spaces+strlen(command_str))<strlen(buffer);i++){
-                pcb_str[i] = buffer[(i+spaces+strlen(command_str))];
+            for(int i = 1;(i+spaces+strlen(command_str))<strlen(buffer);i++){
+                pcb_str[i-1] = buffer[(i+spaces+strlen(command_str))];
             }
             pcb_op(pcb_str);
+        }
+        else if(strcmp(command_str,"yield")){
+            yield();
+        }
+        else if(strcmp(command_str,"loadr3")){
+            loadr3();
         }
         else{
             strtok(buffer, " ");                // capture parameter args
