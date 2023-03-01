@@ -1,5 +1,7 @@
 #include <sys_req.h>
-#include <pcb.h>
+#include <stdint.h>
+#include <stddef.h>
+#include <mpx/pcb.h>
 #include <pcb_user.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -19,7 +21,7 @@ context *sys_call(context *c) {
     }
 
     pcb *next_process;
-    context *next_context;
+    context *next_context = NULL;
     op_code op = c->eax;
     if (op == IDLE) {
         if (ready_head == NULL) {
@@ -28,7 +30,7 @@ context *sys_call(context *c) {
             next_process = ready_head; // get head of ready queue
             pcb_remove(next_process);  // and remove it
 
-            executing_process->stack_ptr = sizeof(context); // update stack pointer
+            executing_process->stack_ptr += sizeof(context); // update stack pointer
             pcb_insert(executing_process); // insert current pcb back into queue
             
             next_context = (context *) next_process->stack_ptr; // get context of next process
@@ -43,7 +45,7 @@ context *sys_call(context *c) {
             next_process = ready_head; // get head of ready queue
             pcb_remove(next_process);  // and remove it
 
-            executing_process->stack_ptr = sizeof(context); // update stack pointer
+            executing_process->stack_ptr += sizeof(context); // update stack pointer
             pcb_insert(executing_process); // insert current pcb back into queue
             
             next_context = (context *) next_process->stack_ptr; // get context of next process
