@@ -275,9 +275,9 @@ void pcb_show_pcb(const char* name){
 void pcb_show_ready() {
 
 }
-void pcb_show_blocked(){
+void pcb_show_blocked() {
 
 }
-void pcb_show_all(){
+void pcb_show_all() {
 
 }
