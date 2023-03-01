@@ -1,6 +1,8 @@
 #include <sys_req.h>
 #include <pcb.h>
 #include <pcb_user.h>
+#include <stddef.h>
+#include <stdint.h>
 
 typedef struct context {
     uint32_t ds, es, fs, gs, ss; // segment registers
