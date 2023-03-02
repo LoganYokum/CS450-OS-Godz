@@ -74,10 +74,10 @@ outb(COM1, '\n');
             }
             pcb_op(pcb_str);
         }
-        else if(strcmp(command_str,"yield")){
+        else if(strcmp(command_str,"yield")==0){
             yield();
         }
-        else if(strcmp(command_str,"loadr3")){
+        else if(strcmp(command_str,"loadr3")==0){
             loadr3();
         }
         else{
