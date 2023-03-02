@@ -1,14 +1,9 @@
-#include <sys_req.h>
+#include <stdint.h>
 #include <stddef.h>
+#include <sys_req.h>
+#include <mpx/call.h>
 #include <mpx/pcb.h>
 #include <pcb_user.h>
-#include <stdint.h>
-
-typedef struct context {
-    uint32_t ds, es, fs, gs, ss; // segment registers
-    uint32_t eax, ebx, ecx, edx, esi, edi, ebp; // general registers
-    uint32_t eip, cs, eflags; // control registers
-}context;
 
 pcb *executing_process;
 context *first_context;
