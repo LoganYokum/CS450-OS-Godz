@@ -13,7 +13,6 @@
 #include <memory.h>
 #include <processes.h>
 #include <sys_req.h>
-#include <mpx/pcb.h>
 
 /* For R3: How many times each process prints its message */
 #define RC_1 1
@@ -121,37 +120,27 @@ static void r3_proc(int iterations, const char *procname)
 /***********************************************************************/
 void proc1(void)
 {
-	pcb *p = pcb_setup("proc1", 1, 0);
-    pcb_insert(p);
-	r3_proc(RC_1, "proc1");
+	r3_proc(RC_1, __func__);
 }
 
 void proc2(void)
 {
-	pcb *p = pcb_setup("proc2", 1, 1);
-    pcb_insert(p);
-	r3_proc(RC_2, "proc2");
+	r3_proc(RC_2, __func__);
 }
 
 void proc3(void)
 {
-	pcb *p = pcb_setup("proc3", 1, 2);
-    pcb_insert(p);
-	r3_proc(RC_3, "proc3");
+	r3_proc(RC_3, __func__);
 }
 
 void proc4(void)
 {
-	pcb *p = pcb_setup("proc4", 1, 3);
-    pcb_insert(p);
-	r3_proc(RC_4, "proc4");
+	r3_proc(RC_4, __func__);
 }
 
 void proc5(void)
 {
-	pcb *p = pcb_setup("proc5", 1, 4);
-    pcb_insert(p);
-	r3_proc(RC_5, "proc5");
+	r3_proc(RC_5, __func__);
 }
 
 /***********************************************************************/

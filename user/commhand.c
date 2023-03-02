@@ -11,7 +11,7 @@
 #include <mpx/io.h>
 #include <mpx/pcb.h>
 #include <pcb_user.h>
-#include <LoadR3.h>
+#include <loadr3.h>
 #include <yield.h>
 
 #define YELLOW "\033[0;33m"
