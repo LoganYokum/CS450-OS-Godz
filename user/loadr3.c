@@ -9,10 +9,10 @@
 void loadr3(){
     // Create 5 system processes with different priorities.
     pcb *process1 = pcb_setup("proc1", 0, 0);
-    context *p1 = NULL;
+    context *p1 = (context*)(process1->stack_top);
     p1->eax = (uint32_t)process1->stack_ptr;
     p1->ebp = (uint32_t)process1->stack_ptr - (uint32_t)process1->stack_top;
-    p1->eip = (uint32_t)&proc1;
+    p1->eip = (uint32_t)proc1;
     p1->eflags = (uint32_t)0x0202;
     p1->cs = (uint32_t)0x08;
     p1->ds = (uint32_t)0x10;
@@ -28,10 +28,10 @@ void loadr3(){
     pcb_insert(process1);
 
     pcb *process2 = pcb_setup("proc2", 1, 1);
-    context *p2 = NULL;
+    context *p2 = (context*)(process2->stack_top);
     p2->eax = (uint32_t)process2->stack_ptr;
     p2->ebp = (uint32_t)process2->stack_ptr - (uint32_t)process2->stack_top;
-    p2->eip = (uint32_t)&proc2;
+    p2->eip = (uint32_t)proc2;
     p2->eflags = (uint32_t)0x0202;
     p2->cs = (uint32_t)0x08;
     p2->ds = (uint32_t)0x10;
@@ -47,10 +47,10 @@ void loadr3(){
     pcb_insert(process2);
 
     pcb *process3 = pcb_setup("proc3", 1, 2);
-    context *p3 = NULL;
+    context *p3 = (context*)(process3->stack_top);
     p3->eax = (uint32_t)process3->stack_ptr;
     p3->ebp = (uint32_t)process3->stack_ptr - (uint32_t)process3->stack_top;
-    p3->eip = (uint32_t)&proc3;
+    p3->eip = (uint32_t)proc3;
     p3->eflags = (uint32_t)0x0202;
     p3->cs = (uint32_t)0x08;
     p3->ds = (uint32_t)0x10;
@@ -66,10 +66,10 @@ void loadr3(){
     pcb_insert(process3);
 
     pcb *process4 = pcb_setup("proc4", 1, 3);
-    context *p4 = NULL;
+    context *p4 = (context*)(process4->stack_top);
     p4->eax = (uint32_t)process4->stack_ptr;
     p4->ebp = (uint32_t)process4->stack_ptr - (uint32_t)process4->stack_top;
-    p4->eip = (uint32_t)&proc4;
+    p4->eip = (uint32_t)proc4;
     p4->eflags = (uint32_t)0x0202;
     p4->cs = (uint32_t)0x08;
     p4->ds = (uint32_t)0x10;
@@ -85,10 +85,10 @@ void loadr3(){
     pcb_insert(process4);
 
     pcb *process5 = pcb_setup("proc5", 1, 4);
-    context *p5 = NULL;
+    context *p5 = (context*)(process5->stack_top);
     p5->eax = (uint32_t)process5->stack_ptr;
     p5->ebp = (uint32_t)process5->stack_ptr - (uint32_t)process5->stack_top;
-    p5->eip = (uint32_t)&proc5;
+    p5->eip = (uint32_t)proc5;
     p5->eflags = (uint32_t)0x0202;
     p5->cs = (uint32_t)0x08;
     p5->ds = (uint32_t)0x10;
@@ -102,23 +102,4 @@ void loadr3(){
     p5->esi = (uint32_t)0;
     p5->edi = (uint32_t)0;
     pcb_insert(process5);
-
-    // Call the 5 processes. From the system.
-    proc1();
-    proc2();
-    proc3();
-    proc4();
-    proc5();
-    // Remove the 5 processes.
-    pcb_remove(process1);
-    pcb_remove(process2);
-    pcb_remove(process3);
-    pcb_remove(process4);
-    pcb_remove(process5);
-    // Free the 5 processes.
-    pcb_free(process1);
-    pcb_free(process2);
-    pcb_free(process3);
-    pcb_free(process4);
-    pcb_free(process5);
 }
