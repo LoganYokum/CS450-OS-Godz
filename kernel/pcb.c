@@ -19,7 +19,7 @@ pcb *pcb_allocate() {
         return NULL;
     }
     memset(p->stack, 0, STACK_SIZE);
-    p->stack_ptr = p->stack + STACK_SIZE - 4;
+    p->stack_ptr = p->stack + STACK_SIZE - 1 - sizeof(void *);
 
     return p;
 }

@@ -11,7 +11,7 @@ void loadr3(){
     // Create 5 system processes with different priorities.
     pcb *p1 = pcb_setup("proc1", 1, 0);
     context c1 = {0x10, 0x10, 0x10, 0x10, 0x10, 
-                  0, 0, 0, 0, 0, 0, (uint32_t) (p1->stack + STACK_SIZE - 1), 
+                  0, 0, 0, 0, 0, 0, (uint32_t) (p1->stack + STACK_SIZE - 1- sizeof(void *)), 
                   (uint32_t) proc1, 0x8, 0x202
                  };
     p1->stack_ptr += 4;
