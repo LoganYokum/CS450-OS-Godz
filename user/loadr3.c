@@ -28,7 +28,7 @@ void loadr3(){
 
     //process 2
     //setup process
-    pcb *p2 = pcb_setup("proc2", 1, 1);
+    pcb *p2 = pcb_setup("proc2", 1, 0);
     //setup context for process 2
     context c2 = {0x10, 0x10, 0x10, 0x10, 0x10, 
                   0, 0, 0, 0, 0, 0, (uint32_t) (p2->stack + STACK_SIZE - 1 - sizeof(void *)), 
@@ -44,7 +44,7 @@ void loadr3(){
 
     //process 3
     //setup process
-    pcb *p3 = pcb_setup("proc3", 1, 2);
+    pcb *p3 = pcb_setup("proc3", 1, 0);
     //setup context for process 3
     context c3 = {0x10, 0x10, 0x10, 0x10, 0x10, 
                   0, 0, 0, 0, 0, 0, (uint32_t) (p3->stack + STACK_SIZE - 1 - sizeof(void *)), 
@@ -60,7 +60,7 @@ void loadr3(){
 
     //process 4
     //setup process
-    pcb *p4 = pcb_setup("proc4", 1, 3);
+    pcb *p4 = pcb_setup("proc4", 1, 0);
     //setup context for process 4
     context c4 = {0x10, 0x10, 0x10, 0x10, 0x10, 
                   0, 0, 0, 0, 0, 0, (uint32_t) (p4->stack + STACK_SIZE - 1 - sizeof(void *)), 
@@ -76,7 +76,7 @@ void loadr3(){
 
     //process 5
     //setup process
-    pcb *p5 = pcb_setup("proc5", 1, 4);
+    pcb *p5 = pcb_setup("proc5", 1, 0);
     //setup context for process 5
     context c5 = {0x10, 0x10, 0x10, 0x10, 0x10, 
                   0, 0, 0, 0, 0, 0, (uint32_t) (p5->stack + STACK_SIZE - 1 - sizeof(void *)), 
