@@ -20,8 +20,6 @@
 #define YELLOW "\033[0;33m"
 #define RESET "\033[0m"
 
-void commhand_proc(char* comp_date);
-
 void commhand()
 {
     char* line1="    ███████     █████████              █████████               █████            \n";           
@@ -64,17 +62,6 @@ void commhand()
     // //insert commhand process into pcb list
     // pcb_insert(commhand_pcb);
 
-    //call commhand process
-    commhand_proc(comp_date);
-
-    sys_free_mem(comp_date);
-    list_free(ready_head);
-    list_free(blocked_head);
-    list_free(suspended_ready_head);
-    list_free(suspended_blocked_head);
-}
-
-void commhand_proc(char* comp_date){
     char prompt[] = "> ";
     while (1) {
         char buffer[100] = {0};
@@ -153,4 +140,10 @@ void commhand_proc(char* comp_date){
             }
         }
     }
+
+    sys_free_mem(comp_date);
+    list_free(ready_head);
+    list_free(blocked_head);
+    list_free(suspended_ready_head);
+    list_free(suspended_blocked_head);
 }
