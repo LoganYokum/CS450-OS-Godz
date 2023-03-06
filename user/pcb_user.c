@@ -84,7 +84,7 @@ void pcb_op(char *pcb_str){
             error("Incorrect parameter(s) for command: pcb. Try again.");
     }
     else{
-        // pcb_name = strtok(NULL, " ");
+        pcb_name = strtok(NULL, " ");
         // if(strcmp(param_str, "create") == 0){
         //     pcb_class = strtok(NULL, " ");
         //     if (!validnum(pcb_class)) {

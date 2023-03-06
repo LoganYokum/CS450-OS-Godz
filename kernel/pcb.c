@@ -2,8 +2,6 @@
 #include <memory.h>
 #include <string.h>
 
-#define STACK_SIZE 1024
-
 pcb *ready_head;
 pcb *blocked_head;
 pcb *suspended_ready_head;
@@ -15,13 +13,13 @@ pcb *pcb_allocate() {
         return NULL;
     }
 
-    p->stack_top = sys_alloc_mem(STACK_SIZE);
-    if (p->stack_top == NULL) {
+    p->stack = sys_alloc_mem(STACK_SIZE);
+    if (p->stack == NULL) {
         sys_free_mem(p);
         return NULL;
     }
-    memset(p->stack_top, 0, STACK_SIZE);
-    p->stack_ptr = p->stack_top;
+    memset(p->stack, 0, STACK_SIZE);
+    p->stack_ptr = p->stack + STACK_SIZE - 4;
 
     return p;
 }
@@ -30,7 +28,7 @@ int pcb_free(pcb *p) {
     if (p == NULL) {
         return -1;
     }
-    sys_free_mem(p->stack_top);
+    sys_free_mem(p->stack);
 
     return sys_free_mem(p);
 }

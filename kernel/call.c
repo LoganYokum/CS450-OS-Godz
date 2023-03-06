@@ -1,4 +1,3 @@
-#include <stdint.h>
 #include <stddef.h>
 #include <sys_req.h>
 #include <mpx/call.h>
@@ -18,31 +17,31 @@ context *sys_call(context *c) {
     op_code op = c->eax;
     if (op == IDLE) {
         if (ready_head == NULL) {
-            next_process = executing_process;
-        }else {
-            next_process = ready_head; // get head of ready queue
-            pcb_remove(next_process);  // and remove it
-
-            executing_process->stack_ptr += sizeof(context); // update stack pointer
-            pcb_insert(executing_process); // insert current pcb back into queue
-            
-            next_context = (context *) next_process->stack_ptr; // get context of next process
+            c->eax = 0;
+            return c;
         }
+        next_process = ready_head; // get head of ready queue
+        pcb_remove(next_process);  // and remove it
+
+        executing_process->stack_ptr = (unsigned char *) c; // update stack pointer
+        pcb_insert(executing_process); // insert current pcb back into queue
+        
+        next_context = (context *) next_process->stack_ptr; // get context of next process
         next_context->eax = 0;
         return next_context;
     }else if (op == EXIT) {
         pcb_free(executing_process); // delete current process
-        if (ready_head == NULL) {
-            return first_context;
-        }else {
-            next_process = ready_head; // get head of ready queue
-            pcb_remove(next_process);  // and remove it
+        // if (ready_head == NULL) {
+        //     first_context->eax = 0;
+        //     return first_context;
+        // }
+        next_process = ready_head; // get head of ready queue
+        pcb_remove(next_process);  // and remove it
 
-            executing_process->stack_ptr += sizeof(context); // update stack pointer
-            pcb_insert(executing_process); // insert current pcb back into queue
+        executing_process->stack_ptr = (unsigned char *) c; // update stack pointer
+        pcb_insert(executing_process); // insert current pcb back into queue
             
-            next_context = (context *) next_process->stack_ptr; // get context of next process
-        }
+        next_context = (context *) next_process->stack_ptr; // get context of next process
         next_context->eax = 0;
         return next_context;
     }

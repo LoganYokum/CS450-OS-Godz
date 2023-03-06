@@ -1,8 +1,8 @@
 #include <stdint.h>
 typedef struct context {
-    uint32_t ds, es, fs, gs, ss; // segment registers
-    uint32_t eax, ebx, ecx, edx, esi, edi, ebp; // general registers
-    uint32_t eip, cs, eflags; // control registers
+    int ds, es, fs, gs, ss; // segment registers
+    int eax, ebx, ecx, edx, esi, edi, ebp; // general registers
+    int eip, cs, eflags; // control registers
 }context;
 
 /**
