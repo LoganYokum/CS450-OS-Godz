@@ -49,6 +49,7 @@ outb(COM1, '\n');
         char buffer[100] = {0};
         buffer[99] = '\0';
 
+        yield();
         sys_req(WRITE, COM1, prompt, sizeof(prompt));
         sys_req(READ, COM1, buffer, sizeof(buffer));
 
@@ -73,9 +74,6 @@ outb(COM1, '\n');
                 pcb_str[i-1] = buffer[(i+spaces+strlen(command_str))];
             }
             pcb_op(pcb_str);
-        }
-        else if(strcmp(command_str,"yield")==0){
-            yield();
         }
         else if(strcmp(command_str,"loadr3")==0){
             loadr3();
