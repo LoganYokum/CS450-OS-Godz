@@ -15,6 +15,7 @@ void help(char *args){
         println("6. pcb");
         println("7. loadr3");
         println("8. yield");
+        println("9. alarm");
         return;
     }                          // the param string contains a argument and none extra
     if (strcmp(args, "help") == 0){ // param = help
@@ -40,6 +41,10 @@ void help(char *args){
     }
     else if(strcmp(args, "yield") == 0){      // param = yield
         println("*ONLY FOR R3* To use yield, simply type yield and the system will idle the current process.");
+    }
+    else if(strcmp(args, "alarm") == 0){      // param = alarm
+        println("To use alarm, type alarm followed by two arguments. Time (when to display the message) and Message (what to display).");
+        println("Example: alarm 10:00:00 Time to wake up!");
     }
     else {                                //param doesnt have any matching string
         println("Incorrect parameter(s) for command: help. Try again.");

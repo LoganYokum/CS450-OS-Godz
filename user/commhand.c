@@ -12,10 +12,15 @@
 #include <mpx/pcb.h>
 #include <pcb_user.h>
 #include <loadr3.h>
-#include <yield.h>
+#include <alarm.h>
+#include <mpx/call.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #define YELLOW "\033[0;33m"
 #define RESET "\033[0m"
+
+void commhand_proc(char* comp_date);
 
 void commhand()
 {
@@ -41,14 +46,41 @@ sys_req(WRITE,COM1,line8, strlen(line8));
 sys_req(WRITE,COM1,RESET, strlen(RESET));
 outb(COM1, '\n');
 outb(COM1, '\n');
-                                                                               
-    char prompt[] = "> ";
-    char *comp_date = getdate();
 
+    char* comp_date = getdate();
+    //commhand process
+    //setup commhand process
+    pcb *commhand_pcb = pcb_setup("Command Handler", 1, 9);
+    //setup context for process 1
+    context commhand_context = {0x10, 0x10, 0x10, 0x10, 0x10, 
+                  0, 0, 0, 0, 0, 0, (uint32_t) (commhand_pcb->stack + STACK_SIZE - 1 - sizeof(void *)), 
+                  (uint32_t) commhand_proc, 0x8, 0x202
+                 };
+    //move stack pointer to match for new context space for commhand pcb
+    commhand_pcb->stack_ptr += sizeof(void *);
+    commhand_pcb->stack_ptr -= sizeof(commhand_context);
+    //copy context to stack for commhand context
+    memcpy(commhand_pcb->stack_ptr, &commhand_context, sizeof(commhand_context));
+    //insert commhand process into pcb list
+    pcb_insert(commhand_pcb);
+
+    //start commhand process
+    commhand_proc(comp_date);
+
+    sys_free_mem(comp_date);
+    list_free(ready_head);
+    list_free(blocked_head);
+    list_free(suspended_ready_head);
+    list_free(suspended_blocked_head);
+}
+
+void commhand_proc(char* comp_date){
+    char prompt[] = "> ";
     while (1) {
         char buffer[100] = {0};
         buffer[99] = '\0';
 
+        sys_req(IDLE);
         sys_req(WRITE, COM1, prompt, sizeof(prompt));
         sys_req(READ, COM1, buffer, sizeof(buffer));
 
@@ -74,11 +106,27 @@ outb(COM1, '\n');
             }
             pcb_op(pcb_str);
         }
-        else if(strcmp(command_str,"yield")==0){
-            yield();
-        }
         else if(strcmp(command_str,"loadr3")==0){
-            loadr3();
+            strtok(buffer, " ");
+            char* extra_arg = strtok(NULL, " ");
+            if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
+                error("The command you entered is not recognized. Too many arguments. Try again.");
+            }
+            else{
+                loadr3();
+            }
+        }
+        else if(strcmp(command_str,"alarm")==0){
+            strtok(buffer, " ");
+            char* time_str = strtok(NULL, " ");
+            char* message_str = strtok(NULL, " ");
+            char* extra_arg = strtok(NULL, " ");
+            if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
+                error("The command you entered is not recognized. Too many arguments. Try again.");
+            }
+            else{
+                alarm(time_str, message_str);
+            }
         }
         else{
             strtok(buffer, " ");                // capture parameter args
@@ -105,9 +153,4 @@ outb(COM1, '\n');
             }
         }
     }
-    sys_free_mem(comp_date);
-    list_free(ready_head);
-    list_free(blocked_head);
-    list_free(suspended_ready_head);
-    list_free(suspended_blocked_head);
 }

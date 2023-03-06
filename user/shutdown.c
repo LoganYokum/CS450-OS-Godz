@@ -4,6 +4,8 @@
 #include <sys_req.h>
 #include <string.h>
 #include <ctype.h>
+#include <mpx/pcb.h>
+#include <pcb_user.h>
 
 int shutdown(){
 
@@ -36,8 +38,32 @@ int shutdown(){
     }
 
     if(strcmp(compare_str, "shutdown") == 0) {                  // compare string for shutdown
+        pcb *ready_cur = ready_head;
+        pcb *suspended_ready_cur = suspended_ready_head;
+        pcb* remove_cur = NULL;
+
+        if (ready_cur == NULL && suspended_ready_cur == NULL) {
+            //nothing in the ready or suspend queues
+            return 0;
+        }
+        //remove all ready processes
+        while (ready_cur != NULL) {
+            remove_cur = ready_cur;
+            pcb_remove(remove_cur);
+            pcb_free(remove_cur);
+            ready_cur = ready_cur->next;
+        }
+        //remove all suspended processes
+        while (suspended_ready_cur != NULL) {
+            remove_cur = suspended_ready_cur;
+            pcb_remove(remove_cur);
+            pcb_free(remove_cur);
+            suspended_ready_cur = suspended_ready_cur->next;
+        }
+        pcb_show_all();
         return 0;
-    }else {                                                   // shutdown not confirmed
+    }
+    else {                                                   // shutdown not confirmed
         error("Shutdown cancelled.");
         return 1;
     }

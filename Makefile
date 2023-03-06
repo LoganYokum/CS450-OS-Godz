@@ -25,7 +25,7 @@ user/shutdown.o\
 user/help.o\
 user/pcb_user.o\
 user/loadr3.o\
-user/yield.o\
+user/alarm.o\
 
 ########################################################################
 ### Nothing below here needs to be changed
