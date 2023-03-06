@@ -15,7 +15,7 @@ context *sys_call(context *c) {
         if (first_context == NULL) {
             first_context = c;
         }
-        
+
         if (ready_head == NULL) {
             c->eax = 0;
             return c;
@@ -23,7 +23,7 @@ context *sys_call(context *c) {
         next_process = ready_head; // get head of ready queue
         pcb_remove(next_process);  // and remove it
 
-        if (current_process == NULL) {
+        if (current_process == NULL) { // first instance of sys_call
             current_process = next_process;
         }else {
             current_process->stack_ptr = (char *) c; // update stack pointer
@@ -31,12 +31,14 @@ context *sys_call(context *c) {
         }
         
         next_context = (context *) next_process->stack_ptr; // get context of next process
-        next_context->eax = 0;
+        next_context->eax = 0; // set okay return value for sys_call
+
+        current_process = next_process; // update current process
+
         return next_context;
     }else if (op == EXIT) {
-        pcb_remove(current_process); // remove current process from queue
-        pcb_free(current_process); // and delete current process
-        
+        pcb_free(current_process); // delete current process
+
         if (ready_head == NULL) {
             first_context->eax = 0;
             return first_context;
@@ -44,15 +46,10 @@ context *sys_call(context *c) {
         next_process = ready_head; // get head of ready queue
         pcb_remove(next_process);  // and remove it
 
-        if (current_process == NULL) {
-            current_process = next_process;
-        }else {
-            current_process->stack_ptr = (char *) c; // update stack pointer
-            pcb_insert(current_process); // insert current pcb back into queue
-        }
+        current_process = next_process; // update current process
             
         next_context = (context *) next_process->stack_ptr; // get context of next process
-        next_context->eax = 0;
+        next_context->eax = 0; // set okay return value for sys_call
         return next_context;
     }
     c->eax = -1; // invalid op code
