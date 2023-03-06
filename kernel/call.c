@@ -1,21 +1,21 @@
 #include <stddef.h>
 #include <sys_req.h>
-#include <pcb_user.h>
 #include <mpx/call.h>
 #include <mpx/pcb.h>
 
 pcb *current_process;
-context *first_context;
+context *first_context = NULL;
 
 context *sys_call(context *c) {
-    if (first_context == NULL) {
-        first_context = c;
-    }
-
     pcb *next_process;
     context *next_context = NULL;
     op_code op = c->eax;
+
     if (op == IDLE) {
+        if (first_context == NULL) {
+            first_context = c;
+        }
+        
         if (ready_head == NULL) {
             c->eax = 0;
             return c;
@@ -34,7 +34,9 @@ context *sys_call(context *c) {
         next_context->eax = 0;
         return next_context;
     }else if (op == EXIT) {
-        pcb_free(current_process); // delete current process
+        pcb_remove(current_process); // remove current process from queue
+        pcb_free(current_process); // and delete current process
+        
         if (ready_head == NULL) {
             first_context->eax = 0;
             return first_context;
