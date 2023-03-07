@@ -115,12 +115,7 @@ void commhand()
                 help(param_str);
             }else if(strcmp(command_str, "shutdown") == 0) { // buffer command is shutdown
                 if (shutdown() == 0){
-                    pcb_remove(pcb_find("idle"));
-                    pcb_free(pcb_find("idle"));
-                    pcb_remove(pcb_find("commhand"));
-                    pcb_free(pcb_find("commhand"));
-                    pcb_show_all();
-                    break;
+                    sys_req(EXIT);
                 }
             }else if(strcmp(command_str, "time") == 0) { // buffer command is time
                 time(param_str);

@@ -38,41 +38,37 @@ int shutdown(){
     }
 
     if(strcmp(compare_str, "shutdown") == 0) {                  // compare string for shutdown
-        pcb *ready_cur = ready_head;
-        pcb *suspended_ready_cur = suspended_ready_head;
-        pcb* remove_cur = NULL;
+        //nothing to remove from queues
+        if (ready_head == NULL && suspended_ready_head == NULL && suspended_blocked_head == NULL && blocked_head == NULL) return 0;
+        
+        //remove all processes from ready queue and suspend queue and blocked queues
+        pcb* temp = NULL;
+        while(ready_head != NULL) {
+            temp = ready_head;
+            ready_head = ready_head->next;
+            pcb_remove(temp);
+        }
+        while(suspended_ready_head != NULL) {
+            temp = suspended_ready_head;
+            suspended_ready_head = suspended_ready_head->next;
+            pcb_remove(temp);
+        }
+        while(suspended_blocked_head != NULL) {
+            temp = suspended_blocked_head;
+            suspended_blocked_head = suspended_blocked_head->next;
+            pcb_remove(temp);
+        }
+        while(blocked_head != NULL) {
+            temp = blocked_head;
+            blocked_head = blocked_head->next;
+            pcb_remove(temp);
+        }
+        //free all lists
+        list_free(ready_head);
+        list_free(suspended_ready_head);
+        list_free(suspended_blocked_head);
+        list_free(blocked_head);
 
-        if (ready_cur == NULL && suspended_ready_cur == NULL) {
-            //nothing in the ready or suspend queues
-            return 0;
-        }
-        //remove all ready processes
-        while (ready_cur != NULL) {
-            if(strcmp(ready_cur->name, "idle") == 0 || strcmp(ready_cur->name, "commhand") == 0){
-                ready_cur = ready_cur->next;
-            }
-            else{
-                remove_cur = ready_cur;
-                pcb_remove(remove_cur);
-                pcb_free(remove_cur);
-                ready_cur = ready_cur->next;
-            }
-        }
-        //remove all suspended processes
-        while (suspended_ready_cur != NULL) {
-            if(strcmp(ready_cur->name, "idle") == 0 || strcmp(ready_cur->name, "commhand") == 0){
-                suspended_ready_cur = suspended_ready_cur->next;
-                continue;
-            }
-            else{
-                remove_cur = suspended_ready_cur;
-                pcb_remove(remove_cur);
-                pcb_free(remove_cur);
-                suspended_ready_cur = suspended_ready_cur->next;
-            }
-            
-        }
-        pcb_show_all();
         return 0;
     }
     else {                                                   // shutdown not confirmed
