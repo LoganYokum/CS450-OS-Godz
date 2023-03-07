@@ -128,8 +128,4 @@ void commhand()
     }
 
     sys_free_mem(comp_date);
-    list_free(ready_head);
-    list_free(blocked_head);
-    list_free(suspended_ready_head);
-    list_free(suspended_blocked_head);
 }

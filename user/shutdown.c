@@ -71,7 +71,7 @@ int shutdown(){
 
         return 0;
     }
-    else {                                                   // shutdown not confirmed
+    else { // shutdown not confirmed
         error("Shutdown cancelled.");
         return 1;
     }
