@@ -35,7 +35,7 @@ sys_call_isr:
 	push ds
 	push esp
 	call sys_call
-	mov esp eax
+	mov esp, eax
 	pop ds
 	pop es
 	pop fs
@@ -48,9 +48,6 @@ sys_call_isr:
 	pop esi
 	pop edi
 	pop ebp
-	pop eip
-	pop cs
-	pop eflags
 	iret
 
 ;;; Serial port ISR. To be implemented in Module R6

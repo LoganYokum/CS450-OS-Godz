@@ -14,10 +14,14 @@
 #include <mpx/interrupts.h>
 #include <mpx/serial.h>
 #include <mpx/vm.h>
+#include <mpx/pcb.h>
+#include <mpx/call.h>
+#include <processes.h>
 #include <commhand.h>
 #include <sys_req.h>
 #include <string.h>
 #include <memory.h>
+#include <stdint.h>
 
 static void klogv(device dev, const char *msg)
 {
@@ -28,7 +32,7 @@ static void klogv(device dev, const char *msg)
 }
 
 void kmain(void)
-{
+{ 
 	// 0) Serial I/O -- mpx/serial.h
 	// Note that here, you should call the function *before* the output via klogv(),
 	// or the message won't print. In all other cases, the output should come first
@@ -85,9 +89,30 @@ void kmain(void)
 	// 9) YOUR command handler -- *create and #include an appropriate .h file*
 	// Pass execution to your command handler so the user can interact with the system.
 	klogv(COM1, "Transferring control to commhand...");
-	commhand();
 
-	// R4: __asm__ volatile ("int $0x60" :: "a"(IDLE));
+	pcb *commhand_pcb = pcb_setup("commhand", 0, 0);
+	context commhand_cxt = {
+		.ds = 0x10, .es = 0x10, .fs = 0x10, .gs = 0x10, .ss = 0x10, 
+		.eax = 0, .ebx = 0, .ecx = 0, .edx = 0, .esi = 0, .edi = 0, .ebp = (uint32_t) (commhand_pcb->stack + STACK_SIZE - 1 - sizeof(void *)),
+		.eip = (uint32_t) commhand, .cs = 0x8, .eflags = 0x202
+	};
+	commhand_pcb->stack_ptr += sizeof(void *);
+    commhand_pcb->stack_ptr -= sizeof(commhand_cxt);
+    memcpy(commhand_pcb->stack_ptr, &commhand_cxt, sizeof(commhand_cxt));
+    pcb_insert(commhand_pcb);
+	
+	pcb *idle_pcb = pcb_setup("idle", 0, 9);
+	context idle_cxt = {
+		.ds = 0x10, .es = 0x10, .fs = 0x10, .gs = 0x10, .ss = 0x10,
+		.eax = 0, .ebx = 0, .ecx = 0, .edx = 0, .esi = 0, .edi = 0, .ebp = (uint32_t) (idle_pcb->stack + STACK_SIZE - 1 - sizeof(void *)),
+		.eip = (uint32_t) sys_idle_process, .cs = 0x8, .eflags = 0x202
+	};
+	idle_pcb->stack_ptr += sizeof(void *);
+	idle_pcb->stack_ptr -= sizeof(idle_cxt);
+	memcpy(idle_pcb->stack_ptr, &idle_cxt, sizeof(idle_cxt));
+	pcb_insert(idle_pcb);
+
+	__asm__ volatile ("int $0x60" :: "a"(IDLE));
 
 	// 10) System Shutdown -- *headers to be determined by your design*
 	// After your command handler returns, take care of any clean up that is necessary.

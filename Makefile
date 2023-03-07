@@ -8,6 +8,7 @@ kernel/core.o\
 kernel/kmain.o\
 kernel/serial.o\
 kernel/pcb.o\
+kernel/call.o\
 
 LIB_OBJECTS =\
 lib/ctype.o\
@@ -23,8 +24,8 @@ user/date.o\
 user/shutdown.o\
 user/help.o\
 user/pcb_user.o\
-user/LoadR3.o\
-user/yield.o\
+user/loadr3.o\
+user/alarm.o\
 
 ########################################################################
 ### Nothing below here needs to be changed

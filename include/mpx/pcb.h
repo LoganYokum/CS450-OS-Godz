@@ -9,12 +9,13 @@
  * 0x12: blocked, suspended
  */
 
+#define STACK_SIZE 1024
 typedef struct pcb {
     char name[17];
     int class;
     int priority;
     int state;
-    void *stack_top;
+    void *stack;
     void *stack_ptr;
     struct pcb *next;
 } pcb;

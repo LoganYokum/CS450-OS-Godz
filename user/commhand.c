@@ -11,44 +11,47 @@
 #include <mpx/io.h>
 #include <mpx/pcb.h>
 #include <pcb_user.h>
-#include <LoadR3.h>
-#include <yield.h>
+#include <loadr3.h>
+#include <alarm.h>
+#include <mpx/call.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #define YELLOW "\033[0;33m"
 #define RESET "\033[0m"
 
 void commhand()
 {
-char* line1="    ███████     █████████              █████████               █████            \n";           
-char* line2="  ███░░░░░███  ███░░░░░███            ███░░░░░███             ░░███             \n"; 
-char* line3=" ███     ░░███░███    ░░░            ███     ░░░   ██████   ███████   █████████ \n"; 
-char* line4="░███      ░███░░█████████           ░███          ███░░███ ███░░███  ░█░░░░███  \n"; 
-char* line5="░███      ░███ ░░░░░░░░███          ░███    █████░███ ░███░███ ░███  ░   ███░   \n"; 
-char* line6="░░███     ███  ███    ░███          ░░███  ░░███ ░███ ░███░███ ░███    ███░   █ \n"; 
-char* line7=" ░░░███████░  ░░█████████  █████████ ░░█████████ ░░██████ ░░████████  █████████ \n"; 
-char* line8="   ░░░░░░░     ░░░░░░░░░  ░░░░░░░░░   ░░░░░░░░░   ░░░░░░   ░░░░░░░░  ░░░░░░░░░  \n";
-                                                                                
-outb(COM1, '\n');
-sys_req(WRITE,COM1,YELLOW, strlen(YELLOW));
-sys_req(WRITE,COM1,line1, strlen(line1));
-sys_req(WRITE,COM1,line2, strlen(line2));
-sys_req(WRITE,COM1,line3, strlen(line3));
-sys_req(WRITE,COM1,line4, strlen(line4));
-sys_req(WRITE,COM1,line5, strlen(line5));
-sys_req(WRITE,COM1,line6, strlen(line6));
-sys_req(WRITE,COM1,line7, strlen(line7));
-sys_req(WRITE,COM1,line8, strlen(line8));
-sys_req(WRITE,COM1,RESET, strlen(RESET));
-outb(COM1, '\n');
-outb(COM1, '\n');
-                                                                               
-    char prompt[] = "> ";
-    char *comp_date = getdate();
+    char* line1="    ███████     █████████              █████████               █████            \n";           
+    char* line2="  ███░░░░░███  ███░░░░░███            ███░░░░░███             ░░███             \n"; 
+    char* line3=" ███     ░░███░███    ░░░            ███     ░░░   ██████   ███████   █████████ \n"; 
+    char* line4="░███      ░███░░█████████           ░███          ███░░███ ███░░███  ░█░░░░███  \n"; 
+    char* line5="░███      ░███ ░░░░░░░░███          ░███    █████░███ ░███░███ ░███  ░   ███░   \n"; 
+    char* line6="░░███     ███  ███    ░███          ░░███  ░░███ ░███ ░███░███ ░███    ███░   █ \n"; 
+    char* line7=" ░░░███████░  ░░█████████  █████████ ░░█████████ ░░██████ ░░████████  █████████ \n"; 
+    char* line8="   ░░░░░░░     ░░░░░░░░░  ░░░░░░░░░   ░░░░░░░░░   ░░░░░░   ░░░░░░░░  ░░░░░░░░░  \n";
+                                                                                    
+    outb(COM1, '\n');
+    sys_req(WRITE,COM1,YELLOW, strlen(YELLOW));
+    sys_req(WRITE,COM1,line1, strlen(line1));
+    sys_req(WRITE,COM1,line2, strlen(line2));
+    sys_req(WRITE,COM1,line3, strlen(line3));
+    sys_req(WRITE,COM1,line4, strlen(line4));
+    sys_req(WRITE,COM1,line5, strlen(line5));
+    sys_req(WRITE,COM1,line6, strlen(line6));
+    sys_req(WRITE,COM1,line7, strlen(line7));
+    sys_req(WRITE,COM1,line8, strlen(line8));
+    sys_req(WRITE,COM1,RESET, strlen(RESET));
+    outb(COM1, '\n');
+    outb(COM1, '\n');
 
+    char* comp_date = getdate();
+    char prompt[] = "> ";
     while (1) {
         char buffer[100] = {0};
         buffer[99] = '\0';
 
+        sys_req(IDLE);
         sys_req(WRITE, COM1, prompt, sizeof(prompt));
         sys_req(READ, COM1, buffer, sizeof(buffer));
 
@@ -74,11 +77,27 @@ outb(COM1, '\n');
             }
             pcb_op(pcb_str);
         }
-        else if(strcmp(command_str,"yield")){
-            yield();
+        else if(strcmp(command_str,"loadr3")==0){
+            strtok(buffer, " ");
+            char* extra_arg = strtok(NULL, " ");
+            if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
+                error("The command you entered is not recognized. Too many arguments. Try again.");
+            }
+            else{
+                loadr3();
+            }
         }
-        else if(strcmp(command_str,"loadr3")){
-            loadr3();
+        else if(strcmp(command_str,"alarm")==0){
+            strtok(buffer, " ");
+            char* time_str = strtok(NULL, " ");
+            char* message_str = strtok(NULL, " ");
+            char* extra_arg = strtok(NULL, " ");
+            if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
+                error("The command you entered is not recognized. Too many arguments. Try again.");
+            }
+            else{
+                alarm(time_str, message_str);
+            }
         }
         else{
             strtok(buffer, " ");                // capture parameter args
@@ -95,7 +114,9 @@ outb(COM1, '\n');
             }else if(strcmp(command_str, "help") == 0) { // buffer command is help
                 help(param_str);
             }else if(strcmp(command_str, "shutdown") == 0) { // buffer command is shutdown
-                if (shutdown() == 0) break;
+                if (shutdown() == 0){
+                    sys_req(EXIT);
+                }
             }else if(strcmp(command_str, "time") == 0) { // buffer command is time
                 time(param_str);
             }else if(strcmp(command_str, "date") == 0) { // buffer command is date
@@ -105,6 +126,7 @@ outb(COM1, '\n');
             }
         }
     }
+
     sys_free_mem(comp_date);
     list_free(ready_head);
     list_free(blocked_head);
