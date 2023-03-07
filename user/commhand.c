@@ -46,22 +46,6 @@ void commhand()
     outb(COM1, '\n');
 
     char* comp_date = getdate();
-    // //commhand process
-    // //setup commhand process
-    // pcb *commhand_pcb = pcb_setup("Command Handler", 1, 9);
-    // //setup context for process 1
-    // context commhand_context = {0x10, 0x10, 0x10, 0x10, 0x10, 
-    //               0, 0, 0, 0, 0, 0, (uint32_t) (commhand_pcb->stack + STACK_SIZE - 1 - sizeof(void *)), 
-    //               (uint32_t) commhand_proc, 0x8, 0x202
-    //              };
-    // //move stack pointer to match for new context space for commhand pcb
-    // commhand_pcb->stack_ptr += sizeof(void *);
-    // commhand_pcb->stack_ptr -= sizeof(commhand_context);
-    // //copy context to stack for commhand context
-    // memcpy(commhand_pcb->stack_ptr, &commhand_context, sizeof(commhand_context));
-    // //insert commhand process into pcb list
-    // pcb_insert(commhand_pcb);
-
     char prompt[] = "> ";
     while (1) {
         char buffer[100] = {0};
@@ -130,7 +114,14 @@ void commhand()
             }else if(strcmp(command_str, "help") == 0) { // buffer command is help
                 help(param_str);
             }else if(strcmp(command_str, "shutdown") == 0) { // buffer command is shutdown
-                if (shutdown() == 0) break;
+                if (shutdown() == 0){
+                    pcb_remove(pcb_find("idle"));
+                    pcb_free(pcb_find("idle"));
+                    pcb_remove(pcb_find("commhand"));
+                    pcb_free(pcb_find("commhand"));
+                    pcb_show_all();
+                    break;
+                }
             }else if(strcmp(command_str, "time") == 0) { // buffer command is time
                 time(param_str);
             }else if(strcmp(command_str, "date") == 0) { // buffer command is date

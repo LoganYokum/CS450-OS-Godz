@@ -48,17 +48,29 @@ int shutdown(){
         }
         //remove all ready processes
         while (ready_cur != NULL) {
-            remove_cur = ready_cur;
-            pcb_remove(remove_cur);
-            pcb_free(remove_cur);
-            ready_cur = ready_cur->next;
+            if(strcmp(ready_cur->name, "idle") == 0 || strcmp(ready_cur->name, "commhand") == 0){
+                ready_cur = ready_cur->next;
+            }
+            else{
+                remove_cur = ready_cur;
+                pcb_remove(remove_cur);
+                pcb_free(remove_cur);
+                ready_cur = ready_cur->next;
+            }
         }
         //remove all suspended processes
         while (suspended_ready_cur != NULL) {
-            remove_cur = suspended_ready_cur;
-            pcb_remove(remove_cur);
-            pcb_free(remove_cur);
-            suspended_ready_cur = suspended_ready_cur->next;
+            if(strcmp(ready_cur->name, "idle") == 0 || strcmp(ready_cur->name, "commhand") == 0){
+                suspended_ready_cur = suspended_ready_cur->next;
+                continue;
+            }
+            else{
+                remove_cur = suspended_ready_cur;
+                pcb_remove(remove_cur);
+                pcb_free(remove_cur);
+                suspended_ready_cur = suspended_ready_cur->next;
+            }
+            
         }
         pcb_show_all();
         return 0;
