@@ -60,8 +60,6 @@ void alarm(char* time, char* message){
             return;
         }
 
-        if()
-
 
         
      sys_req(WRITE,COM1,time,strlen(time));
