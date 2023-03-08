@@ -38,8 +38,8 @@ int shutdown(){
     }
 
     if(strcmp(compare_str, "shutdown") == 0) {                  // compare string for shutdown
-        //nothing to remove from queues
-        if (ready_head == NULL && suspended_ready_head == NULL && suspended_blocked_head == NULL && blocked_head == NULL) return 0;
+        //nothing to remove from queues and IDLE process is only running
+        if (ready_head->next == NULL && suspended_ready_head == NULL && suspended_blocked_head == NULL && blocked_head == NULL) return 0;
         
         //remove all processes from ready queue and suspend queue and blocked queues
         pcb* temp = NULL;
