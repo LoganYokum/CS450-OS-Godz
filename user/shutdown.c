@@ -41,7 +41,7 @@ int shutdown(){
         //nothing to remove from queues
         if (ready_head == NULL && suspended_ready_head == NULL && suspended_blocked_head == NULL && blocked_head == NULL) return 0;
 
-        //free all lists
+        //free all lists and remove all pcb's
         list_free(ready_head);
         list_free(suspended_ready_head);
         list_free(suspended_blocked_head);

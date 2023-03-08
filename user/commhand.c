@@ -111,9 +111,9 @@ void commhand()
             }
             else if(strcmp(command_str, "help") == 0) // buffer command is help
                 help(param_str);
-            }else if(strcmp(command_str, "shutdown") == 0 && shutdown() == 0) { // buffer command is shutdown
+            else if(strcmp(command_str, "shutdown") == 0 && shutdown() == 0) // buffer command is shutdown
                 sys_req(EXIT);
-            }else if(strcmp(command_str, "time") == 0) { // buffer command is time
+            else if(strcmp(command_str, "time") == 0) // buffer command is time
                 time(param_str);
             else if(strcmp(command_str, "date") == 0) // buffer command is date
                 date(param_str);
