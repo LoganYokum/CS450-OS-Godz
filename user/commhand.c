@@ -45,7 +45,7 @@ void commhand()
     outb(COM1, '\n');
     outb(COM1, '\n');
 
-    char* comp_date = getdate();
+    char* comp_date = getdate(); // NEEDS TO BE UPDATED BEFORE R6
     char prompt[] = "> ";
     while (1) {
         char buffer[100] = {0};
@@ -61,43 +61,38 @@ void commhand()
         command_str[19] = '\0'; // null terminator at end of string
 
         int spaces = 0;
-        while (isspace(buffer[spaces])) { // count leading spaces infront of command in the buffer
+        while (isspace(buffer[spaces])) // count leading spaces infront of command in the buffer
             spaces++;
-        }
         
-        for (int i = 0; !isspace(buffer[spaces + i]); i++) { // capture the command on buffer
+        for (int i = 0; !isspace(buffer[spaces + i]); i++) // capture the command on buffer
             command_str[i] = buffer[spaces + i];
-        }
 
         if(strcmp(command_str,"pcb") == 0){ //command is PCB
             char pcb_str[50] = {0};
             pcb_str[49] = '\0';
-            for(int i = 1;(i+spaces+strlen(command_str))<strlen(buffer);i++){
+            for(int i = 1;(i+spaces+strlen(command_str))<strlen(buffer);i++)
                 pcb_str[i-1] = buffer[(i+spaces+strlen(command_str))];
-            }
             pcb_op(pcb_str);
         }
-        else if(strcmp(command_str,"loadr3")==0){
-            strtok(buffer, " ");
+        else if(strcmp(command_str,"loadr3")==0){ //command is loadr3
+            strtok(buffer, " "); 
             char* extra_arg = strtok(NULL, " ");
-            if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
+            if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) {// check for extra arguments in buffer
                 error("The command you entered is not recognized. Too many arguments. Try again.");
+                continue;
             }
-            else{
-                loadr3();
-            }
+            loadr3();
         }
         else if(strcmp(command_str,"alarm")==0){
             strtok(buffer, " ");
             char* time_str = strtok(NULL, " ");
             char* message_str = strtok(NULL, " ");
             char* extra_arg = strtok(NULL, " ");
-            if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
+            if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0)  { // check for extra arguments in buffer
                 error("The command you entered is not recognized. Too many arguments. Try again.");
+                continue;
             }
-            else{
-                alarm(time_str, message_str);
-            }
+            alarm(time_str, message_str);
         }
         else{
             strtok(buffer, " ");                // capture parameter args
@@ -107,29 +102,25 @@ void commhand()
                 error("The command you entered is not recognized. Too many arguments. Try again.");
                 continue;
             }
+
+            //check for commands
             if(strcmp(command_str, "version") == 0 && strcmp(param_str, "\n") == 0) { // buffer command is version
                 version();
                 sys_req(WRITE, COM1, comp_date, strlen(comp_date));
                 sys_req(WRITE, COM1, "\r\n", 2);
-            }else if(strcmp(command_str, "help") == 0) { // buffer command is help
-                help(param_str);
-            }else if(strcmp(command_str, "shutdown") == 0) { // buffer command is shutdown
-                if (shutdown() == 0){
-                    sys_req(EXIT);
-                }
-            }else if(strcmp(command_str, "time") == 0) { // buffer command is time
-                time(param_str);
-            }else if(strcmp(command_str, "date") == 0) { // buffer command is date
-                date(param_str);
-            }else{                                   // not a command
-                error("The command you entered is not recognized. Try again.");
             }
+            else if(strcmp(command_str, "help") == 0) // buffer command is help
+                help(param_str);
+            else if(strcmp(command_str, "shutdown") == 0 && shutdown() == 0) // buffer command is shutdown
+                sys_req(EXIT);
+            else if(strcmp(command_str, "time") == 0) // buffer command is time
+                time(param_str);
+            else if(strcmp(command_str, "date") == 0) // buffer command is date
+                date(param_str);
+            else                                 // not a command
+                error("The command you entered is not recognized. Try again.");
         }
     }
-
+    //free allocated memory
     sys_free_mem(comp_date);
-    list_free(ready_head);
-    list_free(blocked_head);
-    list_free(suspended_ready_head);
-    list_free(suspended_blocked_head);
 }
