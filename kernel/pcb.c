@@ -38,6 +38,7 @@ int list_free(pcb *head) {
     while (cur != NULL) {
         pcb *tmp = cur;
         cur = cur->next;
+        pcb_remove(tmp);
         if (pcb_free(tmp) != 0) return -1;
     }
     return 0;

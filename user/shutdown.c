@@ -40,29 +40,7 @@ int shutdown(){
     if(strcmp(compare_str, "shutdown") == 0) {                  // compare string for shutdown
         //nothing to remove from queues
         if (ready_head == NULL && suspended_ready_head == NULL && suspended_blocked_head == NULL && blocked_head == NULL) return 0;
-        
-        //remove all processes from ready queue and suspend queue and blocked queues
-        pcb* temp = NULL;
-        while(ready_head != NULL) {
-            temp = ready_head;
-            ready_head = ready_head->next;
-            pcb_remove(temp);
-        }
-        while(suspended_ready_head != NULL) {
-            temp = suspended_ready_head;
-            suspended_ready_head = suspended_ready_head->next;
-            pcb_remove(temp);
-        }
-        while(suspended_blocked_head != NULL) {
-            temp = suspended_blocked_head;
-            suspended_blocked_head = suspended_blocked_head->next;
-            pcb_remove(temp);
-        }
-        while(blocked_head != NULL) {
-            temp = blocked_head;
-            blocked_head = blocked_head->next;
-            pcb_remove(temp);
-        }
+
         //free all lists
         list_free(ready_head);
         list_free(suspended_ready_head);
@@ -71,8 +49,6 @@ int shutdown(){
 
         return 0;
     }
-    else { // shutdown not confirmed
-        error("Shutdown cancelled.");
-        return 1;
-    }
+    error("Shutdown cancelled.");
+    return 1;
 }
