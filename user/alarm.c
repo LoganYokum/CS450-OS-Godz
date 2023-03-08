@@ -7,7 +7,7 @@
 char *gettime(); 
 
 void alarm(char* time, char* message){
- if (strlen(time) != 8 || (args[2] != ':' || args[5] != ':')) {
+ if (strlen(time) != 8 || (time[2] != ':' || time[5] != ':')) {
             error("Invalid time format. Use HH:MM:SS");
             return;
         }
@@ -46,22 +46,22 @@ void alarm(char* time, char* message){
         int curr_minute = atoi(curr_minute_str);
         int curr_second = atoi(curr_second_str);
 
-// decided that the set alarm time must be in the future, if not 
+        // decided that the set alarm time must be in the future, if not 
         if (curr_hour > hour){
             error("Invalid time. Alarm time must be in the future.");
             return;
-        }  
-        if (curr_hour == hour && curr_minute > minute){
+        } 
+        if (curr_minute > minute){
             error("Invalid time. Alarm time must be in the future.");
             return;
         }
-        if (curr_hour == hour && curr_minute == minute && curr_second > second){
+        if (curr_second > second){
             error("Invalid time. Alarm time must be in the future.");
             return;
         }
 
-
+        // after input checking, we can create a new alarm process and send it the time and message
         
-     sys_req(WRITE,COM1,time,strlen(time));
-     sys_req(WRITE,COM1,message,strlen(message));
+        sys_req(WRITE,COM1,time,strlen(time));
+        sys_req(WRITE,COM1,message,strlen(message));
     }

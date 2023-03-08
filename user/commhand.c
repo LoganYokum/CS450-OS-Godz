@@ -82,10 +82,9 @@ void commhand()
             char* extra_arg = strtok(NULL, " ");
             if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
                 error("The command you entered is not recognized. Too many arguments. Try again.");
+                continue;
             }
-            else{
-                loadr3();
-            }
+            loadr3();
         }
         else if(strcmp(command_str,"alarm")==0){
             strtok(buffer, " ");
@@ -94,10 +93,9 @@ void commhand()
             char* extra_arg = strtok(NULL, " ");
             if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
                 error("The command you entered is not recognized. Too many arguments. Try again.");
+                continue;
             }
-            else{
-                alarm(time_str, message_str);
-            }
+            alarm(time_str, message_str);
         }
         else{
             strtok(buffer, " ");                // capture parameter args
@@ -113,10 +111,8 @@ void commhand()
                 sys_req(WRITE, COM1, "\r\n", 2);
             }else if(strcmp(command_str, "help") == 0) { // buffer command is help
                 help(param_str);
-            }else if(strcmp(command_str, "shutdown") == 0) { // buffer command is shutdown
-                if (shutdown() == 0){
-                    sys_req(EXIT);
-                }
+            }else if(strcmp(command_str, "shutdown") == 0 && shutdown() == 0) { // buffer command is shutdown
+                sys_req(EXIT);
             }else if(strcmp(command_str, "time") == 0) { // buffer command is time
                 time(param_str);
             }else if(strcmp(command_str, "date") == 0) { // buffer command is date
