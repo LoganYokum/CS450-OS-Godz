@@ -15,7 +15,7 @@ void help(char *args){
         println("6. pcb");
         println("7. loadr3");
         // println("8. yield");
-        println("9. alarm");
+        println("8. alarm");
         return;
     }                          // the param string contains a argument and none extra
     if (strcmp(args, "help") == 0){ // param = help
