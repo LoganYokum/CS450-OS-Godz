@@ -5,13 +5,15 @@
 #include <stdlib.h>
 #include <mpx/call.h>
 #include <mpx/pcb.h>
+#include <pcb_user.h>
 #include <processes.h>
 
-char *gettime();
+//TODO: add functionality to allow full string as a message, allow for multiple alarms (queue), check uniqueness in alarms and messages (no duplicates)
+
+int hour, minute, second;
 
 void alarm(char *time, char *message)
 {
-
     if (strlen(time) != 8 || (time[2] != ':' || time[5] != ':'))
     {
         error("Invalid time format. Use HH:MM:SS");
@@ -27,9 +29,9 @@ void alarm(char *time, char *message)
         return;
     }
 
-    int hour = atoi(hour_str);
-    int minute = atoi(minute_str);
-    int second = atoi(second_str);
+    hour = atoi(hour_str);
+    minute = atoi(minute_str);
+    second = atoi(second_str);
 
     if (hour < 0 || hour > 23)
     {
@@ -47,20 +49,24 @@ void alarm(char *time, char *message)
         return;
     }
       // setup process
-    pcb *a = pcb_setup(message, 0, 0);
+    pcb *a = pcb_setup("Alarm", 0, 0);
     // setup context for the alarm process
-    context c1 = {0x10, 0x10, 0x10, 0x10, 0x10,
-                  0, 0, 0, 0, 0, 0, (uint32_t)(a->stack + STACK_SIZE - 1 - sizeof(void *)),
-                  (uint32_t)message, 0x8, 0x202};
+    context alarm_ctx = {.ds = 0x10, .es = 0x10, .fs = 0x10, .gs = 0x10, .ss = 0x10,
+		.eax = 0, .ebx = 0, .ecx = 0, .edx = 0, .esi = 0, .edi = 0, .ebp = (uint32_t) (a->stack + STACK_SIZE - 1 - sizeof(void *)),
+		.eip = (uint32_t) alarmmsg, .cs = 0x8, .eflags = 0x202};
     // move stack pointer to match for new context space
     a->stack_ptr += sizeof(void *);
-    a->stack_ptr -= sizeof(c1);
+    a->stack_ptr -= sizeof(alarm_ctx);
     // copy context to stack
-    memcpy(a->stack_ptr, &c1, sizeof(c1));
+    memcpy(a->stack_ptr, &alarm_ctx, sizeof(alarm_ctx));
     // insert process into pcb list
     pcb_insert(a);
     success("Alarm Set");
+    sys_req(WRITE, COM1, message, strlen(message)); //ASSIGN EACH ALARM A MESSAGE TO BE PRINTED
+}
 
+void alarmmsg()
+{
     char *curr_time = gettime();
     char *curr_hour_str = strtok(curr_time, ":");
     char *curr_minute_str = strtok(NULL, ":");
@@ -69,9 +75,7 @@ void alarm(char *time, char *message)
     int curr_hour = atoi(curr_hour_str);
     int curr_minute = atoi(curr_minute_str);
     int curr_second = atoi(curr_second_str);
-
-    while ((curr_hour < hour) || (curr_hour == hour && curr_minute < minute) || (curr_hour == hour && curr_minute == minute && curr_second < second))
-    {
+    while(1){
         curr_time = gettime();
         curr_hour_str = strtok(curr_time, ":");
         curr_minute_str = strtok(NULL, ":");
@@ -80,9 +84,12 @@ void alarm(char *time, char *message)
         curr_hour = atoi(curr_hour_str);
         curr_minute = atoi(curr_minute_str);
         curr_second = atoi(curr_second_str);
-       // sys_req(IDLE);
-
+        if(curr_hour >= hour && curr_minute >= minute && curr_second >= second){
+            sys_req(WRITE, COM1, "Alarm Went off \n", strlen("Alarm Went off \n")); //PUT MESSAGE HERE FOR ALARM
+            sys_req(EXIT);
+        }
+        else{
+            sys_req(IDLE);
+        }
     }
-  //  sys_req(WRITE, COM1, time, strlen(time));
-    sys_req(WRITE, COM1, message, strlen(message));
 }

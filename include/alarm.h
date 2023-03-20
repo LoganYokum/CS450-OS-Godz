@@ -5,3 +5,4 @@
  * @brief Sets an alarm to go off at a certain time.
 */
 void alarm(char* time, char *message);
+void alarmmsg();
