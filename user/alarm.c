@@ -18,11 +18,17 @@ void alarm_insert(alarm_t *a) {
         alarm_list = a;
         return;
     }
-    alarm_t *cur_alarm = alarm_list;
+    alarm_t *cur = alarm_list;
+    int adjusted_hour = (a->hour < cur_hour) ? a->hour + 24 : a->hour;
     while (cur->next != NULL) {
-        int tmp_hour = (cur_alarm->hour < cur_hour) ? cur_alarm->hour + 24 : cur_alarm->hour;
-        // still need to finish insertion
-        cur_alarm = cur_alarm->next;
+        int tmp_hour = (cur->hour < cur_hour) ? cur->hour + 24 : cur->hour;
+        if (adjusted_hour < tmp_hour || (adjusted_hour == tmp_hour && (a->minute < cur->minute || (a->minute == cur->minute && a->second < cur->second)))) {
+            alarm_t *rear = cur->next;
+            cur->next = a;
+            a->next = rear;
+            return;
+        }
+        cur = cur->next;
     }
 }
 
@@ -68,7 +74,7 @@ void alarm_setup(char *time, char *message) {
     pcb *alarm_pcb = pcb_setup(time, 1, 5);
     context alarm_ctx = {
         .ds = 0x10, .es = 0x10, .fs = 0x10, .gs = 0x10, .ss = 0x10,
-		.eax = 0, .ebx = 0, .ecx = 0, .edx = 0, .esi = 0, .edi = 0, .ebp = (uint32_t) (a->stack + STACK_SIZE - 1 - sizeof(void *)),
+		.eax = 0, .ebx = 0, .ecx = 0, .edx = 0, .esi = 0, .edi = 0, .ebp = (uint32_t) (alarm_pcb->stack + STACK_SIZE - 1 - sizeof(void *)),
 		.eip = (uint32_t) alarm_exec, .cs = 0x8, .eflags = 0x202
     };
     alarm_pcb->stack_ptr += sizeof(void *);
@@ -95,7 +101,7 @@ void alarm_exec() {
 
     cur_hour = atoi(strtok(curr_time, ":"));
     cur_minute = atoi(strtok(NULL, ":"));
-    cur_second = aoi(strtok(NULL, " "));
+    cur_second = atoi(strtok(NULL, " "));
 
     // check if alarm at front of list is ready to go off
     if (alarm_list->hour >= cur_hour || (alarm_list->hour == cur_hour && (alarm_list->minute >= cur_minute || (alarm_list->minute == cur_minute && alarm_list->second >= cur_second)))) {
