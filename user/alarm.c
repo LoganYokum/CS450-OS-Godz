@@ -16,6 +16,15 @@ alarm_t *alarm_list = NULL;
 
 #include <time.h>
 
+void print_alarm(alarm_t *src){
+    alarm_t *curr = sys_alloc_mem(sizeof(alarm_t));
+    curr = src;
+    while(curr!=NULL){
+        sys_req(WRITE,COM1,src->message,strlen(src->message));
+        curr=curr->next;
+    }
+}
+
 void alarm_insert(alarm_t *a) {
     // Get the current time
     char *curr_time = gettime();
@@ -141,21 +150,26 @@ void alarm_setup(char *time, char *message) {
     a->next = NULL;
     alarm_insert(a);
     success("Alarm Set");
+    print_alarm(alarm_list);
 }
 
 void alarm_exec() {
-    char *curr_time = gettime();
+    while(1){
+        char *curr_time = gettime();
 
-    cur_hour = atoi(strtok(curr_time, ":"));
-    cur_minute = atoi(strtok(NULL, ":"));
-    cur_second = atoi(strtok(NULL, " "));
+        cur_hour = atoi(strtok(curr_time, ":"));
+        cur_minute = atoi(strtok(NULL, ":"));
+        cur_second = atoi(strtok(NULL, " "));
 
-    // check if alarm at front of list is ready to go off
-    if (alarm_list->hour < cur_hour || (alarm_list->hour == cur_hour && (alarm_list->minute < cur_minute || (alarm_list->minute == cur_minute && alarm_list->second < cur_second)))) {
-        sys_req(WRITE, COM1, alarm_list->message, strlen(alarm_list->message));
-        alarm_remove();
-        sys_req(EXIT);
-        return;
+        // check if alarm at front of list is ready to go off
+        if (alarm_list->hour < cur_hour || (alarm_list->hour == cur_hour && (alarm_list->minute < cur_minute || (alarm_list->minute == cur_minute && alarm_list->second < cur_second)))) {
+            sys_req(WRITE, COM1, alarm_list->message, strlen(alarm_list->message));
+            alarm_remove();
+            sys_req(EXIT);
+            return;
+        }
+        else{
+            sys_req(IDLE);
+        }
     }
-    sys_req(IDLE);
 }
