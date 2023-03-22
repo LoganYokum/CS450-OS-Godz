@@ -12,7 +12,7 @@ int hour, minute, second;
 int cur_hour, cur_minute, cur_second;
 char *time_dup;
 
-alarm_t *alarm_list;
+alarm_t *alarm_list = NULL;
 
 void alarm_insert(alarm_t *a) {
     if (alarm_list == NULL) {
@@ -37,7 +37,9 @@ int alarm_remove() {
     if (alarm_list == NULL) {
         return 0;
     }
+    alarm_t *tmp = alarm_list;
     alarm_list = alarm_list->next;
+    sys_free_mem(tmp);
     return 1;
 }
 
@@ -75,7 +77,7 @@ void alarm_setup(char *time, char *message) {
         return;
     }
 
-    pcb *alarm_pcb = pcb_setup(time_dup, 1, 5);
+    pcb *alarm_pcb = pcb_setup(time_dup, 1, 0);
     context alarm_ctx = {
         .ds = 0x10, .es = 0x10, .fs = 0x10, .gs = 0x10, .ss = 0x10,
 		.eax = 0, .ebx = 0, .ecx = 0, .edx = 0, .esi = 0, .edi = 0, .ebp = (uint32_t) (alarm_pcb->stack + STACK_SIZE - 1 - sizeof(void *)),
@@ -108,8 +110,9 @@ void alarm_exec() {
     cur_second = atoi(strtok(NULL, " "));
 
     // check if alarm at front of list is ready to go off
-    if (alarm_list->hour >= cur_hour || (alarm_list->hour == cur_hour && (alarm_list->minute >= cur_minute || (alarm_list->minute == cur_minute && alarm_list->second >= cur_second)))) {
+    if (alarm_list->hour < cur_hour || (alarm_list->hour == cur_hour && (alarm_list->minute < cur_minute || (alarm_list->minute == cur_minute && alarm_list->second < cur_second)))) {
         sys_req(WRITE, COM1, alarm_list->message, strlen(alarm_list->message));
+        alarm_remove();
         sys_req(EXIT);
         return;
     }
