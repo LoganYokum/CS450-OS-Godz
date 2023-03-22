@@ -14,24 +14,63 @@ char *time_dup;
 
 alarm_t *alarm_list = NULL;
 
+#include <time.h>
+
 void alarm_insert(alarm_t *a) {
+    // Get the current time
+    char *curr_time = gettime();
+    cur_hour = atoi(strtok(curr_time, ":"));
+    cur_minute = atoi(strtok(NULL, ":"));
+    cur_second = atoi(strtok(NULL, " "));
+
+    //empty queue insert alarm as first element
     if (alarm_list == NULL) {
         alarm_list = a;
         return;
     }
+
+    //go to end of queue
     alarm_t *cur = alarm_list;
-    int adjusted_hour = (a->hour < cur_hour) ? a->hour + 24 : a->hour;
     while (cur->next != NULL) {
-        int tmp_hour = (cur->hour < cur_hour) ? cur->hour + 24 : cur->hour;
-        if (adjusted_hour < tmp_hour || (adjusted_hour == tmp_hour && (a->minute < cur->minute || (a->minute == cur->minute && a->second < cur->second)))) {
-            alarm_t *rear = cur->next;
-            cur->next = a;
-            a->next = rear;
-            return;
-        }
         cur = cur->next;
     }
+
+    int adjusted_hour = a->hour;
+    if (a->hour < cur_hour) {
+        // If the alarm is for a time earlier than the current time, add 24 hours to the alarm hour to compare with the current hour
+        adjusted_hour += 24;
+    }
+
+    cur = alarm_list;
+    alarm_t *prev = NULL;
+
+    while (cur != NULL) {
+        int tmp_hour = cur->hour;
+        if (cur->hour < cur_hour) {
+            // If the current alarm is for a time earlier than the current time, add 24 hours to the hour to compare with the current hour
+            tmp_hour += 24;
+        }
+
+        if (adjusted_hour < tmp_hour || (adjusted_hour == tmp_hour && (a->minute < cur->minute || (a->minute == cur->minute && a->second < cur->second)))) {
+            // Insert the new alarm before the current alarm
+            a->next = cur;
+            if (prev == NULL) {
+                alarm_list = a;
+            } else {
+                prev->next = a;
+            }
+            return;
+        }
+
+        prev = cur;
+        cur = cur->next;
+    }
+
+    // If the new alarm should be inserted at the end of the list, add it after the last alarm
+    prev->next = a;
+    a->next = NULL;
 }
+
 
 int alarm_remove() {
     if (alarm_list == NULL) {
@@ -77,16 +116,18 @@ void alarm_setup(char *time, char *message) {
         return;
     }
 
-    pcb *alarm_pcb = pcb_setup(time_dup, 1, 0);
-    context alarm_ctx = {
+    if(alarm_list==NULL){
+        pcb *alarm_pcb = pcb_setup("alarm", 1, 0);
+        context alarm_ctx = {
         .ds = 0x10, .es = 0x10, .fs = 0x10, .gs = 0x10, .ss = 0x10,
 		.eax = 0, .ebx = 0, .ecx = 0, .edx = 0, .esi = 0, .edi = 0, .ebp = (uint32_t) (alarm_pcb->stack + STACK_SIZE - 1 - sizeof(void *)),
 		.eip = (uint32_t) alarm_exec, .cs = 0x8, .eflags = 0x202
-    };
-    alarm_pcb->stack_ptr += sizeof(void *);
-    alarm_pcb->stack_ptr -= sizeof(alarm_ctx);
-    memcpy(alarm_pcb->stack_ptr, &alarm_ctx, sizeof(alarm_ctx));
-    pcb_insert(alarm_pcb); // insert process into pcb list
+        };
+        alarm_pcb->stack_ptr += sizeof(void *);
+        alarm_pcb->stack_ptr -= sizeof(alarm_ctx);
+        memcpy(alarm_pcb->stack_ptr, &alarm_ctx, sizeof(alarm_ctx));
+        pcb_insert(alarm_pcb); // insert process into pcb list
+    }
 
     alarm_t *a = (alarm_t *) sys_alloc_mem(sizeof(alarm_t));
     if (a == NULL) {
