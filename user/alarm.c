@@ -146,7 +146,9 @@ void alarm_setup(char *time, char *message) {
     a->hour = hour;
     a->minute = minute;
     a->second = second;
-    a->message = message;
+    char* alarm_msg = (char*) sys_alloc_mem(strlen(message) + 1);
+    memcpy(alarm_msg, message, strlen(message) + 1);
+    a->message = alarm_msg;
     a->next = NULL;
     alarm_insert(a);
     success("Alarm Set");

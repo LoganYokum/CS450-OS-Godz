@@ -32,3 +32,5 @@ void alarm_setup(char* time, char *message);
  * Executes all alarms that are scheduled between the current time and the last time this function was called
  */
 void alarm_exec();
+
+void print_alarm();
