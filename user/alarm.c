@@ -10,6 +10,7 @@
 
 int hour, minute, second;
 int cur_hour, cur_minute, cur_second;
+char *time_dup;
 
 alarm_t *alarm_list;
 
@@ -45,6 +46,9 @@ void alarm_setup(char *time, char *message) {
         error("Invalid time format. Use hh:mm:ss");
         return;
     }
+    time_dup = (char *) sys_alloc_mem(strlen(time) + 1);
+    memcpy(time_dup, time, strlen(time) + 1);
+
     char *hour_str = strtok(time, ":");
     char *minute_str = strtok(NULL, ":");
     char *second_str = strtok(NULL, " ");
@@ -71,7 +75,7 @@ void alarm_setup(char *time, char *message) {
         return;
     }
 
-    pcb *alarm_pcb = pcb_setup(time, 1, 5);
+    pcb *alarm_pcb = pcb_setup(time_dup, 1, 5);
     context alarm_ctx = {
         .ds = 0x10, .es = 0x10, .fs = 0x10, .gs = 0x10, .ss = 0x10,
 		.eax = 0, .ebx = 0, .ecx = 0, .edx = 0, .esi = 0, .edi = 0, .ebp = (uint32_t) (alarm_pcb->stack + STACK_SIZE - 1 - sizeof(void *)),
