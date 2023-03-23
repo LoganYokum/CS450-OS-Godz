@@ -115,13 +115,13 @@ void alarm_exec() {
         cur_second = atoi(strtok(NULL, " "));
 
         // check if alarm at front of list is ready to go off
-        if (alarm_list->hour < cur_hour || (alarm_list->hour == cur_hour && (alarm_list->minute < cur_minute || (alarm_list->minute == cur_minute && alarm_list->second < cur_second)))) {
+        while (alarm_list->hour < cur_hour || (alarm_list->hour == cur_hour && (alarm_list->minute < cur_minute || (alarm_list->minute == cur_minute && alarm_list->second < cur_second)))) {
             alarm_output(alarm_list->message);
             alarm_remove();
             if (alarm_list == NULL) {
                 sys_req(EXIT);
+                return;
             }
-            return;
         }
         sys_req(IDLE);
     }
