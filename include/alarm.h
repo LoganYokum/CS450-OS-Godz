@@ -9,6 +9,14 @@ typedef struct alarm_t {
 extern alarm_t *alarm_list;
 
 /**
+ * Compares two alarms based on the time
+ * @param a first alarm
+ * @param b second alarm
+ * @return -1 if a is before b, 0 if a and b are the same time, 1 if a is after b
+ */
+int alarmcmp(alarm_t *a, alarm_t *b);
+
+/**
  * Inserts an alarm into the alarm list based on the time
  * @param a alarm to insert
  */
