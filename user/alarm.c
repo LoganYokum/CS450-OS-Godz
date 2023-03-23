@@ -15,7 +15,12 @@ int cur_hour, cur_minute, cur_second;
 alarm_t *alarm_list = NULL;
 
 void alarm_insert(alarm_t *a) {
-    if (alarm_list == NULL || (a->hour < alarm_list->hour || (a->hour == alarm_list->hour && (a->minute < alarm_list->minute || (a->minute == alarm_list->minute && a->second < alarm_list->second))))) {
+    if (alarm_list == NULL) {
+        alarm_list = a;
+        return;
+    }
+    if (a->hour < alarm_list->hour || (a->hour == alarm_list->hour && (a->minute < alarm_list->minute || (a->minute == alarm_list->minute && a->second < alarm_list->second)))) {
+        a->next = alarm_list;
         alarm_list = a;
         return;
     }
