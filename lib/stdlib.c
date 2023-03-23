@@ -8,6 +8,7 @@
 
 #define RED "\033[0;31m"
 #define GREEN "\033[0;32m"
+#define YELLOW "\033[0;33m"
 #define RESET "\033[0m"
 
 int atoi(const char *s){
@@ -118,6 +119,12 @@ void error(const char *message){
 
 void success(const char *message){
 	sys_req(WRITE, COM1, GREEN, strlen(GREEN));
+	println(message);
+	sys_req(WRITE, COM1, RESET, strlen(RESET));
+}
+
+void alarm_output(const char *message){
+	sys_req(WRITE, COM1, YELLOW, strlen(GREEN));
 	println(message);
 	sys_req(WRITE, COM1, RESET, strlen(RESET));
 }

@@ -48,4 +48,10 @@ void error(const char *message);
  * @param message the success message to print
  */
 void success(const char *message);
+
+/**
+ * Outputs an alarm message to the console in yellow
+ * @param message the alarm message to print
+ */
+void alarm_output(const char *message);
 #endif

@@ -350,5 +350,14 @@ void pcb_show_blocked() {
     }
 }
 void pcb_show_all(){
-
+    if (ready_head == NULL && suspended_ready_head == NULL && blocked_head == NULL && suspended_blocked_head == NULL) {
+        sys_req(WRITE, COM1, "No processes.\n", sizeof("No processes.\n"));
+        return;
+    }
+    if (ready_head != NULL || suspended_ready_head != NULL) {
+        pcb_show_ready();
+    }
+    if (blocked_head != NULL || suspended_blocked_head != NULL) {
+        pcb_show_blocked();
+    }
 }
