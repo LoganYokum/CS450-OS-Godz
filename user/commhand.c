@@ -118,5 +118,4 @@ void commhand()
     }
     //free allocated memory
     sys_free_mem(comp_date);
-    sys_free_mem(time_dup);
 }

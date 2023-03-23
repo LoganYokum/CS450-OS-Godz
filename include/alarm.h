@@ -7,7 +7,6 @@ typedef struct alarm_t {
 } alarm_t;
 
 extern alarm_t *alarm_list;
-extern char *time_copy;
 
 /**
  * Inserts an alarm into the alarm list based on the time
