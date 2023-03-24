@@ -19,16 +19,14 @@ void alarm_insert(alarm_t *a) {
         alarm_list = a;
         return;
     }
-    if (a->hour < alarm_list->hour || (a->hour == alarm_list->hour && (a->minute < alarm_list->minute || (a->minute == alarm_list->minute && a->second < alarm_list->second)))) {
-        a->next = alarm_list;
-        alarm_list = a;
-        return;
-    }
 
+    int adjusted_hour = (a->hour < cur_hour || (a->hour == cur_hour && (a->minute < cur_minute || (a->minute == cur_minute && a->second < cur_second)))) ? a->hour + 24 : a->hour;
     alarm_t *prev = NULL;
     alarm_t *cur = alarm_list;
+
     while (cur != NULL) {
-        if (a->hour < cur->hour || (a->hour == cur->hour && (a->minute < cur->minute || (a->minute == cur->minute && a->second < cur->second)))) {
+        int tmp_hour = (cur->hour < cur_hour || (cur->hour == cur_hour && (cur->minute < cur_minute || (cur->minute == cur_minute && cur->second < cur_second)))) ? cur->hour + 24 : cur->hour;
+        if (adjusted_hour < tmp_hour || (adjusted_hour == tmp_hour && (a->minute < cur->minute || (a->minute == cur->minute && a->second < cur->second)))) {
             prev->next = a;
             a->next = cur;
             return;
