@@ -13,6 +13,7 @@
 #include <pcb_user.h>
 #include <loadr3.h>
 #include <alarm.h>
+#include <memory_user.h>
 #include <mpx/call.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -112,6 +113,20 @@ void commhand()
                 time(param_str);
             else if(strcmp(command_str, "date") == 0) // buffer command is date
                 date(param_str);
+            else if(strcmp(command_str,"allocate")==0){
+                allocate(param_str);
+            }
+            else if(strcmp(command_str,"free")==0){
+                free(param_str);
+            }
+            else if(strcmp(command_str,"show")==0){
+                if(strcmp(param_str,"allocated")==0)
+                    show_allocated();
+                else if(strcmp(param_str,"free")==0)
+                    show_free();
+                else
+                    error("The command you entered is not recognized. Try again.");
+            }
             else                                 // not a command
                 error("The command you entered is not recognized. Try again.");
         }

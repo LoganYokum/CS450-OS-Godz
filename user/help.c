@@ -16,6 +16,9 @@ void help(char *args){
         println("7. loadr3");
         // println("8. yield");
         println("8. alarm");
+        println("9. allocate");
+        println("10. free");
+        println("11. show (allocated OR free)");
         return;
     }                          // the param string contains a argument and none extra
     if (strcmp(args, "help") == 0){ // param = help
@@ -45,6 +48,18 @@ void help(char *args){
     else if(strcmp(args, "alarm") == 0){      // param = alarm
         println("To use alarm, type alarm followed by two arguments. Time (when to display the message) and Message (what to display).");
         println("Example: alarm 10:00:00 Time to wake up!");
+    }
+    else if(strcmp(args, "allocate") == 0){   // param = allocate"))
+        println("To use allocate, type allocate followed by an argument. The argument for allocate is the size of the memory block you want to allocate.");
+        println("Example: allocate 100");
+    }
+    else if(strcmp(args, "free") == 0){       // param = free
+        println("To use free, type free followed by an argument. The argument for free is the address of the memory block you want to free.");
+        println("Example: free 00000000");
+    }
+    else if(strcmp(args, "show") == 0){       // param = show
+        println("To use show, type show followed by an argument. The arguments for show are:\n1. allocated (to show all allocated memory blocks)\n2. free (to show all free memory blocks)");
+        println("Example: show allocated or show free");
     }
     else {                                //param doesnt have any matching string
         println("Incorrect parameter(s) for command: help. Try again.");

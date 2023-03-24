@@ -26,6 +26,7 @@ user/help.o\
 user/pcb_user.o\
 user/loadr3.o\
 user/alarm.o\
+user/memory_user.o\
 
 ########################################################################
 ### Nothing below here needs to be changed
