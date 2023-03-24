@@ -46,7 +46,7 @@ int mcb_remove(mcb_t **head, mcb_t *m) {
 }
 
 void initialize_heap(size_t size) {
-    void *heap = kmalloc(size + sizeof(mcb_t));
+    void *heap = kmalloc(size + sizeof(mcb_t), 0, NULL);
     mcb_t *m = (mcb_t *) heap;
     m->start_addr = heap + sizeof(mcb_t);
     m->size = size;
@@ -58,5 +58,32 @@ void initialize_heap(size_t size) {
 }
 
 void *allocate_memory(size_t size) {
-    
+    // free block is too small for mcb and requested size
+    if (free_list->size < size + sizeof(mcb_t)) {
+        return NULL;
+    }
+    // split the current free block into two blocks (one allocated, one remaining free)
+    mcb_t *alloc_mcb = free_list;
+    mcb_t *free_mcb = (mcb_t *) (free_list->start_addr + size);
+    free_mcb->start_addr = free_mcb + sizeof(mcb_t);
+    free_mcb->size = free_list->size - size - sizeof(mcb_t);
+
+    alloc_mcb->size = size;
+    alloc_mcb->prev = NULL;
+    alloc_mcb->next = NULL;
+
+    // remove the free block from the free list and add the allocated block to the allocated list
+    mcb_remove(&free_list, free_list);
+    mcb_insert(&alloc_list, alloc_mcb);
+
+    // add the remaining free block back to the free list
+    free_mcb->next = free_list;
+    free_mcb->prev = NULL;
+    free_list = free_mcb;
+
+    return alloc_mcb->start_addr;
+}
+
+int free_memory(void *addr) {
+
 }
