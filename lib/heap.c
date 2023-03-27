@@ -7,18 +7,28 @@ mcb_t *free_list;
 mcb_t *alloc_list;
 
 void mcb_insert(mcb_t **head, mcb_t *m) {
-    mcb_t *cur = *head;
     mcb_t *prev = NULL;
-    while (cur != NULL) {
+    mcb_t *cur = *head;
+
+    // insert the mcb in order of start address (descending) so that the block for splitting is always the first block
+    while (cur != NULL && cur->start_addr > m->start_addr) {
         prev = cur;
         cur = cur->next;
     }
     if (prev == NULL) {
         *head = m;
-        return;
+        m->next = cur;
+        if (cur != NULL) {
+            cur->prev = m;
+        }
+    }else {
+        prev->next = m;
+        m->prev = prev;
+        m->next = cur;
+        if (cur != NULL) {
+            cur->prev = m;
+        }
     }
-    prev->next = m;
-    m->prev = prev;
 }
 
 int mcb_remove(mcb_t **head, mcb_t *m) {
@@ -72,18 +82,30 @@ void *allocate_memory(size_t size) {
     alloc_mcb->prev = NULL;
     alloc_mcb->next = NULL;
 
-    // remove the free block from the free list and add the allocated block to the allocated list
-    mcb_remove(&free_list, free_list);
-    mcb_insert(&alloc_list, alloc_mcb);
-
-    // add the remaining free block back to the free list
-    free_mcb->next = free_list;
-    free_mcb->prev = NULL;
-    free_list = free_mcb;
+    mcb_remove(&free_list, free_list); // remove free block from the free list
+    mcb_insert(&alloc_list, alloc_mcb); // add allocated block to the allocated list
+    mcb_insert(&free_list, free_mcb); // add remaining free block to the free list
 
     return alloc_mcb->start_addr;
 }
 
 int free_memory(void *addr) {
+    // find the mcb for the given address
+    mcb_t *m = (mcb_t *) (addr - sizeof(mcb_t));
+    if (mcb_remove(&alloc_list, m) == 0) {
+        return 0;
+    }
+    // add the mcb to the free list
+    mcb_insert(&free_list, m);
 
+    // merge any adjacent free blocks
+    mcb_t *cur = free_list;
+    while (cur != NULL) {
+        if (cur->next != NULL && (cur->start_addr + cur->size == cur->next)) {
+            cur->size += cur->next->size + sizeof(mcb_t);
+            mcb_remove(&free_list, cur->next);
+        }
+        cur = cur->next;
+    }
+    return 1;
 }

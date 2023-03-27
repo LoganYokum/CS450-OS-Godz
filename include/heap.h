@@ -1,8 +1,8 @@
 typedef struct mcb_t {
     void *start_addr;
-    void *size;
-    struct mcb *prev;
-    struct mcb *next;
+    size_t size;
+    struct mcb_t *prev;
+    struct mcb_t *next;
 } mcb_t;
 
 extern mcb_t *free_list;
@@ -23,5 +23,6 @@ void *allocate_memory(size_t size);
 /**
  * Frees memory from the heap
  * @param addr Address of memory to free
+ * @return 0 on success, non-zero on failure
  */
-void free_memory(void *addr);
+int free_memory(void *addr);
