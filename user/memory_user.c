@@ -30,27 +30,27 @@ void free(char* address){
 }
 
 void show_allocated(){
-    // while(allocated_list->next != NULL){
-        // char* address = itoa(allocated_list->address);
-        // sys_req(WRITE, COM1, "Allocated memory at 0x", 22);
-        // sys_req(WRITE, COM1, address, strlen(address));
-        // sys_req(WRITE, COM1, " with size ", 11);
-        // char* size = itoa(allocated_list->size);
-        // sys_req(WRITE, COM1, size, strlen(size));
-        // sys_req(WRITE, COM1, "\r\n", 2);
-        // allocated_list = allocated_list->next;
-    // }
+    while(allocated_list->next != NULL){
+        char* address = itoa(allocated_list->address);
+        sys_req(WRITE, COM1, "Allocated memory at 0x", 22);
+        sys_req(WRITE, COM1, address, strlen(address));
+        sys_req(WRITE, COM1, " with size ", 11);
+        char* size = itoa(allocated_list->size);
+        sys_req(WRITE, COM1, size, strlen(size));
+        sys_req(WRITE, COM1, "\r\n", 2);
+        allocated_list = allocated_list->next;
+    }
 }
 
 void show_free(){
-    // while(free_list->next != NULL){
-        // char* address = itoa(free_list->address);
-        // sys_req(WRITE, COM1, "Free memory at 0x", 17);
-        // sys_req(WRITE, COM1, address, strlen(address));
-        // sys_req(WRITE, COM1, " with size ", 11);
-        // char* size = itoa(free_list->size);
-        // sys_req(WRITE, COM1, size, strlen(size));
-        // sys_req(WRITE, COM1, "\r\n", 2);
-        // free_list = free_list->next;
-    // }
+    while(free_list->next != NULL){
+        char* address = itoa(free_list->address);
+        sys_req(WRITE, COM1, "Free memory at 0x", 17);
+        sys_req(WRITE, COM1, address, strlen(address));
+        sys_req(WRITE, COM1, " with size ", 11);
+        char* size = itoa(free_list->size);
+        sys_req(WRITE, COM1, size, strlen(size));
+        sys_req(WRITE, COM1, "\r\n", 2);
+        free_list = free_list->next;
+    }
 }
