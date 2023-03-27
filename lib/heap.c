@@ -10,7 +10,7 @@ void mcb_insert(mcb_t **head, mcb_t *m) {
     mcb_t *prev = NULL;
     mcb_t *cur = *head;
 
-    // insert the mcb in order of start address (descending) so that the block for splitting is always the first block
+    // insert the mcb in order of start address (descending) so that the large initial block is always first
     while (cur != NULL && cur->start_addr > m->start_addr) {
         prev = cur;
         cur = cur->next;
@@ -52,6 +52,8 @@ int mcb_remove(mcb_t **head, mcb_t *m) {
             cur->next->prev = prev;
         }
     }
+    m->next = NULL;
+    m->prev = NULL;
     return 1;
 }
 
@@ -68,21 +70,26 @@ void initialize_heap(size_t size) {
 }
 
 void *allocate_memory(size_t size) {
-    // free block is too small for mcb and requested size
-    if (free_list->size < size + sizeof(mcb_t)) {
+    // check if there is a free block that is large enough
+    mcb_t *cur = free_list;
+    while (cur != NULL) {
+        if (cur->size >= size + sizeof(mcb_t)) {
+            break;
+        }
+        cur = cur->next;
+    }
+    if (cur == NULL) {
         return NULL;
     }
     // split the current free block into two blocks (one allocated, one remaining free)
-    mcb_t *alloc_mcb = free_list;
-    mcb_t *free_mcb = (mcb_t *) (free_list->start_addr + size);
+    mcb_t *alloc_mcb = cur;
+    mcb_t *free_mcb = (mcb_t *) (cur->start_addr + size);
     free_mcb->start_addr = free_mcb + sizeof(mcb_t);
-    free_mcb->size = free_list->size - size - sizeof(mcb_t);
+    free_mcb->size = cur->size - size - sizeof(mcb_t);
 
     alloc_mcb->size = size;
-    alloc_mcb->prev = NULL;
-    alloc_mcb->next = NULL;
 
-    mcb_remove(&free_list, free_list); // remove free block from the free list
+    mcb_remove(&free_list, cur); // remove first large enough free block from the free list
     mcb_insert(&alloc_list, alloc_mcb); // add allocated block to the allocated list
     mcb_insert(&free_list, free_mcb); // add remaining free block to the free list
 
@@ -93,7 +100,7 @@ int free_memory(void *addr) {
     // find the mcb for the given address
     mcb_t *m = (mcb_t *) (addr - sizeof(mcb_t));
     if (mcb_remove(&alloc_list, m) == 0) {
-        return 0;
+        return 1;
     }
     // add the mcb to the free list
     mcb_insert(&free_list, m);
@@ -101,11 +108,12 @@ int free_memory(void *addr) {
     // merge any adjacent free blocks
     mcb_t *cur = free_list;
     while (cur != NULL) {
-        if (cur->next != NULL && (cur->start_addr + cur->size == cur->next)) {
+         // check if the next block is adjacent to the current block
+        if (cur->next != NULL && (cur == cur->next->start_addr + cur->next->size)) {
             cur->size += cur->next->size + sizeof(mcb_t);
             mcb_remove(&free_list, cur->next);
         }
         cur = cur->next;
     }
-    return 1;
+    return 0;
 }
