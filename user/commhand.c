@@ -77,11 +77,11 @@ void commhand()
         }
         else if(strcmp(command_str,"loadr3")==0){ //command is loadr3
             strtok(buffer, " "); 
-            char* extra_arg = strtok(NULL, " ");
-            if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) {// check for extra arguments in buffer
-                error("The command you entered is not recognized. Too many arguments. Try again.");
-                continue;
-            }
+            // char* extra_arg = strtok(NULL, " ");
+            // if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) {// check for extra arguments in buffer
+            //     error("The command you entered is not recognized. Too many arguments. Try again.");
+            //     continue;
+            // }
             loadr3();
         }
         else if(strcmp(command_str,"alarm")==0){
@@ -93,11 +93,11 @@ void commhand()
         else{
             strtok(buffer, " ");                // capture parameter args
             char *param_str = strtok(NULL, " ");// capture argument after help
-            char *extra_arg = strtok(NULL, " ");// test for extra args
-            if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
-                error("The command you entered is not recognized. Too many arguments. Try again.");
-                continue;
-            }
+            // char *extra_arg = strtok(NULL, " ");// test for extra args
+            // if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
+            //     error("The command you entered is not recognized. Too many arguments. Try again.");
+            //     continue;
+            // }
 
             //check for commands
             if(strcmp(command_str, "version") == 0 && strcmp(param_str, "\n") == 0) { // buffer command is version
