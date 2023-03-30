@@ -1,4 +1,5 @@
 #include <string.h>
+#include <memory.h>
 
 void *memcpy(void * restrict s1, const void * restrict s2, size_t n)
 {
@@ -110,4 +111,28 @@ char* strcpy(char * restrict destination, const char * restrict source)
     *destination = '\0';
  
     return ptr;
+}
+
+char *strsub(const char *s, size_t start, size_t end) {
+	if (start > end) {
+		return NULL;
+	}
+	size_t len = end - start;
+	char *res = sys_alloc_mem(len + 1);
+
+	for (size_t i = 0; i < len; i++) {
+		res[i] = s[start + i];
+	}
+	res[len] = '\0';
+	return res;
+}
+
+char *strcat(char * restrict dest, const char * restrict src) {
+	char *ptr = dest + strlen(dest);
+	
+	while (*src) {
+		*ptr++ = *src++;
+	}
+	*ptr = '\0';
+	return dest;
 }

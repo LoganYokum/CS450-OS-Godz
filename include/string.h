@@ -55,4 +55,21 @@ char* strtok(char * restrict s1, const char * restrict s2);
  */
 char* strcpy(char * restrict destination, const char * restrict source);
 
+/**
+ * Creates a substring of the provided strings
+ * @param s provided string
+ * @param start start index
+ * @param end end index
+ * @return substring of s
+ */
+char *strsub(const char *s, size_t start, size_t end);
+
+/**
+ * Concatenates the string pointed to by source to the end of the string pointed to by dest
+ * @param dest first string
+ * @param source appended string
+ * @return a pointer to the destination string
+ */
+char *strcat(char * restrict dest, const char * restrict src);
+
 #endif
