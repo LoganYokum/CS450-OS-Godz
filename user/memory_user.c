@@ -11,14 +11,13 @@ void allocate(char* mem_size){
     }
     else{
         sys_req(WRITE, COM1, "Memory allocated at address: ", sizeof("Memory allocated at address: "));
-        char* address = strcat("0x", itoa(dtoh((int) mem)));
+        char* address = dtoh((int) mem);
         sys_req(WRITE, COM1, address, strlen(address));
-        sys_req(WRITE, COM1, "\r\n", 2);
-        
+        sys_req(WRITE, COM1, "\r\n", 2);   
     }
 }
 void free(char* address){
-    int mem_addr = atoi(strsub(address, 2, strlen(address))); // may need to change this as strsub dynamically allocates memory
+    int mem_addr = htod(address); // may need to change this as strsub dynamically allocates memory
     if(free_memory((void *) mem_addr) == 0){
         sys_req(WRITE, COM1, "Memory freed at: ", sizeof("Memory freed at: "));
         sys_req(WRITE, COM1, address, strlen(address));

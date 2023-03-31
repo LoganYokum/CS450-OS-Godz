@@ -70,7 +70,7 @@ char *itoa(int n) {
   	return res;
 }
 
-int dtoh(int dec) {
+int dtoBCD(int dec) {
     int hex = 0;
     int i = 1;
     int rem;
@@ -83,15 +83,59 @@ int dtoh(int dec) {
     return hex;
 }
 
-int htod(int hex) {
+int BCDtod(int bcd) {
     int dec = 0;
 	int i = 1; 
 	int rem;
-    while (hex > 0) {
-        rem = hex % 10;
-        hex /= 10;
+    while (bcd > 0) {
+        rem = bcd % 10;
+        bcd /= 10;
         dec += rem * i;
         i *= 16;
+    }
+    return dec;
+}
+
+char* dtoh(int dec) {
+    char* hex = sys_alloc_mem(sizeof(char) * 11);
+
+    if (!hex) {
+        error("Failed to allocate int to hex memory");
+    }
+
+    if (dec == 0) {
+        strcpy(hex, "0x00000000");
+        return hex;
+    }
+
+    hex[10] = '\0';
+    int i = 9;
+    int rem;
+    while (i > 1) {
+        rem = dec % 16;
+        dec /= 16;
+        hex[i] = (rem > 9) ? rem - 10 + 'a' : rem + '0';
+        i--;
+    }
+    hex[0] = '0';
+    hex[1] = 'x';
+    return hex;
+}
+
+int htod(const char *hex) {
+    int dec = 0;
+    int len = strlen(hex);
+    int i = 2;
+
+    for (; i < len; i++) {
+        int rem;
+
+        if (hex[i] >= '0' && hex[i] <= '9') {
+            rem = hex[i] - '0';
+        } else {
+            rem = hex[i] - 'a' + 10;
+        }
+        dec = dec * 16 + rem;
     }
     return dec;
 }

@@ -56,15 +56,15 @@ void time(char *args) {
         //write sec
         cli();
         outb(0x70, SEC_INDEX);
-        outb(0x71, (unsigned char)htod(sec)); //fill in 0x00 with write value
+        outb(0x71, (unsigned char)BCDtod(sec)); //fill in 0x00 with write value
         
         // write min
         outb(0x70, MIN_INDEX);
-        outb(0x71, (unsigned char)htod(min)); //fill in 0x00 with write value
+        outb(0x71, (unsigned char)BCDtod(min)); //fill in 0x00 with write value
         
         //write hour
         outb(0x70, HOUR_INDEX);
-        outb(0x71, (unsigned char)htod(hour)); //fill in 0x00 with write value
+        outb(0x71, (unsigned char)BCDtod(hour)); //fill in 0x00 with write value
         sti();
     }
 }
@@ -76,17 +76,17 @@ char *gettime() {
     // get hour
     outb(0x70, HOUR_INDEX);
     unsigned char hour = inb(0x71); 
-    char *hour_str =  itoa(dtoh(hour));
+    char *hour_str =  itoa(dtoBCD(hour));
     
     //get min
     outb(0x70, MIN_INDEX);
     unsigned char min = inb(0x71);
-    char *min_str = itoa(dtoh(min));
+    char *min_str = itoa(dtoBCD(min));
 
     //get sec
     outb(0x70, SEC_INDEX);
     unsigned char sec = inb(0x71);
-    char *sec_str = itoa(dtoh(sec));
+    char *sec_str = itoa(dtoBCD(sec));
 
     if (hour < 10){
         time[0] = '0';
