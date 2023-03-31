@@ -5,6 +5,7 @@
 #include <heap.h>
 
 void allocate(char* mem_size){
+    //Do some error checking to verify that the size is valid
     int int_size = atoi(mem_size);
     char *mem = (char *) allocate_memory(int_size);
     if(mem == NULL){
@@ -19,7 +20,9 @@ void allocate(char* mem_size){
     }
 }
 void free(char* address){
-    if(free_memory(address) == 0){
+    //Do some error checking to verify that the address is valid
+    int mem_address = free_memory(address);
+    if(mem_address == 0){
         sys_req(WRITE, COM1, "Memory freed at: 0x", sizeof("Memory freed at: 0x"));
         sys_req(WRITE, COM1, address, strlen(address));
         sys_req(WRITE, COM1, "\r\n", 2);
