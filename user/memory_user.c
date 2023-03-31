@@ -17,7 +17,7 @@ void allocate(char* mem_size){
     }
 }
 void free(char* address){
-    int mem_addr = htod(address); // may need to change this as strsub dynamically allocates memory
+    int mem_addr = htod(address);
     if(free_memory((void *) mem_addr) == 0){
         sys_req(WRITE, COM1, "Memory freed at: ", sizeof("Memory freed at: "));
         sys_req(WRITE, COM1, address, strlen(address));
@@ -32,9 +32,9 @@ void show_allocated() {
     mcb_t *cur = alloc_list;
     while (cur->next != NULL) {
         char* address = itoa((int)cur->start_addr);
-        sys_req(WRITE, COM1, "Allocated memory at 0x", 22);
+        sys_req(WRITE, COM1, "Allocated memory at: ", sizeof("Allocated memory at: "));
         sys_req(WRITE, COM1, address, strlen(address));
-        sys_req(WRITE, COM1, " with size ", 11);
+        sys_req(WRITE, COM1, " with size ", sizeof(" with size "));
         char* size = itoa(cur->size);
         sys_req(WRITE, COM1, size, strlen(size));
         sys_req(WRITE, COM1, "\r\n", 2);
@@ -46,9 +46,9 @@ void show_free() {
     mcb_t *cur = free_list;
     while (cur->next != NULL) {
         char* address = itoa((int)cur->start_addr);
-        sys_req(WRITE, COM1, "Free memory at 0x", 17);
+        sys_req(WRITE, COM1, "Free memory at ", sizeof("Free memory at "));
         sys_req(WRITE, COM1, address, strlen(address));
-        sys_req(WRITE, COM1, " with size ", 11);
+        sys_req(WRITE, COM1, " with size ", sizeof(" with size "));
         char* size = itoa(cur->size);
         sys_req(WRITE, COM1, size, strlen(size));
         sys_req(WRITE, COM1, "\r\n", 2);
