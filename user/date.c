@@ -71,15 +71,15 @@ void date(char *args) {
         //write year
         cli();
         outb(0x70, YEAR_INDEX);
-        outb(0x71,(unsigned char)htod(year)); 
+        outb(0x71,(unsigned char)BCDtod(year)); 
 
         // write day
         outb(0x70, DAY_INDEX);
-        outb(0x71,(unsigned char)htod(day));
+        outb(0x71,(unsigned char)BCDtod(day));
 
         //write month
         outb(0x70, MONTH_INDEX);
-        outb(0x71,(unsigned char)htod(month)); 
+        outb(0x71,(unsigned char)BCDtod(month)); 
         sti();
     }
 }
@@ -91,17 +91,17 @@ char *getdate() {
     // get month
     outb(0x70, MONTH_INDEX);
     unsigned char month = inb(0x71); 
-    char *month_str =  itoa(dtoh(month));
+    char *month_str =  itoa(dtoBCD(month));
     
     //get day
     outb(0x70, DAY_INDEX);
     unsigned char day = inb(0x71);
-    char *day_str = itoa(dtoh(day));
+    char *day_str = itoa(dtoBCD(day));
 
     //get year
     outb(0x70, YEAR_INDEX);
     unsigned char year = inb(0x71);
-    char *year_str = itoa(dtoh(year));
+    char *year_str = itoa(dtoBCD(year));
 
     if (month < 10){
         date[0] = '0';
