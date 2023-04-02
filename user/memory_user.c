@@ -29,9 +29,13 @@ void free(char* address){
 }
 
 void show_allocated() {
+    if (alloc_list == NULL) {
+        sys_req(WRITE, COM1, "No allocated memory\r\n", sizeof("No allocated memory\r\n"));
+        return;
+    }
     mcb_t *cur = alloc_list;
-    while (cur->next != NULL) {
-        char* address = itoa((int)cur->start_addr);
+    while (cur != NULL) {
+        char* address = dtoh((int)cur->start_addr);
         sys_req(WRITE, COM1, "Allocated memory at: ", sizeof("Allocated memory at: "));
         sys_req(WRITE, COM1, address, strlen(address));
         sys_req(WRITE, COM1, " with size ", sizeof(" with size "));
@@ -43,9 +47,13 @@ void show_allocated() {
 }
 
 void show_free() {
+    if (free_list == NULL) {
+        sys_req(WRITE, COM1, "No free memory\r\n", sizeof("No free memory\r\n"));
+        return;
+    }
     mcb_t *cur = free_list;
-    while (cur->next != NULL) {
-        char* address = itoa((int)cur->start_addr);
+    while (cur != NULL) {
+         char* address = dtoh((int)cur->start_addr);
         sys_req(WRITE, COM1, "Free memory at ", sizeof("Free memory at "));
         sys_req(WRITE, COM1, address, strlen(address));
         sys_req(WRITE, COM1, " with size ", sizeof(" with size "));
