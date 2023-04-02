@@ -30,7 +30,7 @@ void pcb_op(char *pcb_str){
     char* pcb_name = NULL;
     char* pcb_class = NULL;
     char* pcb_priority = NULL;
-    // char* extra_arg_test = NULL;
+    char* extra_arg_test = NULL;
 
     if(strcmp(param_str, "set")==0){
         arg_str = strtok(NULL, " ");

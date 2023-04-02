@@ -13,6 +13,8 @@ int hour, minute, second;
 int cur_hour, cur_minute, cur_second;
 
 alarm_t *alarm_list = NULL;
+alarm_t *a = NULL;
+char* alarm_msg = NULL;
 
 void alarm_insert(alarm_t *a) {
     if (alarm_list == NULL) {
@@ -93,7 +95,7 @@ void alarm_setup(char *time, char *message) {
         pcb_insert(alarm_pcb); // insert process into pcb list
     }
 
-    alarm_t *a = (alarm_t *) sys_alloc_mem(sizeof(alarm_t));
+    a = (alarm_t *) sys_alloc_mem(sizeof(alarm_t));
     if (a == NULL) {
         error("Failed to allocate memory for alarm");
         return;
@@ -101,7 +103,7 @@ void alarm_setup(char *time, char *message) {
     a->hour = hour;
     a->minute = minute;
     a->second = second;
-    char* alarm_msg = (char*) sys_alloc_mem(strlen(message) + 1);
+    alarm_msg = (char*) sys_alloc_mem(strlen(message) + 1);
     memcpy(alarm_msg, message, strlen(message) + 1);
     a->message = alarm_msg;
     a->next = NULL;
@@ -122,6 +124,8 @@ void alarm_exec() {
             alarm_output(alarm_list->message);
             alarm_remove();
             if (alarm_list == NULL) {
+                sys_free_mem(a);
+                sys_free_mem(alarm_msg);
                 sys_req(EXIT);
                 return;
             }

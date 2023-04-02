@@ -55,13 +55,13 @@ void help(char *args){
     }
     else if(strcmp(args, "free") == 0){       // param = free
         println("To use free, type free followed by an argument. The argument for free is the address of the memory block you want to free.");
-        println("Example: free 00000000");
+        println("Example: free 0x0a123000");
     }
     else if(strcmp(args, "show") == 0){       // param = show
         println("To use show, type show followed by an argument. The arguments for show are:\n1. allocated (to show all allocated memory blocks)\n2. free (to show all free memory blocks)");
         println("Example: show allocated or show free");
     }
     else {                                //param doesnt have any matching string
-        println("Incorrect parameter(s) for command: help. Try again.");
+        error("Incorrect parameter(s) for command: help. Try again.");
     }
 }
