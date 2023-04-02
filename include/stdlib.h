@@ -22,9 +22,33 @@ char *itoa(int n) ;
  */
 char *itoa(int n);
 
-int dtoh(int dec);
+/**
+ * Converts an integer into a BCD integer
+ * @param dec 
+ * @return BCD integer of dec 
+ */
+int dtoBCD(int dec);
 
-int htod(int hex);
+/**
+ * Converts a BCD integer into an integer
+ * @param bcd 
+ * @return integer of bcd 
+ */
+int BCDtod(int bcd);
+
+/**
+ * Converts an integer into a hexidecial string
+ * @param dec 
+ * @return hex string of dec
+ */
+char *dtoh(int dec);
+
+/**
+ * Converts hexidecimal string into an integer
+ * @param hex 
+ * @return integer of hex 
+ */
+int htod(const char *hex);
 
 int isnum(unsigned char args);
 
