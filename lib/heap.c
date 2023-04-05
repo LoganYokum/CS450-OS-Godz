@@ -111,13 +111,12 @@ int free_memory(void *addr) {
     while (cur != NULL) {
          // check if the next block is adjacent to the current block
         if (cur->next != NULL && ((char *)cur->start_addr == (char *)cur->next->start_addr + cur->next->size + sizeof(mcb_t))) {
-            cur->next->size += cur->size + sizeof(mcb_t);  
-            mcb_t *tmp = cur->next;
-            mcb_remove(&free_list, cur);
-            cur = tmp;
-            continue;
+            cur->next->size += cur->size + sizeof(mcb_t);
+            cur = cur->next;
+            mcb_remove(&free_list, cur->prev);
+        }else {
+            cur = cur->next;
         }
-        cur = cur->next;
     }
     return 0;
 }

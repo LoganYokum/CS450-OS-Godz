@@ -28,7 +28,7 @@ int shutdown(){
 
     strtok(shutdown_buf, " ");
     char *extra_arg = strtok(NULL, " ");
-    if (strcmp(extra_arg, NULL) != 0 && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
+    if (extra_arg != NULL && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
         error("You did not confirm shutdown. Too many arguments passed.");
         return 1;
     }

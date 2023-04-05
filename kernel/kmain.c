@@ -119,7 +119,9 @@ void kmain(void)
 	// 10) System Shutdown -- *headers to be determined by your design*
 	// After your command handler returns, take care of any clean up that is necessary.
 	klogv(COM1, "Starting system shutdown procedure...");
-
+	sys_free_mem(commhand_pcb);
+	sys_free_mem(idle_pcb);
+	
 	// System shutdown -- Nothing remains to change below here.
 	klogv(COM1, "Shutdown complete.");
 }
