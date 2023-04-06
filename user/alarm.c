@@ -55,6 +55,10 @@ void alarm_setup(char *time, char *message) {
         error("Invalid time format. Use hh:mm:ss");
         return;
     }
+    if(strlen(message) <= 1){
+        error("There is no message to set the alarm to!");
+        return;
+    }
 
     char *hour_str = strtok(time, ":");
     char *minute_str = strtok(NULL, ":");
