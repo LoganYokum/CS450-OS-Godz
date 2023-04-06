@@ -70,6 +70,10 @@ void initialize_heap(size_t size) {
 }
 
 void *allocate_memory(size_t size) {
+    // check if the size is valid
+    if (size < 1 || size > 50000) {
+        return NULL;
+    }
     // check if there is a free block that is large enough
     mcb_t *cur = free_list;
     while (cur != NULL) {
@@ -78,9 +82,8 @@ void *allocate_memory(size_t size) {
         }
         cur = cur->next;
     }
-    if (cur == NULL) {
-        return NULL;
-    }
+    if (cur == NULL) return NULL; // no free block large enough to allocate
+    
     // split the current free block into two blocks (one allocated, one remaining free)
     mcb_t *alloc_mcb = cur;
     mcb_t *free_mcb = (mcb_t *) ((char *)cur->start_addr + size);
@@ -111,13 +114,12 @@ int free_memory(void *addr) {
     while (cur != NULL) {
          // check if the next block is adjacent to the current block
         if (cur->next != NULL && ((char *)cur->start_addr == (char *)cur->next->start_addr + cur->next->size + sizeof(mcb_t))) {
-            cur->next->size += cur->size + sizeof(mcb_t);  
-            mcb_t *tmp = cur->next;
-            mcb_remove(&free_list, cur);
-            cur = tmp;
-            continue;
+            cur->next->size += cur->size + sizeof(mcb_t);
+            cur = cur->next;
+            mcb_remove(&free_list, cur->prev);
+        }else {
+            cur = cur->next;
         }
-        cur = cur->next;
     }
     return 0;
 }
