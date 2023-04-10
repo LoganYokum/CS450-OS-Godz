@@ -1,12 +1,12 @@
-typedef struct mcb_t {
+typedef struct mcb {
     void *start_addr;
     size_t size;
-    struct mcb_t *prev;
-    struct mcb_t *next;
-} mcb_t;
+    struct mcb  *prev;
+    struct mcb  *next;
+} mcb;
 
-extern mcb_t *free_list;
-extern mcb_t *alloc_list;
+extern mcb  *free_list;
+extern mcb  *alloc_list;
 
 /**
  * Allocates all memory available to heap manager

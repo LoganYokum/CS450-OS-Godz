@@ -3,6 +3,31 @@
 
 #include <stddef.h>
 #include <mpx/device.h>
+#include <mpx/pcb.h>
+#include <sys_req.h>
+
+typedef struct iocb iocb;
+typedef struct dcb dcb;
+
+struct dcb {
+    int open_flag;
+    int event_flag;
+    op_code cur_op;
+    char buffer[128];
+    size_t buf_len;
+    size_t buf_start;
+    size_t buf_end;
+    iocb *iocb_queue;
+};
+
+struct iocb {
+    op_code cur_op;
+    char buffer[128];
+    size_t len;
+    pcb *process;
+};
+
+extern dcb devices[4];
 
 /**
  @file mpx/serial.h
@@ -34,5 +59,16 @@ int serial_out(device dev, const char *buffer, size_t len);
 */   		   
 
 int serial_poll(device dev, char *buffer, size_t len);
+
+
+void serial_input_interrupt(struct dcb *dcb);
+
+void serial_output_interrupt(struct dcb *dcb);
+
+void serial_interrupt();
+
+int serial_open(device dev, int speed);
+
+int serial_close(device dev);
 
 #endif

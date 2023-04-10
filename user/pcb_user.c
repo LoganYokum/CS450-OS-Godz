@@ -168,6 +168,7 @@ void pcb_show_ready() {
         suspended_ready_cur = suspended_ready_cur->next;
     }
 }
+
 void pcb_show_blocked() {
     pcb *blocked_cur = blocked_head;
     pcb *suspended_blocked_cur = suspended_blocked_head;
@@ -277,20 +278,20 @@ void pcb_op(char *pcb_str){
             else
                 pcb_delete(pcb_name);
         }
-        else if(strcmp(param_str, "block") == 0){
-            extra_arg_test = strtok(NULL, " ");
-            if (extra_arg_test != NULL && strcmp(extra_arg_test, "\n") != 0)
-                error("Incorrect parameter(s) for command: pcb. Try again.");
-            else
-                pcb_block(pcb_name);
-        }
-        else if(strcmp(param_str, "unblock") == 0){
-            extra_arg_test = strtok(NULL, " ");
-            if (extra_arg_test != NULL && strcmp(extra_arg_test, "\n") != 0)
-                error("Incorrect parameter(s) for command: pcb. Try again.");
-            else
-                pcb_unblock(pcb_name);
-        }
+        // else if(strcmp(param_str, "block") == 0){
+        //     extra_arg_test = strtok(NULL, " ");
+        //     if (extra_arg_test != NULL && strcmp(extra_arg_test, "\n") != 0)
+        //         error("Incorrect parameter(s) for command: pcb. Try again.");
+        //     else
+        //         pcb_block(pcb_name);
+        // }
+        // else if(strcmp(param_str, "unblock") == 0){
+        //     extra_arg_test = strtok(NULL, " ");
+        //     if (extra_arg_test != NULL && strcmp(extra_arg_test, "\n") != 0)
+        //         error("Incorrect parameter(s) for command: pcb. Try again.");
+        //     else
+        //         pcb_unblock(pcb_name);
+        // }
         else if(strcmp(param_str, "suspend") == 0){
             extra_arg_test = strtok(NULL, " ");
             if (extra_arg_test != NULL && strcmp(extra_arg_test, "\n") != 0)
