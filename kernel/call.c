@@ -1,7 +1,7 @@
+#include <mpx/call.h>
+#include <mpx/serial.h>
 #include <stddef.h>
 #include <sys_req.h>
-#include <mpx/call.h>
-#include <mpx/pcb.h>
 
 pcb *current_process;
 context *first_context = NULL;
@@ -52,6 +52,22 @@ context *sys_call(context *c) {
         next_context->eax = 0; // set okay return value for sys_call
         return next_context;
     }
-    c->eax = -1; // invalid op code
+    // device dev = c->ebx;
+    // char *buffer = (char *) c->ecx;
+    // size_t len = c->edx;
+
+    // int index = serial_devno(dev);
+    // dcb dev = devices[index];
+
+    // if (dev->alloc_status == 0) {
+    //     if (op == READ) {
+    //         serial_read(dev, buffer, len);
+    //     }else {
+    //         serial_write(dev, buffer, len);
+    //     }
+    // }else {
+        
+    // }
+    c->eax = -1;
     return c;
 }
