@@ -1,13 +1,10 @@
 #include <mpx/io.h>
 #include <mpx/serial.h>
+#include <mpx/device.h>
+#include <mpx/interrupts.h>
 #include <sys_req.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define BACKSPACE 0x08
-#define DELETE 0x7F
-#define CARRIAGE_RETURN 0x0D
-#define NEWLINE 0x0A
 
 enum uart_registers {
 	RBR = 0,	// Receive Buffer
@@ -25,6 +22,7 @@ enum uart_registers {
 };
 
 static int initialized[4] = { 0 };
+dcb devices[4];
 
 static int serial_devno(device dev)
 {
@@ -66,6 +64,11 @@ int serial_out(device dev, const char *buffer, size_t len)
 	}
 	return (int)len;
 }
+
+#define BACKSPACE 0x08
+#define DELETE 0x7F
+#define CARRIAGE_RETURN 0x0D
+#define NEWLINE 0x0A
 
 int serial_poll(device dev, char *buffer, size_t len)
 {
@@ -151,4 +154,98 @@ int serial_poll(device dev, char *buffer, size_t len)
 	outb(dev, '\r');
 	outb(dev, '\n');
 	return bufferIndex;
+}
+
+void serial_input_interrupt(struct dcb *dcb) {
+
+}
+
+void serial_output_interrupt(struct dcb *dcb) {
+
+}
+
+void serial_interrupt() {
+	cli();
+	device dev = COM1; // TODO: figure out which device triggered the interrupt
+	dcb *d = &devices[serial_devno(dev)];
+	// if (d->open_flag == 0) {
+	// 	sti();
+	// 	return;
+	// }
+
+	int iir = inb(dev + IIR);
+	if (iir & 0x02) { // bit 1 (output)
+		serial_output_interrupt(d);
+	}else if (iir & 0x04) { // bit 2 (input)
+		serial_input_interrupt(d);
+	}
+	// issue EOI to PIC
+	outb(0x20, 0x20);
+	sti();
+}
+
+// UNFINISHED
+int serial_open(device dev, int speed) {
+	int dno = serial_devno(dev);
+	if (dno == -1) {
+		return -1;
+	}
+	
+	if (devices[dno].open_flag) { // check that device is closed
+		return -1;
+	}
+	// initialize device
+	devices[dno] = (dcb) {
+		.open_flag = 1,
+		.event_flag = 0,
+		.cur_op = IDLE,
+		.buffer = { 0 },
+		.buf_len = 128,
+		.buf_start = 0,
+		.buf_end = 0,
+		.iocb_queue = NULL
+	};
+
+	// still need to install new handler into interrupt table
+
+	outb(dev + LCR, 0x80);	//set line control register	
+	outb(dev + DLL, 115200 / (long) speed); //set bsd least sig bit
+	outb(dev + DLM, 0x00);	//brd most significant bit
+	outb(dev + LCR, 0x03);	//lock divisor; 8bits, no parity, one stop
+
+	cli();
+	int mask = inb(0x21);
+	int irq = (dev == COM1 || dev == COM3) ? 4 : 3; // IRQ4 or IRQ3
+	mask &= ~(1 << (irq - 1)); 
+	outb(0x21, mask); // enable hardware IRQ4 or IRQ3
+	sti();
+
+	outb(dev + MCR, 0x08); // enable serial port interrupts
+	outb(dev + IER, 0x01); // enable interrupts
+
+	return 0;
+}
+
+int serial_close(device dev) {
+	int dno = serial_devno(dev);
+	if (dno == -1) {
+		return -1;
+	}
+
+	if (!devices[dno].open_flag) { // device is already closed
+		return -1;
+	}
+	devices[dno].open_flag = 0; // close device
+
+	cli();
+	int mask = inb(0x21);
+	int irq = (dev == COM1 || dev == COM3) ? 4 : 3; // IRQ4 or IRQ3
+	mask &= ~(1 << (irq - 1));
+	outb(0x21, mask); // disable hardware IRQ4 or IRQ3
+	sti();
+
+	outb(dev + MSR, 0x00); // disable serial port interrupts
+	outb(dev + IER, 0x00); // disable interrupts
+
+	return 0;
 }
