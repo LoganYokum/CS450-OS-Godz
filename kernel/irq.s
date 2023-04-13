@@ -51,5 +51,7 @@ sys_call_isr:
 	iret
 
 ;;; Serial port ISR. To be implemented in Module R6
+extern serial_interrupt			; C function that serial_isr will call
 serial_isr:
+	call serial_interrupt
 	iret

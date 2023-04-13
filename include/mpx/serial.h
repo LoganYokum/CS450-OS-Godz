@@ -10,10 +10,11 @@ typedef struct iocb iocb;
 typedef struct dcb dcb;
 
 struct dcb {
+    device dev;
     int open_flag;
     int event_flag;
     op_code cur_op;
-    char buffer[128];
+    char *buffer;
     size_t buf_len;
     size_t buf_start;
     size_t buf_end;
@@ -22,12 +23,13 @@ struct dcb {
 
 struct iocb {
     op_code cur_op;
-    char buffer[128];
+    char *buffer;
     size_t len;
     pcb *process;
+    iocb *next;
 };
 
-extern dcb devices[4];
+extern dcb dcb_table[4];
 
 /**
  @file mpx/serial.h
@@ -60,15 +62,36 @@ int serial_out(device dev, const char *buffer, size_t len);
 
 int serial_poll(device dev, char *buffer, size_t len);
 
-
+/**
+ * Second level interrupt handler for serial input
+ * @param dcb struct for the device that triggered the interrupt
+ */
 void serial_input_interrupt(struct dcb *dcb);
 
+/**
+ * Second level interrupt handler for serial output
+ * @param dcb struct for the device that triggered the interrupt
+ */
 void serial_output_interrupt(struct dcb *dcb);
 
+/**
+ * First level interrupt handler for serial interrupts
+ */
 void serial_interrupt();
 
+/**
+ * Opens a serial port
+ * @param dev The serial port to open
+ * @param speed The baud rate to use
+ * @return 0 on success, non-zero on failure
+ */
 int serial_open(device dev, int speed);
 
+/**
+ * Closes a serial port
+ * @param dev The serial port to close
+ * @return 0 on success, non-zero on failure
+ */
 int serial_close(device dev);
 
 #endif

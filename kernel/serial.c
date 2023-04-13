@@ -22,7 +22,7 @@ enum uart_registers {
 };
 
 static int initialized[4] = { 0 };
-dcb devices[4];
+dcb dcb_table[4];
 
 static int serial_devno(device dev)
 {
@@ -156,68 +156,128 @@ int serial_poll(device dev, char *buffer, size_t len)
 	return bufferIndex;
 }
 
-void serial_input_interrupt(struct dcb *dcb) {
 
+void serial_input_interrupt(struct dcb *dcb) {
+	char c = inb(dcb->dev);	
+	if (dcb->cur_op != READ) {
+		// attempt to store character in ring buffer
+		if ((dcb->buf_end + 1) % dcb->buf_len == dcb->buf_start) {
+			return;
+		}
+		dcb->buffer[dcb->buf_end] = c;
+		dcb->buf_end = (dcb->buf_end + 1) % dcb->buf_len;
+	}else {
+		// store the character in the first IOCB in the queue
+		iocb *io = dcb->iocb_queue;
+		if (io == NULL) {
+			return;
+		}
+
+	}
 }
 
 void serial_output_interrupt(struct dcb *dcb) {
-
+	if (dcb->cur_op != WRITE) {
+		return;
+	}
+	iocb *io = dcb->iocb_queue;
+	if (io == NULL) {
+		return;
+	}
+	if (*io->buffer != '\0') {
+		outb(dcb->dev, *io->buffer);
+		io->buffer++;
+		io->len--;
+	}
+	if (io->len == 0) {
+		outb(dcb->dev + IER, 0x00); // disable write interrupts
+		outb(0x20, 0x20); // signal completion to PIC
+		dcb->iocb_queue = io->next;
+	}
 }
 
 void serial_interrupt() {
 	cli();
-	device dev = COM1; // TODO: figure out which device triggered the interrupt
-	dcb *d = &devices[serial_devno(dev)];
-	// if (d->open_flag == 0) {
-	// 	sti();
-	// 	return;
-	// }
+	device dev = COM1;
+	dcb d = dcb_table[0];
+	for (int i = 0; i < 4; i++) {
+		if (inb(dcb_table[i].dev = IIR) & 0x01) {
+			dev = dcb_table[i].dev;
+			d = dcb_table[i];
+			break;
+		}
+	}
 
 	int iir = inb(dev + IIR);
 	if (iir & 0x02) { // bit 1 (output)
-		serial_output_interrupt(d);
+		serial_output_interrupt(&d);
 	}else if (iir & 0x04) { // bit 2 (input)
-		serial_input_interrupt(d);
+		serial_input_interrupt(&d);
 	}
-	// issue EOI to PIC
-	outb(0x20, 0x20);
+	outb(0x20, 0x20); // issue EOI to PIC to clear interrupt
 	sti();
 }
 
-// UNFINISHED
 int serial_open(device dev, int speed) {
 	int dno = serial_devno(dev);
 	if (dno == -1) {
-		return -1;
+		return -103;
+	}
+	if (dcb_table[dno].open_flag) { // check if device is already open
+		return -103;
+	}
+
+	int dll = 115200 / speed;
+	int dlm = 0;
+	switch (dll) {
+		case 0x00:
+			dlm = 0x09;
+			break;
+		case 0x80:
+			dlm = 0x01;
+			break;
+		case 0x60:
+		case 0x30:
+		case 0x18:
+		case 0x0C:
+		case 0x06:
+		case 0x03:
+		case 0x02:
+		case 0x01:
+			dlm = 0x00;
+			break;
+		default:
+			return -102;
 	}
 	
-	if (devices[dno].open_flag) { // check that device is closed
-		return -1;
-	}
 	// initialize device
-	devices[dno] = (dcb) {
+	dcb_table[dno] = (dcb) {
+		.dev = dev,
 		.open_flag = 1,
 		.event_flag = 0,
 		.cur_op = IDLE,
-		.buffer = { 0 },
+		.buffer = NULL,
 		.buf_len = 128,
 		.buf_start = 0,
 		.buf_end = 0,
 		.iocb_queue = NULL
 	};
 
-	// still need to install new handler into interrupt table
+	int vector = (dev == COM1 || dev == COM3) ? 0x24 : 0x23; // IRQ4 or IRQ3
+	idt_install(vector, serial_interrupt);
 
 	outb(dev + LCR, 0x80);	//set line control register	
-	outb(dev + DLL, 115200 / (long) speed); //set bsd least sig bit
-	outb(dev + DLM, 0x00);	//brd most significant bit
+	outb(dev + DLL, dll); 	//set bsd least sig bit
+	outb(dev + DLM, dlm);	//brd most significant bit
 	outb(dev + LCR, 0x03);	//lock divisor; 8bits, no parity, one stop
+	outb(dev + MCR, 0x0B);  // enable interrupts, rts/dsr set
+	outb(dev + IER, 0x01);	//enable input ready interrupts
 
 	cli();
 	int mask = inb(0x21);
 	int irq = (dev == COM1 || dev == COM3) ? 4 : 3; // IRQ4 or IRQ3
-	mask &= ~(1 << (irq - 1)); 
-	outb(0x21, mask); // enable hardware IRQ4 or IRQ3
+	mask |= (1 << (irq - 1)); 
+	outb(0x21, mask); // disable hardware IRQ4 or IRQ3
 	sti();
 
 	outb(dev + MCR, 0x08); // enable serial port interrupts
@@ -232,10 +292,10 @@ int serial_close(device dev) {
 		return -1;
 	}
 
-	if (!devices[dno].open_flag) { // device is already closed
+	if (!dcb_table[dno].open_flag) { // device is already closed
 		return -1;
 	}
-	devices[dno].open_flag = 0; // close device
+	dcb_table[dno].open_flag = 0; // close device
 
 	cli();
 	int mask = inb(0x21);
