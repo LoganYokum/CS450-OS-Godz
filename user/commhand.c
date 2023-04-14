@@ -84,7 +84,7 @@ void commhand()
             }
             loadr3();
         }
-        else if(strcmp(command_str,"alarm")==0){
+        else if(strcmp(command_str,"alarm")==0){ //command is alarm
             strtok(buffer, " ");
             char* time_str = strtok(NULL, " ");
             char* message_str = strtok(NULL, "\n");
@@ -112,13 +112,13 @@ void commhand()
                 time(param_str);
             else if(strcmp(command_str, "date") == 0) // buffer command is date
                 date(param_str);
-            else if(strcmp(command_str,"allocate")==0){
+            else if(strcmp(command_str,"allocate")==0){ // buffer command is allocate
                 allocate(param_str);
             }
-            else if(strcmp(command_str,"free")==0){
+            else if(strcmp(command_str,"free")==0){ // buffer command is free
                 free(param_str);
             }
-            else if(strcmp(command_str,"show")==0){
+            else if(strcmp(command_str,"show")==0){ // buffer command is show
                 if(strcmp(param_str,"allocated")==0)
                     show_allocated();
                 else if(strcmp(param_str,"free")==0)

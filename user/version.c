@@ -7,5 +7,5 @@
     Manually update version function upon each module release.
 */
 void version() {
-    sys_req(WRITE, COM1, "R4: ", strlen("R5: "));
+    sys_req(WRITE, COM1, "R5: ", strlen("R5: "));
 }
