@@ -15,8 +15,8 @@ struct dcb {
     op_code cur_op;
     char *buffer;
     size_t buf_len;
-    size_t buf_start;
-    size_t buf_end;
+    int buf_start;
+    int buf_end;
     iocb *iocb_queue;
 };
 

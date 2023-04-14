@@ -156,7 +156,6 @@ int serial_poll(device dev, char *buffer, size_t len)
 	return bufferIndex;
 }
 
-// UNFINISHED
 void serial_input_interrupt(struct dcb *dcb) {
 	device dev = 0;
 	if (&dcb_table[0] == dcb) {
@@ -174,7 +173,7 @@ void serial_input_interrupt(struct dcb *dcb) {
 	char c = inb(dev);	
 	if (dcb->cur_op != READ) {
 		// check if ring buffer is full
-		if ((dcb->buf_end + 1) % dcb->buf_len == dcb->buf_start) {
+		if ((dcb->buf_end + 1) % dcb->buf_len == (size_t) dcb->buf_start) {
 			return;
 		}
 		// otherwise store the character at end of ring buffer
@@ -186,11 +185,15 @@ void serial_input_interrupt(struct dcb *dcb) {
 		if (io == NULL) {
 			return;
 		}
-		// need to find out how to store a character from IOCB buffer given only a pointer and a length
+		// store the character from IOCB buffer
+		io->buffer[io->buf_idx++] = c;
+		if (io->buf_idx == io->buf_len || c == '\n') {
+			dcb->cur_op = IDLE;
+			dcb->event_flag = 1;
+		}
 	}
 }
 
-// UNFINISHED
 void serial_output_interrupt(struct dcb *dcb) {
 	if (dcb->cur_op != WRITE) {
 		return;
@@ -199,7 +202,29 @@ void serial_output_interrupt(struct dcb *dcb) {
 	if (io == NULL) {
 		return;
 	}
-	// need to find out how to write a character from IOCB buffer given only a pointer and a length
+
+	device dev = 0;
+	if (&dcb_table[0] == dcb) {
+		dev = COM1;
+	}else if (&dcb_table[1] == dcb) {
+		dev = COM2;
+	}else if (&dcb_table[2] == dcb) {
+		dev = COM3;
+	}else if (&dcb_table[3] == dcb) {
+		dev = COM4;
+	}else {
+		return;
+	}
+
+	if (io->buffer[io->buf_idx] == '\0') { // end of buffer
+		int ier = inb(dev + IER) & ~0x02;
+		outb(dev + IER, ier); // disable output interrupts
+
+		dcb->cur_op = IDLE;
+		dcb->event_flag = 1;
+	}else {
+		outb(dev, io->buffer[io->buf_idx++]); // write next character
+	}
 }
 
 void serial_interrupt() {
@@ -318,7 +343,45 @@ int serial_close(device dev) {
 }
 
 int serial_read(device dev, char *buf, size_t len) {
+	int dno = serial_devno(dev);
+	if (dcb_table[dno].open_flag == 0) { // device is closed
+		return -301;
+	}
+	if (buf == NULL) {
+		return -302;
+	}
+	if (len < 1) { 
+		return -303;
+	}
+	if (dcb_table[dno].cur_op != IDLE) { // device is busy
+		return -304;
+	}
+	dcb d = dcb_table[dno];
+	d.event_flag = 0;
+	d.cur_op = READ;
 
+	cli();
+	size_t i = 0, empty = 0; 
+	while (!empty && d.buffer[d.buf_start] != '\n' && i < len) {
+		empty = (d.buf_start == d.buf_end);
+
+		buf[d.iocb_queue->buf_idx] = d.buffer[d.buf_start];
+		d.iocb_queue->buf_idx += 1;
+		d.buf_start = (d.buf_start + 1) % d.buf_len;
+
+		if (empty) {
+			d.buf_start = 0;
+			d.buf_end = 0;
+			break;
+		}
+	}
+	sti();
+
+	if (i < len) return 0;
+	
+	d.cur_op = IDLE;
+	d.event_flag = 1;
+	return len;
 }
 
 int serial_write(device dev, char *buf, size_t len) {
@@ -337,12 +400,7 @@ int serial_write(device dev, char *buf, size_t len) {
 	}
 	dcb d = dcb_table[dno];
 	d.event_flag = 0;
-	d.cur_op = WRITE;
-
-	if (d.buf_start == -1 && d.buf_end == -1) { // reset buffer indexes
-		d.buf_start = 0;
-		d.buf_end = 0;
-	}
+	// d.cur_op = WRITE;
 
 	outb(dev, *buf); // write first character to output buffer
 	d.iocb_queue->buf_idx += 1;
