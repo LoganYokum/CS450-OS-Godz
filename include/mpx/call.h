@@ -5,6 +5,8 @@ typedef struct context {
     int eip, cs, eflags; // control registers
 }context;
 
+context *idle(context *c);
+
 /**
  * Loads the next process into memory and returns the context of the next process
  * @param c context of the current process

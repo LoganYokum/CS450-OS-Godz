@@ -25,9 +25,10 @@ struct iocb {
     char buffer[128];
     size_t len;
     pcb *process;
+    iocb* next;
 };
 
-extern dcb devices[4];
+extern dcb dcb_table[4];
 
 /**
  @file mpx/serial.h
