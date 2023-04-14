@@ -10,7 +10,6 @@ typedef struct iocb iocb;
 typedef struct dcb dcb;
 
 struct dcb {
-    device dev;
     int open_flag;
     int event_flag;
     op_code cur_op;
@@ -24,7 +23,8 @@ struct dcb {
 struct iocb {
     op_code cur_op;
     char *buffer;
-    size_t len;
+    size_t buf_idx;
+    size_t buf_len;
     pcb *process;
     iocb *next;
 };
