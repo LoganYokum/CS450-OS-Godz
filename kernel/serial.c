@@ -172,9 +172,12 @@ void serial_input_interrupt(struct dcb *dcb) {
 
 	char c = inb(dev);	
 	if (dcb->cur_op != READ) {
-		// check if ring buffer is full
-		if ((dcb->buf_end + 1) % dcb->buf_len == (size_t) dcb->buf_start) {
+		if ((dcb->buf_end + 1) % dcb->buf_len == (size_t) dcb->buf_start) { // check if ring buffer is full
 			return;
+		}
+		if (dcb->buf_start == -1) { // check if ring buffer is empty
+			dcb->buf_start = 0;
+			dcb->buf_end = 0;
 		}
 		// otherwise store the character at end of ring buffer
 		dcb->buffer[dcb->buf_end] = c;
@@ -185,9 +188,8 @@ void serial_input_interrupt(struct dcb *dcb) {
 		if (io == NULL) {
 			return;
 		}
-		// store the character from IOCB buffer
 		io->buffer[io->buf_idx++] = c;
-		if (io->buf_idx == io->buf_len || c == '\n') {
+		if (io->buf_idx == io->buf_len || c == '\n') { // buffer is now full or newline character
 			dcb->cur_op = IDLE;
 			dcb->event_flag = 1;
 		}
@@ -217,7 +219,8 @@ void serial_output_interrupt(struct dcb *dcb) {
 	}
 
 	if (io->buffer[io->buf_idx] == '\0') { // end of buffer
-		int ier = inb(dev + IER) & ~0x02;
+		int ier = inb(dev + IER);
+		ier &= ~0x02;
 		outb(dev + IER, ier); // disable output interrupts
 
 		dcb->cur_op = IDLE;
@@ -362,16 +365,17 @@ int serial_read(device dev, char *buf, size_t len) {
 
 	cli();
 	size_t i = 0, empty = 0; 
-	while (!empty && d.buffer[d.buf_start] != '\n' && i < len) {
+	while (!empty && d.buffer[d.buf.start] != '\n' && i < len) {
 		empty = (d.buf_start == d.buf_end);
 
 		buf[d.iocb_queue->buf_idx] = d.buffer[d.buf_start];
+		d.buffer[d.buf_start] = 0;
 		d.iocb_queue->buf_idx += 1;
 		d.buf_start = (d.buf_start + 1) % d.buf_len;
 
 		if (empty) {
-			d.buf_start = 0;
-			d.buf_end = 0;
+			d.buf_start = -1; // maybe 0?
+			d.buf_end = -1; // maybe 0?
 			break;
 		}
 	}
@@ -405,7 +409,8 @@ int serial_write(device dev, char *buf, size_t len) {
 	outb(dev, *buf); // write first character to output buffer
 	d.iocb_queue->buf_idx += 1;
 
-	int ier = inb(dev + IER) | 0x02;
+	int ier = inb(dev + IER);
+	ier |= 0x02;
 	outb(dev + IER, ier); // enable output interrupts
 	
 	return 0;
