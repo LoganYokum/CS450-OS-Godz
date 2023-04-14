@@ -365,7 +365,7 @@ int serial_read(device dev, char *buf, size_t len) {
 
 	cli();
 	size_t i = 0, empty = 0; 
-	while (!empty && d.buffer[d.buf.start] != '\n' && i < len) {
+	while (!empty && d.buffer[d.buf_start] != '\n' && i < len) {
 		empty = (d.buf_start == d.buf_end);
 
 		buf[d.iocb_queue->buf_idx] = d.buffer[d.buf_start];
