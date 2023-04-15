@@ -30,6 +30,7 @@ struct iocb {
 };
 
 extern dcb dcb_table[4];
+extern dcb dcb_table[4];
 
 /**
  @file mpx/serial.h
