@@ -415,3 +415,23 @@ int serial_write(device dev, char *buf, size_t len) {
 	
 	return 0;
 }
+
+int iocb_dequeue(iocb **io_queue) {
+	if (*io_queue == NULL) {
+		return -1;
+	}
+	*io_queue = (*io_queue)->next;
+	return 0;
+}
+
+void iocb_enqueue(iocb **io_queue, iocb *io) {
+	if (*io_queue == NULL) {
+		*io_queue = io;
+		return;
+	}
+	iocb *cur = *io_queue;
+	while (cur->next != NULL) {
+		cur = cur->next;
+	}
+	cur->next = io;
+}

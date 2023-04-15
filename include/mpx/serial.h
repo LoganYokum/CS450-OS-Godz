@@ -30,7 +30,6 @@ struct iocb {
 };
 
 extern dcb dcb_table[4];
-extern dcb dcb_table[4];
 
 /**
  @file mpx/serial.h
@@ -94,5 +93,37 @@ int serial_open(device dev, int speed);
  * @return 0 on success, non-zero on failure
  */
 int serial_close(device dev);
+
+/**
+ * Reads from a serial port
+ * @param dev device to read from
+ * @param buf buffer to read into
+ * @param len number of bytes to read
+ * @return len on success, 0 on failure 
+ */
+int serial_read(device dev, char *buf, size_t len);
+
+/**
+ * Writes to a serial port
+ * @param dev device to write to
+ * @param buf buffer to write from
+ * @param len number of bytes to write
+ * @return 0 on success, non-zero on failure
+ */
+int serial_write(device dev, char *buf, size_t len);
+
+/** 
+ * Dequeues an iocb from the given queue
+ * @param iocb_queue the front of the queue
+ * @return 0 on success, non-zero on failure
+ */
+int iocb_dequeue(iocb **iocb_queue);
+
+/**
+ * Enqueues an iocb to the given queue
+ * @param iocb_queue the front of the queue
+ * @param io the iocb to enqueue
+ */
+void iocb_enqueue(iocb **iocb_queue, iocb *io);
 
 #endif
