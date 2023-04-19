@@ -39,7 +39,7 @@ context *idle(context *c) {
     }
 }
 context *sys_call(context *c) {
-    pcb *next_process;
+    pcb *next_process = NULL;
     context *next_context = NULL;
     op_code op = c->eax;
     device dev = c->ebx;
@@ -70,7 +70,7 @@ context *sys_call(context *c) {
                 int index = serial_devno(dev); //get index of device
                 iocb *temp_iocb = device_dcb_ptr->iocb_queue; //GET IOCB FROM QUEUE
                 buffer = temp_iocb->buffer; //GET BUFFER FROM IOCB
-                len = temp_iocb->len; //GET LENGTH FROM IOCB
+                len = temp_iocb->buf_len; //GET LENGTH FROM IOCB
                 dcb dev_dcb = dcb_table[index]; //get device control block
                 next_process = temp_iocb->process; //get pcb of iocb 
                 pcb *temp_pcb = next_process; //get pcb of ready head process
@@ -106,7 +106,7 @@ context *sys_call(context *c) {
             ready_head->state = 0x02; //move ready head process to blocked state
             //dispatch new process with IDLE operation by pulling the next thing from the ready queue (icall)
             context* temp_context = (context *) ready_head->stack_ptr; // get context of ready head process
-            context* return_context = idle(temp_context);
+            return idle(temp_context);
         }
     }
     if (op == IDLE) {
