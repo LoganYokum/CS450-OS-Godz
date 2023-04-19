@@ -47,44 +47,11 @@ context *sys_call(context *c) {
 
     for (int i = 0; i < 4; i++) {
         dcb *d = &dcb_table[i];
-        if(d->event_flag == 1 && d->open_flag == 1){ //IF EVENT FLAG IS SET, CHECK FOR IOCB QUEUE
-            if(dev==COM1){
-                device_index = 0;
-                device_state[device_index] = 1;
-            }
-            else if(dev==COM2){
-                device_index = 1;
-                device_state[device_index] = 1;
-            }
-            else if(dev==COM3){
-                device_index = 2;
-                device_state[device_index] = 1;
-            }
-            else if(dev==COM4){
-                device_index = 3;
-                device_state[device_index] = 1;
-            }
-            
+        if(d->event_flag == 1 && d->open_flag == 1){ //IF EVENT FLAG IS SET, CHECK FOR IOCB QUEUE FOR COMPLETION
             iocb *temp_iocb = d->iocb_queue; //GET IOCB FROM QUEUE
-            buffer = temp_iocb->buffer; //GET BUFFER FROM IOCB
-            len = temp_iocb->buf_len; //GET LENGTH FROM IOCB
             next_process = temp_iocb->process; //get pcb of iocb 
             pcb *temp_pcb = next_process; //get pcb of ready head process
-            pcb_remove(next_process); //remove from ready queue
-            temp_pcb->state = 0x02; //blocked state
-            pcb_insert(temp_pcb); //insert into blocked queue (state is set to block)
-            if(temp_iocb->cur_op == READ){ // op is read
-                serial_read(dev, buffer, len); //read from device
-            }
-            else if (temp_iocb->cur_op == WRITE){ // op is write
-                serial_write(dev, buffer, len); //write to device
-            }
-            else{ // op is invalid
-                c->eax = -1;
-                return c;
-            }
-            // COMPLETION SEQUENCE
-            pcb_remove(temp_pcb); //remove from blocked queue
+            pcb_remove(next_process); //remove from blocked queue
             d->event_flag = 0; // reset event flag
             d->open_flag = 0; // reset open flag
             temp_pcb->state = 0x01; // process back to ready state
@@ -92,8 +59,6 @@ context *sys_call(context *c) {
             context* iocb_context = temp_pcb->stack_ptr; //get context of iocb process
             iocb_context->eax = temp_iocb->buf_len; //set return value of iocb buffer len for sys_call
             iocb_dequeue(&d->iocb_queue); //dequeue iocb
-            idle((context *) ready_head->stack_ptr, next_process, next_context);
-            
             if(dev==COM1)
                 device_state[device_index] = 0;
             else if(dev==COM2)
@@ -102,6 +67,7 @@ context *sys_call(context *c) {
                 device_state[device_index] = 0;
             else if(dev==COM4)
                 device_state[device_index] = 0;
+            idle((context *) ready_head->stack_ptr, next_process, next_context);
         }
         else if(device_state[device_index]==1) { //device is busy
             iocb* new_iocb = sys_alloc_mem(sizeof(iocb)); //allocate memory for new iocb
@@ -120,7 +86,23 @@ context *sys_call(context *c) {
         }
     }
     if(op == READ){
-        pcb* temp_pcb = ready_head; //get pcb of ready head process
+        if(dev==COM1){
+            device_index = 0;
+            device_state[device_index] = 1;
+        }
+        else if(dev==COM2){
+            device_index = 1;
+            device_state[device_index] = 1;
+        }
+        else if(dev==COM3){
+            device_index = 2;
+            device_state[device_index] = 1;
+        }
+        else if(dev==COM4){
+            device_index = 3;
+            device_state[device_index] = 1;
+        }
+        pcb* temp_pcb = current_process; //get pcb of ready head process
         pcb_remove(ready_head);
         temp_pcb->state = 0x02; //move ready head process to blocked state
         pcb_insert(temp_pcb); //insert into blocked queue
@@ -133,8 +115,23 @@ context *sys_call(context *c) {
         return idle(c, next_process, next_context);
     }
     else if(op == WRITE){
-        pcb* temp_pcb = ready_head; //get pcb of ready head process
-        pcb_remove(ready_head);
+        if(dev==COM1){
+            device_index = 0;
+            device_state[device_index] = 1;
+        }
+        else if(dev==COM2){
+            device_index = 1;
+            device_state[device_index] = 1;
+        }
+        else if(dev==COM3){
+            device_index = 2;
+            device_state[device_index] = 1;
+        }
+        else if(dev==COM4){
+            device_index = 3;
+            device_state[device_index] = 1;
+        }
+        pcb* temp_pcb = current_process; //get pcb of ready head process
         temp_pcb->state = 0x02; //move ready head process to blocked state
         pcb_insert(temp_pcb); //insert into blocked queue
         size_t transferred_bytes = serial_write(dev, buffer, len);

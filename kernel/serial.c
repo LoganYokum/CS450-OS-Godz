@@ -391,7 +391,8 @@ int serial_read(device dev, char *buf, size_t len) {
 	d->event_flag = 1;
 	return len;
 }
-
+//every read and write should create an iocb and add it to the queue
+//not doing that here
 int serial_write(device dev, char *buf, size_t len) {
 	int dno = serial_devno(dev);
 	dcb *d = &dcb_table[dno];
