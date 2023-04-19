@@ -13,21 +13,23 @@ struct dcb {
     int open_flag;
     int event_flag;
     op_code cur_op;
-    char buffer[128];
+    char *buffer;
     size_t buf_len;
-    size_t buf_start;
-    size_t buf_end;
+    int buf_start;
+    int buf_end;
     iocb *iocb_queue;
 };
 
 struct iocb {
     op_code cur_op;
-    char buffer[128];
-    size_t len;
+    char *buffer;
+    size_t buf_idx;
+    size_t buf_len;
     pcb *process;
+    iocb *next;
 };
 
-extern dcb devices[4];
+extern dcb dcb_table[4];
 
 /**
  @file mpx/serial.h
@@ -60,15 +62,68 @@ int serial_out(device dev, const char *buffer, size_t len);
 
 int serial_poll(device dev, char *buffer, size_t len);
 
-
+/**
+ * Second level interrupt handler for serial input
+ * @param dcb struct for the device that triggered the interrupt
+ */
 void serial_input_interrupt(struct dcb *dcb);
 
+/**
+ * Second level interrupt handler for serial output
+ * @param dcb struct for the device that triggered the interrupt
+ */
 void serial_output_interrupt(struct dcb *dcb);
 
+/**
+ * First level interrupt handler for serial interrupts
+ */
 void serial_interrupt();
 
+/**
+ * Opens a serial port
+ * @param dev The serial port to open
+ * @param speed The baud rate to use
+ * @return 0 on success, non-zero on failure
+ */
 int serial_open(device dev, int speed);
 
+/**
+ * Closes a serial port
+ * @param dev The serial port to close
+ * @return 0 on success, non-zero on failure
+ */
 int serial_close(device dev);
+
+/**
+ * Reads from a serial port
+ * @param dev device to read from
+ * @param buf buffer to read into
+ * @param len number of bytes to read
+ * @return len on success, 0 on failure 
+ */
+int serial_read(device dev, char *buf, size_t len);
+
+/**
+ * Writes to a serial port
+ * @param dev device to write to
+ * @param buf buffer to write from
+ * @param len number of bytes to write
+ * @return 0 on success, non-zero on failure
+ */
+int serial_write(device dev, char *buf, size_t len);
+
+/** 
+ * Dequeues an iocb from the given queue
+ * @param iocb_queue the front of the queue
+ * @return 0 on success, non-zero on failure
+ */
+int iocb_dequeue(iocb **iocb_queue);
+
+/**
+ * Enqueues an iocb to the given queue
+ * @param iocb_queue the front of the queue
+ * @param io the iocb to enqueue
+ */
+void iocb_enqueue(iocb **iocb_queue, iocb *io);
 
 #endif
