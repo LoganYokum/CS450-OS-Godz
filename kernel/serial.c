@@ -2,6 +2,7 @@
 #include <mpx/serial.h>
 #include <mpx/device.h>
 #include <mpx/interrupts.h>
+#include <memory.h>
 #include <sys_req.h>
 #include <stdlib.h>
 #include <string.h>
@@ -420,7 +421,9 @@ int iocb_dequeue(iocb **io_queue) {
 	if (*io_queue == NULL) {
 		return -1;
 	}
+	iocb *tmp = *io_queue;
 	*io_queue = (*io_queue)->next;
+	sys_free_mem(tmp);
 	return 0;
 }
 

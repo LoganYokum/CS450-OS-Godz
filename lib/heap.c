@@ -77,7 +77,7 @@ void *allocate_memory(size_t size) {
     // check if there is a free block that is large enough
     mcb *cur = free_list;
     while (cur != NULL) {
-        if (cur->size >= size + sizeof(mcb)) {
+        if (cur->size >= size) {
             break;
         }
         cur = cur->next;
