@@ -2,6 +2,7 @@
 #include <mpx/serial.h>
 #include <mpx/device.h>
 #include <mpx/interrupts.h>
+#include <mpx/call.h>
 #include <memory.h>
 #include <sys_req.h>
 #include <stdlib.h>
@@ -328,10 +329,11 @@ int serial_close(device dev) {
 	if (dno == -1) {
 		return -1;
 	}
-	if (dcb_table[dno].open_flag == 0) { // device is already closed
+	dcb *d = &dcb_table[dno];
+	if (d->open_flag == 0) { // device is already closed
 		return -201;
 	}
-	dcb_table[dno].open_flag = 0; // close device
+	d->open_flag = 0; // close device
 
 	cli();
 	int mask = inb(0x21);
@@ -348,7 +350,9 @@ int serial_close(device dev) {
 
 int serial_read(device dev, char *buf, size_t len) {
 	int dno = serial_devno(dev);
-	if (dcb_table[dno].open_flag == 0) { // device is closed
+	dcb *d = &dcb_table[dno];
+	
+	if (d->open_flag == 0) { // device is closed
 		return -301;
 	}
 	if (buf == NULL) {
@@ -357,41 +361,42 @@ int serial_read(device dev, char *buf, size_t len) {
 	if (len < 1) { 
 		return -303;
 	}
-	if (dcb_table[dno].cur_op != IDLE) { // device is busy
+	if (device_state[dno]) { // device is busy
 		return -304;
 	}
-	dcb d = dcb_table[dno];
-	d.event_flag = 0;
-	d.cur_op = READ;
+	d->event_flag = 0;
+	d->cur_op = READ;
 
 	cli();
 	size_t i = 0, empty = 0; 
-	while (!empty && d.buffer[d.buf_start] != '\n' && i < len) {
-		empty = (d.buf_start == d.buf_end);
+	while (!empty && d->buffer[d->buf_start] != '\n' && i < len) {
+		empty = (d->buf_start == d->buf_end);
 
-		buf[d.iocb_queue->buf_idx] = d.buffer[d.buf_start];
-		d.buffer[d.buf_start] = 0;
-		d.iocb_queue->buf_idx += 1;
-		d.buf_start = (d.buf_start + 1) % d.buf_len;
+		buf[d->iocb_queue->buf_idx] = d->buffer[d->buf_start];
+		d->buffer[d->buf_start] = 0;
+		d->iocb_queue->buf_idx += 1;
+		d->buf_start = (d->buf_start + 1) % d->buf_len;
 
 		if (empty) {
-			d.buf_start = -1; // maybe 0?
-			d.buf_end = -1; // maybe 0?
+			d->buf_start = -1; // maybe 0?
+			d->buf_end = -1; // maybe 0?
 			break;
 		}
 	}
 	sti();
 
-	if (i < len) return 0;
+	if (i < len) return i+1;
 	
-	d.cur_op = IDLE;
-	d.event_flag = 1;
+	d->cur_op = IDLE;
+	d->event_flag = 1;
 	return len;
 }
 
 int serial_write(device dev, char *buf, size_t len) {
 	int dno = serial_devno(dev);
-	if (dcb_table[dno].open_flag == 0) { // device is closed
+	dcb *d = &dcb_table[dno];
+
+	if (d->open_flag == 0) { // device is closed
 		return -401;
 	}
 	if (buf == NULL) {
@@ -400,15 +405,13 @@ int serial_write(device dev, char *buf, size_t len) {
 	if (len < 1) { 
 		return -403;
 	}
-	if (dcb_table[dno].cur_op != IDLE) { // device is busy
+	if (device_state[dno]) { // device is busy
 		return -404;
 	}
-	dcb d = dcb_table[dno];
-	d.event_flag = 0;
-	// d.cur_op = WRITE;
+	d->event_flag = 0;
 
 	outb(dev, *buf); // write first character to output buffer
-	d.iocb_queue->buf_idx += 1;
+	d->iocb_queue->buf_idx += 1;
 
 	int ier = inb(dev + IER);
 	ier |= 0x02;
