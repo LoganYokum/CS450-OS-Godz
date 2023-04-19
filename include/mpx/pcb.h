@@ -1,3 +1,6 @@
+#ifndef MPX_PCB_H
+#define MPX_PCB_H
+
 /**
  * Different states of process (col 1 is dispatch state, col 2 is execution state)
  * 0x00: running, not suspended
@@ -105,3 +108,4 @@ int list_remove(pcb **head, pcb *p);
  */
 int pcb_remove(pcb *p);
 
+#endif
