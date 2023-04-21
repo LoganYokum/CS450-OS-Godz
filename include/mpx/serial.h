@@ -10,6 +10,7 @@ typedef struct iocb iocb;
 typedef struct dcb dcb;
 
 struct dcb {
+    int busy_flag;
     int open_flag;
     int event_flag;
     op_code cur_op;
