@@ -26,7 +26,7 @@ struct iocb {
     size_t buf_idx;
     size_t buf_len;
     pcb *process;
-    iocb *next;
+    iocb* next;
 };
 
 extern dcb dcb_table[4];

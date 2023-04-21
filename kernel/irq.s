@@ -53,5 +53,7 @@ sys_call_isr:
 ;;; Serial port ISR. To be implemented in Module R6
 extern serial_interrupt
 serial_isr:
+	cli
 	call serial_interrupt
+	sti
 	iret

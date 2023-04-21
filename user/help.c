@@ -37,7 +37,7 @@ void help(char *args){
         println("To use date, simply type date followed by the month, day, and year separated by slashes or\njust type date to display the current date");
         println("Example: date OR date 09/25/01");
     }else if(strcmp(args, "pcb") == 0){       // param = pcb
-        println("To use pcb, type pcb followed by an argument. The arguments for pcb are:\n1. delete name (to delete a pcb by name)\n2. block name  (to block a pcb by name)\n3. suspend name(to suspend a pcb by name)\n4. resume name (to resume a pcb by name after suspended)\n5. set priority name priority number (to set the priority of a pcb)\n6. show pcb name (to show all details of a pcb)\n7. show ready   (to show all ready pcb's)\n8. show blocked     (to show all blocked pcb's)\n9. show all    (to show all pcb's)\n10. *NO LONGER SUPPORTED* create name class priority (to create a new pcb)");
+        println("To use pcb, type pcb followed by an argument. The arguments for pcb are:\n1. delete name (to delete a pcb by name)\n2. suspend name(to suspend a pcb by name)\n3. resume name (to resume a pcb by name after suspended)\n4. set priority name priority number (to set the priority of a pcb)\n5. show pcb name (to show all details of a pcb)\n6. show ready   (to show all ready pcb's)\n7. show blocked     (to show all blocked pcb's)\n8. show all    (to show all pcb's)\n9. *NO LONGER SUPPORTED* create name class priority (to create a new pcb)");
     }
     else if(strcmp(args, "loadr3") == 0){     // param = loadr3
         println("*ONLY FOR R3* To use loadr3, simply type loadr3 and the system will load the r3 program.");

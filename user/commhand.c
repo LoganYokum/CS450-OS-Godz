@@ -32,7 +32,7 @@ void commhand()
     char* line7=" ░░░███████░  ░░█████████  █████████ ░░█████████ ░░██████ ░░████████  █████████ \n"; 
     char* line8="   ░░░░░░░     ░░░░░░░░░  ░░░░░░░░░   ░░░░░░░░░   ░░░░░░   ░░░░░░░░  ░░░░░░░░░  \n";
                                                                                     
-    outb(COM1, '\n');
+    sys_req(WRITE,COM1,"\r\n", 2);
     sys_req(WRITE,COM1,YELLOW, strlen(YELLOW));
     sys_req(WRITE,COM1,line1, strlen(line1));
     sys_req(WRITE,COM1,line2, strlen(line2));
@@ -43,8 +43,8 @@ void commhand()
     sys_req(WRITE,COM1,line7, strlen(line7));
     sys_req(WRITE,COM1,line8, strlen(line8));
     sys_req(WRITE,COM1,RESET, strlen(RESET));
-    outb(COM1, '\n');
-    outb(COM1, '\n');
+    sys_req(WRITE,COM1,"\r\n", 2);
+    sys_req(WRITE,COM1,"\r\n", 2);
 
     char* comp_date = getdate(); // NEEDS TO BE UPDATED BEFORE R6
     char prompt[] = "> ";
