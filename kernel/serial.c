@@ -233,7 +233,6 @@ void serial_output_interrupt(struct dcb *dcb) {
 }
 
 void serial_interrupt() {
-	cli();
 	device dev = 0;
 	// check which device caused the interrupt
 	if ((inb(COM1 + IIR) & 0x01) == 0) {
@@ -254,7 +253,6 @@ void serial_interrupt() {
 		serial_input_interrupt(&d);
 	}
 	outb(0x20, 0x20); // issue EOI to PIC to clear interrupt
-	sti();
 }
 
 int serial_open(device dev, int speed) {
@@ -367,7 +365,6 @@ int serial_read(device dev, char *buf, size_t len) {
 	d->event_flag = 0;
 	d->cur_op = READ;
 
-	cli();
 	size_t i = 0, empty = 0; 
 	while (!empty && d->buffer[d->buf_start] != '\n' && i < len) {
 		empty = (d->buf_start == d->buf_end);
@@ -383,7 +380,6 @@ int serial_read(device dev, char *buf, size_t len) {
 			break;
 		}
 	}
-	sti();
 
 	if (i < len) return i+1;
 	

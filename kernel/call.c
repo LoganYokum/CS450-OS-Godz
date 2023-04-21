@@ -50,13 +50,12 @@ context *sys_call(context *c) {
         if(d->event_flag == 1 && d->open_flag == 1){ //IF EVENT FLAG IS SET, CHECK FOR IOCB QUEUE FOR COMPLETION
             iocb *temp_iocb = d->iocb_queue; //GET IOCB FROM QUEUE
             next_process = temp_iocb->process; //get pcb of iocb 
-            pcb *temp_pcb = next_process; //get pcb of ready head process
             pcb_remove(next_process); //remove from blocked queue
             d->event_flag = 0; // reset event flag
             d->open_flag = 0; // reset open flag
-            temp_pcb->state = 0x01; // process back to ready state
-            pcb_insert(temp_pcb); //insert into ready queue
-            context* iocb_context = temp_pcb->stack_ptr; //get context of iocb process
+            next_process->state = 0x01; // process back to ready state
+            pcb_insert(next_process); //insert into ready queue
+            context* iocb_context = next_process->stack_ptr; //get context of iocb process
             iocb_context->eax = temp_iocb->buf_len; //set return value of iocb buffer len for sys_call
             iocb_dequeue(&d->iocb_queue); //dequeue iocb
             if(dev==COM1)
@@ -70,17 +69,17 @@ context *sys_call(context *c) {
             idle((context *) ready_head->stack_ptr, next_process, next_context);
         }
         else if(device_state[device_index]==1) { //device is busy
-            iocb* new_iocb = sys_alloc_mem(sizeof(iocb)); //allocate memory for new iocb
-            new_iocb->cur_op = op; //set op
-            new_iocb->buffer = buffer; //set buffer
-            new_iocb->buf_len = len; //set length
-            new_iocb->process = ready_head; //set process
-            new_iocb->next = NULL; //set next to null
-            iocb_enqueue(&(d->iocb_queue), new_iocb); //enqueue iocb
-            pcb *temp_pcb = ready_head; //get pcb of ready head process
-            pcb_remove(ready_head);
-            temp_pcb->state = 0x02; //move ready head process to blocked state
-            pcb_insert(temp_pcb); //insert into blocked queue
+            // iocb* new_iocb = sys_alloc_mem(sizeof(iocb)); //allocate memory for new iocb
+            // new_iocb->cur_op = op; //set op
+            // new_iocb->buffer = buffer; //set buffer
+            // new_iocb->buf_len = len; //set length
+            // new_iocb->process = ready_head; //set process
+            // new_iocb->next = NULL; //set next to null
+            // iocb_enqueue(&(d->iocb_queue), new_iocb); //enqueue iocb
+            // pcb *temp_pcb = ready_head; //get pcb of ready head process
+            // pcb_remove(ready_head);
+            // temp_pcb->state = 0x02; //move ready head process to blocked state
+            // pcb_insert(temp_pcb); //insert into blocked queue
             //dispatch new process with IDLE operation by pulling the next thing from the ready queue (icall)
             idle((context *) ready_head->stack_ptr, next_process, next_context);
         }

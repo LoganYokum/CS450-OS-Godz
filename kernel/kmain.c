@@ -86,6 +86,9 @@ void kmain(void)
 	klogv(COM1, "Initializing MPX modules...");
 	initialize_heap(50000);
 	sys_set_heap_functions(allocate_memory, free_memory);
+
+	//R6
+	serial_open(COM1,9600);
 	// R4: create commhand and idle processes
 
 	// 9) YOUR command handler -- *create and #include an appropriate .h file*
