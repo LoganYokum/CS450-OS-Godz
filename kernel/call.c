@@ -101,7 +101,7 @@ context *sys_call(context *c) {
             device_index = 3;
             device_state[device_index] = 1;
         }
-        pcb* temp_pcb = current_process; //get pcb of ready head process
+        pcb* temp_pcb = ready_head; //get pcb of current process
         pcb_remove(ready_head);
         temp_pcb->state = 0x02; //move ready head process to blocked state
         pcb_insert(temp_pcb); //insert into blocked queue
@@ -130,7 +130,7 @@ context *sys_call(context *c) {
             device_index = 3;
             device_state[device_index] = 1;
         }
-        pcb* temp_pcb = current_process; //get pcb of ready head process
+        pcb* temp_pcb = current_process; //get pcb of current process that not in the ready queue
         temp_pcb->state = 0x02; //move ready head process to blocked state
         pcb_insert(temp_pcb); //insert into blocked queue
         size_t transferred_bytes = serial_write(dev, buffer, len);
