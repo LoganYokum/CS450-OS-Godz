@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 #include <mpx/pcb.h>
-
-extern int device_state[4];
 typedef struct context {
     int ds, es, fs, gs, ss; // segment registers
     int eax, ebx, ecx, edx, esi, edi, ebp; // general registers

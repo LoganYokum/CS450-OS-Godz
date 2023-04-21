@@ -93,6 +93,7 @@ void kmain(void)
 
 	// 9) YOUR command handler -- *create and #include an appropriate .h file*
 	// Pass execution to your command handler so the user can interact with the system.
+	serial_open(COM1, 9600);
 	klogv(COM1, "Transferring control to commhand...");
 
 	pcb *commhand_pcb = pcb_setup("commhand", 0, 0);
