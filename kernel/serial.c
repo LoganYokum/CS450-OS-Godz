@@ -1,7 +1,9 @@
 #include <mpx/io.h>
 #include <mpx/serial.h>
 #include <mpx/device.h>
+#include <mpx/call.h>
 #include <mpx/interrupts.h>
+#include <memory.h>
 #include <sys_req.h>
 #include <stdlib.h>
 #include <string.h>
