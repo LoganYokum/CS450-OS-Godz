@@ -32,7 +32,7 @@ void commhand()
     char* line7=" ░░░███████░  ░░█████████  █████████ ░░█████████ ░░██████ ░░████████  █████████ \n"; 
     char* line8="   ░░░░░░░     ░░░░░░░░░  ░░░░░░░░░   ░░░░░░░░░   ░░░░░░   ░░░░░░░░  ░░░░░░░░░  \n";
                                                                                     
-    sys_req(WRITE,COM1,"\r\n", 2);
+    sys_req(WRITE, COM1, "\n", strlen("\n"));
     sys_req(WRITE,COM1,YELLOW, strlen(YELLOW));
     sys_req(WRITE,COM1,line1, strlen(line1));
     sys_req(WRITE,COM1,line2, strlen(line2));
