@@ -23,29 +23,31 @@
 
 void commhand()
 {
-    char* line1="    ███████     █████████              █████████               █████            \n";           
-    char* line2="  ███░░░░░███  ███░░░░░███            ███░░░░░███             ░░███             \n"; 
-    char* line3=" ███     ░░███░███    ░░░            ███     ░░░   ██████   ███████   █████████ \n"; 
-    char* line4="░███      ░███░░█████████           ░███          ███░░███ ███░░███  ░█░░░░███  \n"; 
-    char* line5="░███      ░███ ░░░░░░░░███          ░███    █████░███ ░███░███ ░███  ░   ███░   \n"; 
-    char* line6="░░███     ███  ███    ░███          ░░███  ░░███ ░███ ░███░███ ░███    ███░   █ \n"; 
-    char* line7=" ░░░███████░  ░░█████████  █████████ ░░█████████ ░░██████ ░░████████  █████████ \n"; 
-    char* line8="   ░░░░░░░     ░░░░░░░░░  ░░░░░░░░░   ░░░░░░░░░   ░░░░░░   ░░░░░░░░  ░░░░░░░░░  \n";
-                                                                                    
-    sys_req(WRITE, COM1, "\n", strlen("\n"));
-    sys_req(WRITE,COM1,YELLOW, strlen(YELLOW));
-    sys_req(WRITE,COM1,line1, strlen(line1));
-    sys_req(WRITE,COM1,line2, strlen(line2));
-    sys_req(WRITE,COM1,line3, strlen(line3));
-    sys_req(WRITE,COM1,line4, strlen(line4));
-    sys_req(WRITE,COM1,line5, strlen(line5));
-    sys_req(WRITE,COM1,line6, strlen(line6));
-    sys_req(WRITE,COM1,line7, strlen(line7));
-    sys_req(WRITE,COM1,line8, strlen(line8));
-    sys_req(WRITE,COM1,RESET, strlen(RESET));
-    sys_req(WRITE,COM1,"\r\n", 2);
-    sys_req(WRITE,COM1,"\r\n", 2);
+    // char* line1="    ███████     █████████              █████████               █████            \n";           
+    // char* line2="  ███░░░░░███  ███░░░░░███            ███░░░░░███             ░░███             \n"; 
+    // char* line3=" ███     ░░███░███    ░░░            ███     ░░░   ██████   ███████   █████████ \n"; 
+    // char* line4="░███      ░███░░█████████           ░███          ███░░███ ███░░███  ░█░░░░███  \n"; 
+    // char* line5="░███      ░███ ░░░░░░░░███          ░███    █████░███ ░███░███ ░███  ░   ███░   \n"; 
+    // char* line6="░░███     ███  ███    ░███          ░░███  ░░███ ░███ ░███░███ ░███    ███░   █ \n"; 
+    // char* line7=" ░░░███████░  ░░█████████  █████████ ░░█████████ ░░██████ ░░████████  █████████ \n"; 
+    // char* line8="   ░░░░░░░     ░░░░░░░░░  ░░░░░░░░░   ░░░░░░░░░   ░░░░░░   ░░░░░░░░  ░░░░░░░░░  \n";
 
+    // char *banner = sys_alloc_mem(1000);
+    // strcpy(banner, "\n"");
+    // strcat(banner, YELLOW);
+    // strcat(banner, line1);
+    // strcat(banner, line2);
+    // strcat(banner, line3);
+    // strcat(banner, line4);
+    // strcat(banner, line5);
+    // strcat(banner, line6);
+    // strcat(banner, line7);
+    // strcat(banner, line8);
+    // strcat(banner, RESET);
+    // strcat(banner, "\n");
+    // sys_req(WRITE, COM1, banner, strlen(banner));
+    // sys_free_mem(banner);
+                                                                                    
     char* comp_date = getdate();
     char prompt[] = "> ";
     while (1) {

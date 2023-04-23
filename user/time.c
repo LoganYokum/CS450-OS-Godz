@@ -14,9 +14,11 @@
 char *gettime();
 
 void time(char *args) {
-    if (strcmp(args, "\n") == 0) { 
-        char *date = gettime();
-        println(date);
+    if (strcmp(args, "\n") == 0) {
+        char *date = sys_alloc_mem(8 + 1 + 1);
+        strcpy(date, gettime());
+        strcat(date, "\n");
+        sys_req(WRITE, COM1, date, 10);
         
         sys_free_mem(date);
         
@@ -120,3 +122,55 @@ char *gettime() {
 
     return time;
 }
+
+// char *gettime() {
+//     char *time = sys_alloc_mem(9);
+//     time[8] = '\0';
+
+//     // get hour
+//     outb(0x70, HOUR_INDEX);
+//     int hour = (int) inb(0x71); 
+//     char *hour_str =  itoa(dtoBCD(hour));
+    
+//     //get min
+//     outb(0x70, MIN_INDEX);
+//     int min = (int) inb(0x71);
+//     char *min_str = itoa(dtoBCD(min));
+
+//     //get sec
+//     outb(0x70, SEC_INDEX);
+//     int sec = (int) inb(0x71);
+//     char *sec_str = itoa(dtoBCD(sec));
+
+//     if ((hour <= 39) && (hour >= 30)) { // if hour is a single digit
+//         time[0] = '0';
+//         time[1] = hour_str[0];
+//     }else {
+//         time[0] = hour_str[0];
+//         time[1] = hour_str[1];
+//     }
+//     time[2] = ':';
+
+//     if ((min <= 39) && (min >= 30)) { // if min is a single digit
+//        time[3] = '0';
+//        time[4] = (strcmp(min_str, "") == 0) ? '0' : min_str[0];
+//     }else {
+//          time[3] = min_str[0];
+//          time[4] = min_str[1];
+//     }
+//     time[5] = ':';
+
+//     if ((sec <= 39) && (sec >= 30)) { // if sec is a single digit
+//        time[6] = '0';
+//        time[7] = (strcmp(sec_str, "") == 0) ? '0' : sec_str[0];
+//     }else {
+//         time[6] = sec_str[0];
+//         time[7] = sec_str[1];
+//     }
+
+//     sys_free_mem(hour_str);
+//     sys_free_mem(min_str);
+//     sys_free_mem(sec_str);
+
+//     return time;
+// }

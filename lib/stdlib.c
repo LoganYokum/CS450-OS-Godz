@@ -149,26 +149,29 @@ int validnum(const char *s) {
 	return 1;
 }
 
-int println(const char* message){
-	sys_req(WRITE, COM1, message, strlen(message));
-	sys_req(WRITE, COM1, "\r\n", 2);
-    return (int)strlen(message);
+void error(const char *message) {
+	char *err = sys_alloc_mem(strlen(message) + 1 + strlen(RED) + strlen(RESET));
+	strcpy(err, RED);
+	strcat(err, message);
+	strcat(err, RESET);
+	strcat(err, "\n");
+	sys_req(WRITE, COM1, err, strlen(err));
 }
 
-void error(const char *message){
-	sys_req(WRITE, COM1, RED, strlen(RED));
-	println(message);
-	sys_req(WRITE, COM1, RESET, strlen(RESET));
+void success(const char *message) {
+	char *succ = sys_alloc_mem(strlen(message) + 1 + strlen(GREEN) + strlen(RESET));
+	strcpy(succ, GREEN);
+	strcat(succ, message);
+	strcat(succ, RESET);
+	strcat(succ, "\n");
+	sys_req(WRITE, COM1, succ, strlen(succ));
 }
 
-void success(const char *message){
-	sys_req(WRITE, COM1, GREEN, strlen(GREEN));
-	println(message);
-	sys_req(WRITE, COM1, RESET, strlen(RESET));
-}
-
-void alarm_output(const char *message){
-	sys_req(WRITE, COM1, YELLOW, strlen(GREEN));
-	println(message);
-	sys_req(WRITE, COM1, RESET, strlen(RESET));
+void alarm_output(const char *message) {
+	char *alarm = sys_alloc_mem(sizeof(message) + 1 + strlen(YELLOW) + strlen(RESET));
+	strcpy(alarm, YELLOW);
+	strcat(alarm, message);
+	strcat(alarm, RESET);
+	strcat(alarm, "\n");
+	sys_req(WRITE, COM1, alarm, strlen(alarm));
 }

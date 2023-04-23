@@ -3,6 +3,7 @@
 #include <commhand.h>
 #include <sys_req.h>
 #include <string.h>
+#include <memory.h>
 #include <ctype.h>
 #include <mpx/pcb.h>
 #include <pcb_user.h>
@@ -15,7 +16,10 @@ int shutdown(){
     compare_str[9] = '\0';          // null terminator at end of string
 
     char prompt[] = "> ";
-    println("You selected shutdown. Retype shutdown to confirm.");
+    char *message = sys_alloc_mem(100);
+    strcat(message, "You selected shutdown. Retype shutdown to confirm.\n");
+    strcat(message, prompt);
+
     sys_req(WRITE, COM1, prompt, sizeof(prompt));           // add prompt to output    
     sys_req(READ,COM1,shutdown_buf,strlen(shutdown_buf));   // read in buffer for confirmation
 
