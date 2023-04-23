@@ -46,7 +46,7 @@ void commhand()
     sys_req(WRITE,COM1,"\r\n", 2);
     sys_req(WRITE,COM1,"\r\n", 2);
 
-    char* comp_date = getdate(); // NEEDS TO BE UPDATED BEFORE R6
+    char* comp_date = getdate();
     char prompt[] = "> ";
     while (1) {
         char buffer[100] = {0};

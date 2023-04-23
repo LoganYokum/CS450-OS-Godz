@@ -129,6 +129,7 @@ void list_insert_blocked(pcb **head, pcb *p) {
         cur = cur->next;
     }
     cur->next = p;
+    p->next = NULL; // interesting little change
 }
 
 void pcb_insert(pcb *p) {

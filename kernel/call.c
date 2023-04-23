@@ -57,7 +57,6 @@ context *sys_call(context *c) {
             iocb_context->eax = temp_iocb->buf_len; //set return value of iocb buffer len for sys_call
             iocb_dequeue(&d->iocb_queue); //dequeue iocb
             d->busy_flag = 0; //reset busy flag
-            // idle((context *) ready_head->stack_ptr, next_process, next_context);
         }
         else if(d->busy_flag) { //device is busy
             //dispatch new process with IDLE operation by pulling the next thing from the ready queue (icall)
