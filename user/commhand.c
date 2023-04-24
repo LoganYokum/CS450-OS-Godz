@@ -22,32 +22,7 @@
 #define RESET "\033[0m"
 
 void commhand()
-{
-    // char* line1="    ███████     █████████              █████████               █████            \n";           
-    // char* line2="  ███░░░░░███  ███░░░░░███            ███░░░░░███             ░░███             \n"; 
-    // char* line3=" ███     ░░███░███    ░░░            ███     ░░░   ██████   ███████   █████████ \n"; 
-    // char* line4="░███      ░███░░█████████           ░███          ███░░███ ███░░███  ░█░░░░███  \n"; 
-    // char* line5="░███      ░███ ░░░░░░░░███          ░███    █████░███ ░███░███ ░███  ░   ███░   \n"; 
-    // char* line6="░░███     ███  ███    ░███          ░░███  ░░███ ░███ ░███░███ ░███    ███░   █ \n"; 
-    // char* line7=" ░░░███████░  ░░█████████  █████████ ░░█████████ ░░██████ ░░████████  █████████ \n"; 
-    // char* line8="   ░░░░░░░     ░░░░░░░░░  ░░░░░░░░░   ░░░░░░░░░   ░░░░░░   ░░░░░░░░  ░░░░░░░░░  \n";
-
-    // char *banner = sys_alloc_mem(1000);
-    // strcpy(banner, "\n"");
-    // strcat(banner, YELLOW);
-    // strcat(banner, line1);
-    // strcat(banner, line2);
-    // strcat(banner, line3);
-    // strcat(banner, line4);
-    // strcat(banner, line5);
-    // strcat(banner, line6);
-    // strcat(banner, line7);
-    // strcat(banner, line8);
-    // strcat(banner, RESET);
-    // strcat(banner, "\n");
-    // sys_req(WRITE, COM1, banner, strlen(banner));
-    // sys_free_mem(banner);
-                                                                                    
+{                                                                                   
     char* comp_date = getdate();
     char prompt[] = "> ";
     while (1) {

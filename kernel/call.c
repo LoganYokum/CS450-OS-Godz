@@ -77,7 +77,7 @@ context *sys_call(context *c) {
         //     device_index = 3;
         // }
         // dcb *d = &dcb_table[device_index];
-        
+
         // iocb* new_iocb = sys_alloc_mem(sizeof(iocb)); //allocate memory for new iocb
         // new_iocb->cur_op = op; //set op
         // new_iocb->buffer = buffer; //set buffer
@@ -116,6 +116,7 @@ context *sys_call(context *c) {
             device_index = 3;
         }
         dcb *d = &dcb_table[device_index];
+        
         
         iocb* new_iocb = sys_alloc_mem(sizeof(iocb)); //allocate memory for new iocb
         new_iocb->cur_op = op; //set op

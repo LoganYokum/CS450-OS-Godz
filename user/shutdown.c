@@ -16,10 +16,8 @@ int shutdown(){
     compare_str[9] = '\0';          // null terminator at end of string
 
     char prompt[] = "> ";
-    char *message = sys_alloc_mem(100);
-    strcat(message, "You selected shutdown. Retype shutdown to confirm.\n");
-    strcat(message, prompt);
-
+    char shutdown[] = "You selected shutdown. Retype shutdown to confirm.\n";
+    sys_req(WRITE, COM1, shutdown, sizeof(shutdown));
     sys_req(WRITE, COM1, prompt, sizeof(prompt));           // add prompt to output    
     sys_req(READ,COM1,shutdown_buf,strlen(shutdown_buf));   // read in buffer for confirmation
 

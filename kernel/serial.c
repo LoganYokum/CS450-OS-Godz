@@ -145,22 +145,25 @@ void serial_output_interrupt(struct dcb *dcb) {
 void serial_interrupt() {
 	device dev = 0;
 	// check which device caused the interrupt
-	int iir = inb(COM1 + IIR); // can not read IIR multiple times, so need to figure out how to store it in a variable
-	dev = COM1;
-	// if ((inb(COM1 + IIR) & 0x01) == 0) {
-	// 	dev = COM1;
-	// }else if ((inb(COM2 + IIR) & 0x01) == 0) {
-	// 	dev = COM2;
-	// }else if ((inb(COM3 + IIR) & 0x01) == 0) {
-	// 	dev = COM3;
-	// }else if ((inb(COM4 + IIR) & 0x01) == 0) {
-	// 	dev = COM4;
-	// }
+	int iir = -1;
+	if (((iir = inb(COM1 + IIR)) & 0x01) == 0) {
+		dev = COM1;
+	}else if (((iir = inb(COM2 + IIR)) & 0x01) == 0) {
+		dev = COM2;
+	}else if (((iir = inb(COM3 + IIR)) & 0x01) == 0) {
+		dev = COM3;
+	}else if (((iir = inb(COM4 + IIR)) & 0x01) == 0) {
+		dev = COM4;
+	}
 	dcb *d = &dcb_table[serial_devno(dev)];
+	if (d->open_flag == 0) {
+		outb(0x20, 0x20); // issue EOI to PIC to clear interrupt
+		return;
+	}
 
-	if (iir & 0x02) { // bit 1 (output)
+	if ((iir & 0x06) == 0x02) { // bit 1 (output)
 		serial_output_interrupt(d);
-	}else if (iir & 0x04) { // bit 2 (input)
+	}else if ((iir & 0x06) == 0x04) { // bit 2 (input)
 		serial_input_interrupt(d);
 	}
 	outb(0x20, 0x20); // issue EOI to PIC to clear interrupt
@@ -206,8 +209,8 @@ int serial_open(device dev, int speed) {
 		.cur_op = IDLE,
 		.buffer = (char *) sys_alloc_mem(128),
 		.buf_len = 128,
-		.buf_start = 0,
-		.buf_end = 0,
+		.buf_start = -1,
+		.buf_end = -1,
 		.iocb_queue = NULL
 	};
 
@@ -218,7 +221,7 @@ int serial_open(device dev, int speed) {
 	outb(dev + DLL, dll); 	//set bsd least sig bit
 	outb(dev + DLM, dlm);	//brd most significant bit
 	outb(dev + LCR, 0x03);	//lock divisor; 8bits, no parity, one stop
-	outb(dev + MCR, 0x0B); // enable interrupts
+	outb(dev + MCR, 0x0B); 	// enable interrupts
 	outb(dev + IER, 0x01);	//enable input ready interrupts
 
 	cli();
@@ -275,17 +278,21 @@ int serial_read(device dev, char *buf, size_t len) {
 	d->event_flag = 0;
 	d->cur_op = READ;
 
+	if (d->buf_start == -1) {
+		d->buf_start = 0;
+		d->buf_end = 0;
+	}
+
 	// should be reading characters from ring buffer into param buffer
 	size_t i = 0, empty = 0;
 	while (!empty && d->buffer[d->buf_start] != '\n' && i < len) {
-		empty = (d->buf_start == d->buf_end);
-
 		buf[d->iocb_queue->buf_idx] = d->buffer[d->buf_start];
 		d->buffer[d->buf_start] = 0;
-		d->iocb_queue->buf_idx += 1;
+		d->iocb_queue->buf_idx++;
 		d->buf_start = (d->buf_start + 1) % d->buf_len;
 		i++;
 
+		empty = (d->buf_start == d->buf_end);
 		if (empty) {
 			d->buf_start = -1;
 			d->buf_end = -1;
@@ -293,11 +300,11 @@ int serial_read(device dev, char *buf, size_t len) {
 		}
 	}
 
-	if (i < len) return i+1;
+	if (i < len) return i+1; // did not read full buffer
 	
 	d->cur_op = IDLE;
 	d->event_flag = 1;
-	return len;
+	return len; // read full buffer
 }
 
 int serial_write(device dev, char *buf, size_t len) {
