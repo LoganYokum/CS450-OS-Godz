@@ -15,8 +15,10 @@ char *getdate();
 
 void date(char *args) {
     if (strcmp(args, "\n") == 0) {
-        char *date = getdate();
-        println(date);
+        char *date = sys_alloc_mem(9 + 1);
+        strcpy(date, getdate());
+        strcat(date, "\n");
+        sys_req(WRITE, COM1, date, 9 + 1);
         
         sys_free_mem(date);
     } else {

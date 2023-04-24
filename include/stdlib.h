@@ -59,8 +59,6 @@ int isnum(unsigned char args);
  */
 int validnum(const char *s);
 
-int println(const char *message);
-
 /**
  * Outputs an error string to the console in red
  * @param message the error message to print

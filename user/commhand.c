@@ -22,31 +22,8 @@
 #define RESET "\033[0m"
 
 void commhand()
-{
-    char* line1="    ███████     █████████              █████████               █████            \n";           
-    char* line2="  ███░░░░░███  ███░░░░░███            ███░░░░░███             ░░███             \n"; 
-    char* line3=" ███     ░░███░███    ░░░            ███     ░░░   ██████   ███████   █████████ \n"; 
-    char* line4="░███      ░███░░█████████           ░███          ███░░███ ███░░███  ░█░░░░███  \n"; 
-    char* line5="░███      ░███ ░░░░░░░░███          ░███    █████░███ ░███░███ ░███  ░   ███░   \n"; 
-    char* line6="░░███     ███  ███    ░███          ░░███  ░░███ ░███ ░███░███ ░███    ███░   █ \n"; 
-    char* line7=" ░░░███████░  ░░█████████  █████████ ░░█████████ ░░██████ ░░████████  █████████ \n"; 
-    char* line8="   ░░░░░░░     ░░░░░░░░░  ░░░░░░░░░   ░░░░░░░░░   ░░░░░░   ░░░░░░░░  ░░░░░░░░░  \n";
-                                                                                    
-    sys_req(WRITE, COM1, "\n", strlen("\n"));
-    sys_req(WRITE,COM1,YELLOW, strlen(YELLOW));
-    sys_req(WRITE,COM1,line1, strlen(line1));
-    sys_req(WRITE,COM1,line2, strlen(line2));
-    sys_req(WRITE,COM1,line3, strlen(line3));
-    sys_req(WRITE,COM1,line4, strlen(line4));
-    sys_req(WRITE,COM1,line5, strlen(line5));
-    sys_req(WRITE,COM1,line6, strlen(line6));
-    sys_req(WRITE,COM1,line7, strlen(line7));
-    sys_req(WRITE,COM1,line8, strlen(line8));
-    sys_req(WRITE,COM1,RESET, strlen(RESET));
-    sys_req(WRITE,COM1,"\r\n", 2);
-    sys_req(WRITE,COM1,"\r\n", 2);
-
-    char* comp_date = getdate(); // NEEDS TO BE UPDATED BEFORE R6
+{                                                                                   
+    char* comp_date = getdate();
     char prompt[] = "> ";
     while (1) {
         char buffer[100] = {0};
