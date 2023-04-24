@@ -50,14 +50,13 @@ context *sys_call(context *c) {
             next_process = temp_iocb->process; //get pcb of iocb 
             pcb_remove(next_process); //remove from blocked queue
             d->event_flag = 0; // reset event flag
-            d->open_flag = 0; // reset open flag
             next_process->state = 0x01; // process back to ready state
             pcb_insert(next_process); //insert into ready queue
             context* iocb_context = next_process->stack_ptr; //get context of iocb process
             iocb_context->eax = temp_iocb->buf_len; //set return value of iocb buffer len for sys_call
             iocb_dequeue(&d->iocb_queue); //dequeue iocb
             d->busy_flag = 0; //reset busy flag
-            idle((context *) current_process->stack_ptr, next_process, next_context);
+            // idle((context *) ready_head->stack_ptr, next_process, next_context);
         }
         else if(d->busy_flag) { //device is busy
             //dispatch new process with IDLE operation by pulling the next thing from the ready queue (icall)
@@ -65,11 +64,24 @@ context *sys_call(context *c) {
         }
     }
     if(op == READ){
-        dcb *d = &dcb_table[0]; //0 is com1
+        if(dev==COM1){
+            device_index = 0;
+        }
+        else if(dev==COM2){
+            device_index = 1;
+        }
+        else if(dev==COM3){
+            device_index = 2;
+        }
+        else if(dev==COM4){
+            device_index = 3;
+        }
+        dcb *d = &dcb_table[device_index];
         
         iocb* new_iocb = sys_alloc_mem(sizeof(iocb)); //allocate memory for new iocb
         new_iocb->cur_op = op; //set op
         new_iocb->buffer = buffer; //set buffer
+        new_iocb->buf_idx = 0; //set index
         new_iocb->buf_len = len; //set length
         new_iocb->process = current_process; //set process
         new_iocb->next = NULL; //set next to null
@@ -89,11 +101,24 @@ context *sys_call(context *c) {
         return idle(c, next_process, next_context);
     }
     else if(op == WRITE){
-        dcb *d = &dcb_table[0]; // 0 is com1
+        if(dev==COM1){
+            device_index = 0;
+        }
+        else if(dev==COM2){
+            device_index = 1;
+        }
+        else if(dev==COM3){
+            device_index = 2;
+        }
+        else if(dev==COM4){
+            device_index = 3;
+        }
+        dcb *d = &dcb_table[device_index];
         
         iocb* new_iocb = sys_alloc_mem(sizeof(iocb)); //allocate memory for new iocb
         new_iocb->cur_op = op; //set op
         new_iocb->buffer = buffer; //set buffer
+        new_iocb->buf_idx = 0; //set index
         new_iocb->buf_len = len; //set length
         new_iocb->process = current_process; //set process
         new_iocb->next = NULL; //set next to null
