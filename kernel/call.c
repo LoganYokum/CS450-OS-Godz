@@ -74,10 +74,6 @@ context *sys_call(context *c) {
         }
         dcb *d = &dcb_table[device_index];
 
-        if (d->busy_flag) { // if busy flag is set, call idle to get next process
-            return idle(c, next_process, next_context);
-        }
-
         iocb* new_iocb = sys_alloc_mem(sizeof(iocb)); //allocate memory for new iocb
         new_iocb->cur_op = op; //set op
         new_iocb->buffer = buffer; //set buffer
@@ -90,7 +86,9 @@ context *sys_call(context *c) {
         current_process->state = 0x02; //move ready head process to blocked state
         pcb_insert(current_process); //insert into blocked queue
 
-        // idle(c, next_process, next_context); //call idle to get next process
+         if (d->busy_flag) { // if busy flag is set, call idle to get next process
+            return idle(c, next_process, next_context);
+        }
 
         size_t transferred_bytes = serial_read(dev, buffer, len);
         //if it can be satisfied on the ring buffer return current context otherwise call idle
@@ -116,9 +114,6 @@ context *sys_call(context *c) {
             device_index = 3;
         }
         dcb *d = &dcb_table[device_index];
-        if (d->busy_flag) {
-            return idle(c, next_process, next_context);
-        }
         
         iocb* new_iocb = sys_alloc_mem(sizeof(iocb)); //allocate memory for new iocb
         new_iocb->cur_op = op; //set op
@@ -132,7 +127,9 @@ context *sys_call(context *c) {
         current_process->state = 0x02; //move current process to blocked state
         pcb_insert(current_process); //insert into blocked queue
 
-        // idle(c, next_process, next_context); //call idle to get next process
+        if (d->busy_flag) {
+            return idle(c, next_process, next_context);
+        }
 
         size_t transferred_bytes = serial_write(dev, buffer, len);
         if (transferred_bytes == len) {
