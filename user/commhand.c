@@ -34,7 +34,7 @@ void commhand()
         sys_req(READ, COM1, buffer, sizeof(buffer));
 
         // begin parsing buffer
-        // buffer[strlen(buffer) - 2] = ' ';
+        buffer[strlen(buffer) - 1] = ' ';
         char command_str[20] = {0}; // init char array
         command_str[19] = '\0'; // null terminator at end of string
 
@@ -76,7 +76,7 @@ void commhand()
                 continue;
             }
             //check for commands
-            if(strcmp(command_str, "version") == 0 && strcmp(param_str, "\n") == 0) { // buffer command is version
+            if(strcmp(command_str, "version") == 0 && param_str == 0) { // buffer command is version
                 version();
                 sys_req(WRITE, COM1, comp_date, strlen(comp_date));
                 sys_req(WRITE, COM1, "\r\n", 2);

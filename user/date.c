@@ -14,7 +14,7 @@
 char *getdate();
 
 void date(char *args) {
-    if (strcmp(args, "\n") == 0 || args == 0) {
+    if (args == 0 || strcmp(args, "\n") == 0) {
         char *date = getdate();
         sys_req(WRITE, COM1, strcat(date, "\n"), 10);
         

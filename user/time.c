@@ -1,4 +1,5 @@
 #include <time.h>
+#include <stddef.h>
 #include <string.h>
 #include <stdlib.h>
 #include <mpx/io.h>
@@ -14,7 +15,7 @@
 char *gettime();
 
 void time(char *args) {
-    if (strcmp(args, "\n") == 0 || args == 0) {
+    if (args == NULL || strcmp(args, "\n") == 0) {
         char *date = gettime();
         sys_req(WRITE, COM1, strcat(date, "\n"), 10);
         sys_free_mem(date);

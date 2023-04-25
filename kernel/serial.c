@@ -103,7 +103,7 @@ void serial_input_interrupt(struct dcb *dcb) {
 			return;
 		}
 		io->buffer[io->buf_idx++] = c;
-		outb(dev, c);
+		// outb(dev, c);
 		if (io->buf_idx == io->buf_len || c == '\n') { // buffer is now full or newline character
 			dcb->cur_op = IDLE;
 			dcb->event_flag = 1;
@@ -291,6 +291,7 @@ int serial_read(device dev, char *buf, size_t len) {
 	while (!empty && d->buffer[d->buf_start] != '\n' && i < len && d->buf_count > 0) {
 		buf[d->iocb_queue->buf_idx] = d->buffer[d->buf_start];
 		d->buffer[d->buf_start] = 0;
+		d->buf_count--;
 		d->iocb_queue->buf_idx++;
 		d->buf_start = (d->buf_start + 1) % d->buf_len;
 		i++;
