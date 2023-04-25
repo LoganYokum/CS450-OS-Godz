@@ -4,6 +4,7 @@
 #include <sys_req.h>
 #include <memory.h>
 
+int device_index = -1;
 pcb *current_process;
 context *first_context = NULL;
 
