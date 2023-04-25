@@ -20,11 +20,12 @@ void allocate(char *mem_size)
     }
     else
     {
-       // sys_req(WRITE, COM1, "Memory allocated at address: ", sizeof("Memory allocated at address: "));
-       success("Memory allocated at address: ");
+        char *alloc = sys_alloc_mem(100);
+        strcpy(alloc, "Memory allocated at address: ");
         char *address = dtoh((int)mem);
-        sys_req(WRITE, COM1, address, strlen(address));
-        sys_req(WRITE, COM1, "\r\n", 2);
+        strcat(alloc, address);
+        success(alloc);
+        sys_free_mem(alloc);
         sys_free_mem(address);
     }
 }
@@ -34,10 +35,11 @@ void free(char *address)
     // Do some error checking to verify that the address is valid
     if (free_memory((void *)mem_addr) == 0)
     {
-       // sys_req(WRITE, COM1, "Memory freed at: ", sizeof("Memory freed at: "));
-        success("Memory freed at: ");
-        sys_req(WRITE, COM1, address, strlen(address));
-        sys_req(WRITE, COM1, "\r\n", 2);
+        char *free_msg = sys_alloc_mem(100);
+        strcpy(free_msg, "Memory freed at: ");
+        strcat(free_msg, address);
+        success(free_msg);
+        sys_free_mem(free_msg);
     }
     else
     {

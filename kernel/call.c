@@ -57,49 +57,47 @@ context *sys_call(context *c) {
             iocb_dequeue(&d->iocb_queue); //dequeue iocb
             d->busy_flag = 0; //reset busy flag
         }
-        else if(d->busy_flag) { //device is busy
-            //dispatch new process with IDLE operation by pulling the next thing from the ready queue (icall)
-            idle((context *) current_process->stack_ptr, next_process, next_context);
-        }
     }
     if(op == READ){
-        // if(dev==COM1){
-        //     device_index = 0;
-        // }
-        // else if(dev==COM2){
-        //     device_index = 1;
-        // }
-        // else if(dev==COM3){
-        //     device_index = 2;
-        // }
-        // else if(dev==COM4){
-        //     device_index = 3;
-        // }
-        // dcb *d = &dcb_table[device_index];
+        if(dev==COM1){
+            device_index = 0;
+        }
+        else if(dev==COM2){
+            device_index = 1;
+        }
+        else if(dev==COM3){
+            device_index = 2;
+        }
+        else if(dev==COM4){
+            device_index = 3;
+        }
+        dcb *d = &dcb_table[device_index];
 
-        // iocb* new_iocb = sys_alloc_mem(sizeof(iocb)); //allocate memory for new iocb
-        // new_iocb->cur_op = op; //set op
-        // new_iocb->buffer = buffer; //set buffer
-        // new_iocb->buf_idx = 0; //set index
-        // new_iocb->buf_len = len; //set length
-        // new_iocb->process = current_process; //set process
-        // new_iocb->next = NULL; //set next to null
-        // iocb_enqueue(&(d->iocb_queue), new_iocb); //enqueue iocb
+        iocb* new_iocb = sys_alloc_mem(sizeof(iocb)); //allocate memory for new iocb
+        new_iocb->cur_op = op; //set op
+        new_iocb->buffer = buffer; //set buffer
+        new_iocb->buf_idx = 0; //set index
+        new_iocb->buf_len = len; //set length
+        new_iocb->process = current_process; //set process
+        new_iocb->next = NULL; //set next to null
+        iocb_enqueue(&(d->iocb_queue), new_iocb); //enqueue iocb
 
-        // pcb *temp_pcb = ready_head; //get pcb of ready head process
-        // pcb_remove(ready_head);
-        // temp_pcb->state = 0x02; //move ready head process to blocked state
-        // pcb_insert(temp_pcb); //insert into blocked queue
+        current_process->state = 0x02; //move ready head process to blocked state
+        pcb_insert(current_process); //insert into blocked queue
 
-        // size_t transferred_bytes = serial_read(dev, buffer, len);
-        // //if it can be satisfied on the ring buffer return current context otherwise call idle
-        // if(transferred_bytes == len){
-        //     c->eax = transferred_bytes;
-        //     return c;
-        // }
-        // return idle(c, next_process, next_context);
-        c->eax = -1;
-        return c;
+         if (d->busy_flag) { // if busy flag is set, call idle to get next process
+            return idle(c, next_process, next_context);
+        }
+
+        size_t transferred_bytes = serial_read(dev, buffer, len);
+        //if it can be satisfied on the ring buffer return current context otherwise call idle
+        if(transferred_bytes == len){
+            c->eax = transferred_bytes;
+            return c;
+        }
+        return idle(c, next_process, next_context);
+        // c->eax = -1; // for testing purposes
+        // return c;
     }
     else if(op == WRITE){
         if(dev==COM1){
@@ -116,7 +114,6 @@ context *sys_call(context *c) {
         }
         dcb *d = &dcb_table[device_index];
         
-        
         iocb* new_iocb = sys_alloc_mem(sizeof(iocb)); //allocate memory for new iocb
         new_iocb->cur_op = op; //set op
         new_iocb->buffer = buffer; //set buffer
@@ -129,8 +126,11 @@ context *sys_call(context *c) {
         current_process->state = 0x02; //move current process to blocked state
         pcb_insert(current_process); //insert into blocked queue
 
-        size_t transferred_bytes = serial_write(dev, buffer, len);
-        c->eax = transferred_bytes;
+        if (d->busy_flag) {
+            return idle(c, next_process, next_context);
+        }
+        serial_write(dev, buffer, len);
+       
         return idle(c, next_process, next_context);
     }
     else if (op == IDLE) {
@@ -155,4 +155,3 @@ context *sys_call(context *c) {
     c->eax = -1;
     return c;
 }
-
