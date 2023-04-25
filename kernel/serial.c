@@ -207,7 +207,7 @@ int serial_open(device dev, int speed) {
 		.open_flag = 1,
 		.event_flag = 0,
 		.cur_op = IDLE,
-		.buffer = (char *) sys_alloc_mem(128),
+		.buffer = sys_alloc_mem(128),
 		.buf_len = 128,
 		.buf_start = -1,
 		.buf_end = -1,
@@ -283,7 +283,6 @@ int serial_read(device dev, char *buf, size_t len) {
 		d->buf_end = 0;
 	}
 
-	// should be reading characters from ring buffer into param buffer
 	size_t i = 0, empty = 0;
 	while (!empty && d->buffer[d->buf_start] != '\n' && i < len) {
 		buf[d->iocb_queue->buf_idx] = d->buffer[d->buf_start];

@@ -101,10 +101,10 @@ void commhand()
                 else if(strcmp(param_str,"free")==0)
                     show_free();
                 else
-                    error("The command you entered is not recognized. Try again.");
+                    error(strcat(param_str, " is not a mcb command. Try again."));
             }
             else                                 // not a command
-                error("The command you entered is not recognized. Try again.");
+                error(strcat(buffer, " is not a command. Try again."));
         }
     }
     //free allocated memory
