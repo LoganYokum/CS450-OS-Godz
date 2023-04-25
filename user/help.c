@@ -15,13 +15,13 @@ void help(char *args){
         strcat(help, "4. date\n");
         strcat(help, "5. version\n");
         strcat(help, "6. pcb\n");
-        strcat(help, "7. loadr3\n");
-        strcat(help, "8. alarm\n");
-        strcat(help, "9. allocate\n");
-        strcat(help, "10. free\n");
-        strcat(help, "11. show (allocated OR free)\n");
+        // strcat(help, "7. loadr3\n");
+        strcat(help, "7. alarm\n");
+        strcat(help, "8. allocate\n");
+        strcat(help, "9. free\n");
+        strcat(help, "10. show (allocated OR free)\n");
         sys_req(WRITE, COM1, help, strlen(help));
-        sys_free_mem(help);
+        sys_free_mem(help); //free memory
         return;
     } // the param string contains a argument and none extra
     if (strcmp(args, "help") == 0){ // param = help
@@ -45,9 +45,16 @@ void help(char *args){
         strcat(help, "Example: date OR date 09/25/01\n");
         sys_req(WRITE, COM1, help, strlen(help));
     }else if(strcmp(args, "pcb") == 0){       // param = pcb
-        strcpy(help, "To use pcb, type pcb followed by an argument. The arguments for pcb are:\n1. delete name (to delete a pcb by name)\n2. block name  (to block a pcb by name)\n3. suspend name(to suspend a pcb by name)\n4. resume name (to resume a pcb by name after suspended)\n5. set priority name priority number (to set the priority of a pcb)\n6. show pcb name (to show all details of a pcb)\n7. show ready   (to show all ready pcb's)\n8. show blocked     (to show all blocked pcb's)\n9. show all    (to show all pcb's)\n10. *NO LONGER SUPPORTED* create name class priority (to create a new pcb)\n");
+        //2. *NO LONGER SUPPORTED* block name  (to block a pcb by name)\n
+        //10. *NO LONGER SUPPORTED* create name class priority (to create a new pcb)\n
+        //11. *NO LONGER SUPPORTED* unblock name  (to block a pcb by name)\n
+        strcpy(help, "To use pcb, type pcb followed by an argument. The arguments for pcb are:\n1. delete name (to delete a pcb by name)\n2. suspend name(to suspend a pcb by name)\n3. resume name (to resume a pcb by name after suspended)\n4. set priority name priority number (to set the priority of a pcb)\n5. show pcb name (to show all details of a pcb)\n6. show ready   (to show all ready pcb's)\n7. show blocked     (to show all blocked pcb's)\n8. show all    (to show all pcb's)\n");
         sys_req(WRITE, COM1, help, strlen(help));
     }
+    // else if(strcmp(args,"yield") == 0){
+    //     strcpy(help, "To use yield, simply type yield and the system will yield the current process.\n");
+    //     sys_req(WRITE, COM1, help, strlen(help));
+    // }
     else if(strcmp(args, "loadr3") == 0){     // param = loadr3
         strcpy(help, "*ONLY FOR R3* To use loadr3, simply type loadr3 and the system will load the r3 program.\n");
         sys_req(WRITE, COM1, help, strlen(help));
@@ -75,5 +82,5 @@ void help(char *args){
     else {                                //param doesnt have any matching string
         error("Incorrect parameter(s) for command: help. Try again.\n");
     }
-    sys_free_mem(help);
+    sys_free_mem(help); //free memory
 }

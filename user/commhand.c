@@ -21,8 +21,7 @@
 #define YELLOW "\033[0;33m"
 #define RESET "\033[0m"
 
-void commhand()
-{                                                                                   
+void commhand(){                                                                                   
     char* comp_date = getdate();
     char prompt[] = "> ";
     while (1) {

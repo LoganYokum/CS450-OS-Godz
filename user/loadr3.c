@@ -7,10 +7,9 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <pcb_user.h>
-//save stack_top into esp
+//save stack_top into esp ,eax has op code
 void loadr3(){
     // Create 5 system processes with different priorities.
-
     //process 1
     //setup process
     pcb *p1 = pcb_setup("proc1", 1, 0);
@@ -91,5 +90,5 @@ void loadr3(){
     //insert process into pcb list
     pcb_insert(p5);
 
-    //The five process are removed and freed from after their are dispatched and exited.
+    //The five process are removed and freed from after their are dispatched and exited. By sys_req(EXIT) in system.c
 }

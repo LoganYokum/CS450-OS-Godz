@@ -19,9 +19,7 @@ void time(char *args) {
         strcpy(date, gettime());
         strcat(date, "\n");
         sys_req(WRITE, COM1, date, 10);
-        
-        sys_free_mem(date);
-        
+        sys_free_mem(date); 
     }
     else {
         if (strlen(args) > 8 || (args[2] != ':' || args[5] != ':')) {

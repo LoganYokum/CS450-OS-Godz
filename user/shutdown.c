@@ -32,6 +32,10 @@ int shutdown(){
     char *extra_arg = strtok(NULL, " ");
     if (extra_arg != NULL && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
         error("You did not confirm shutdown. Too many arguments passed.");
+        sys_free_mem(shutdown_buf);
+        sys_free_mem(compare_str);
+        sys_free_mem(prompt);
+        sys_free_mem(shutdown);
         return 1;
     }
 
@@ -41,7 +45,20 @@ int shutdown(){
 
     if(strcmp(compare_str, "shutdown") == 0) {                  // compare string for shutdown
         //nothing to remove from queues
-        if (ready_head == NULL && suspended_ready_head == NULL && suspended_blocked_head == NULL && blocked_head == NULL) return 0;
+        if (ready_head == NULL && suspended_ready_head == NULL && suspended_blocked_head == NULL && blocked_head == NULL){
+            //free all memory in function
+            sys_free_mem(shutdown_buf);
+            sys_free_mem(compare_str);
+            sys_free_mem(prompt);
+            sys_free_mem(shutdown);
+            return 0;
+        }
+
+        //free all memory in function
+        sys_free_mem(shutdown_buf);
+        sys_free_mem(compare_str);
+        sys_free_mem(prompt);
+        sys_free_mem(shutdown);
 
         //free all lists and remove all pcb's
         list_free(ready_head);
@@ -52,5 +69,9 @@ int shutdown(){
         return 0;
     }
     error("Shutdown cancelled.");
+    sys_free_mem(shutdown_buf);
+    sys_free_mem(compare_str);
+    sys_free_mem(prompt);
+    sys_free_mem(shutdown);
     return 1;
 }

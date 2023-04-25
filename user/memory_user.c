@@ -5,21 +5,17 @@
 #include <string.h>
 #include <heap.h>
 
-void allocate(char *mem_size)
-{
+void allocate(char *mem_size){
     // Do some error checking to verify that the size is valid
-    if (!validnum(mem_size))
-    { // check if input is valid
+    if (!validnum(mem_size)){ // check if input is valid
         error("Invalid character format. Must use numbers only.");
         return;
     }
     void *mem = allocate_memory(atoi(mem_size));
-    if (mem == NULL)
-    {
+    if (mem == NULL){
         error("Memory allocation failed.");
     }
-    else
-    {
+    else{
         char *alloc = sys_alloc_mem(100);
         strcpy(alloc, "Memory allocated at address: ");
         char *address = dtoh((int)mem);
@@ -29,28 +25,23 @@ void allocate(char *mem_size)
         sys_free_mem(address);
     }
 }
-void free(char *address)
-{
+void free(char *address){
     int mem_addr = htod(address);
     // Do some error checking to verify that the address is valid
-    if (free_memory((void *)mem_addr) == 0)
-    {
+    if (free_memory((void *)mem_addr) == 0){
         char *free_msg = sys_alloc_mem(100);
         strcpy(free_msg, "Memory freed at: ");
         strcat(free_msg, address);
         success(free_msg);
         sys_free_mem(free_msg);
     }
-    else
-    {
+    else{
         error("Memory free failed.");
     }
 }
 
-void show_allocated()
-{
-    if (alloc_list == NULL)
-    {
+void show_allocated(){
+    if (alloc_list == NULL){
         sys_req(WRITE, COM1, "No allocated memory\r\n", sizeof("No allocated memory\r\n"));
         return;
     }
@@ -70,10 +61,8 @@ void show_allocated()
     }
 }
 
-void show_free()
-{
-    if (free_list == NULL)
-    {
+void show_free(){
+    if (free_list == NULL){
         sys_req(WRITE, COM1, "No free memory\r\n", sizeof("No free memory\r\n"));
         return;
     }
