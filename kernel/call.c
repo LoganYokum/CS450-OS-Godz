@@ -130,12 +130,8 @@ context *sys_call(context *c) {
         if (d->busy_flag) {
             return idle(c, next_process, next_context);
         }
-
-        size_t transferred_bytes = serial_write(dev, buffer, len);
-        if (transferred_bytes == len) {
-            next_context->eax = transferred_bytes;
-            return next_context;
-        }
+        serial_write(dev, buffer, len);
+       
         return idle(c, next_process, next_context);
     }
     else if (op == IDLE) {
