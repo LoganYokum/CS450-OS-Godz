@@ -82,7 +82,8 @@ void serial_input_interrupt(struct dcb *dcb) {
 		return;
 	}
 
-	char c = inb(dev);	
+	char c = inb(dev);
+	c = (c == '\r') ? '\n' : c; // convert carriage return to newline	
 	if (dcb->cur_op != READ) {
 		if ((dcb->buf_end + 1) % dcb->buf_len == (size_t) dcb->buf_start) { // check if ring buffer is full
 			return;
@@ -93,6 +94,7 @@ void serial_input_interrupt(struct dcb *dcb) {
 		}
 		// otherwise store the character at end of ring buffer
 		dcb->buffer[dcb->buf_end] = c;
+		dcb->buf_count++;
 		dcb->buf_end = (dcb->buf_end + 1) % dcb->buf_len;
 	}else {
 		// store the character in the first IOCB in the queue
@@ -101,6 +103,7 @@ void serial_input_interrupt(struct dcb *dcb) {
 			return;
 		}
 		io->buffer[io->buf_idx++] = c;
+		outb(dev, c);
 		if (io->buf_idx == io->buf_len || c == '\n') { // buffer is now full or newline character
 			dcb->cur_op = IDLE;
 			dcb->event_flag = 1;
@@ -208,6 +211,7 @@ int serial_open(device dev, int speed) {
 		.event_flag = 0,
 		.cur_op = IDLE,
 		.buffer = sys_alloc_mem(128),
+		.buf_count = 0,
 		.buf_len = 128,
 		.buf_start = -1,
 		.buf_end = -1,
@@ -284,7 +288,7 @@ int serial_read(device dev, char *buf, size_t len) {
 	}
 
 	size_t i = 0, empty = 0;
-	while (!empty && d->buffer[d->buf_start] != '\n' && i < len) {
+	while (!empty && d->buffer[d->buf_start] != '\n' && i < len && d->buf_count > 0) {
 		buf[d->iocb_queue->buf_idx] = d->buffer[d->buf_start];
 		d->buffer[d->buf_start] = 0;
 		d->iocb_queue->buf_idx++;
@@ -299,7 +303,7 @@ int serial_read(device dev, char *buf, size_t len) {
 		}
 	}
 
-	if (i < len) return i+1; // did not read full buffer
+	if (i < len) return i; // did not read full buffer
 	
 	d->cur_op = IDLE;
 	d->event_flag = 1;

@@ -34,7 +34,7 @@ void commhand()
         sys_req(READ, COM1, buffer, sizeof(buffer));
 
         // begin parsing buffer
-        buffer[strlen(buffer) - 2] = ' ';
+        // buffer[strlen(buffer) - 2] = ' ';
         char command_str[20] = {0}; // init char array
         command_str[19] = '\0'; // null terminator at end of string
 

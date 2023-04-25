@@ -15,6 +15,7 @@ struct dcb {
     int event_flag;
     op_code cur_op;
     char *buffer;
+    size_t buf_count;
     size_t buf_len;
     int buf_start;
     int buf_end;
