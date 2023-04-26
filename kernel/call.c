@@ -4,9 +4,9 @@
 #include <sys_req.h>
 #include <memory.h>
 
-int device_index = -1;
 pcb *current_process;
 context *first_context = NULL;
+int device_index = -1;
 
 context *idle(context *c, pcb *next_process, context *next_context) {
     if (first_context == NULL) {
@@ -46,7 +46,7 @@ context *sys_call(context *c) {
 
     for (int i = 0; i < 4; i++) {
         dcb *d = &dcb_table[i];
-        if(d->event_flag == 1 && d->open_flag == 1 && !d->busy_flag){ //IF EVENT FLAG IS SET, CHECK FOR IOCB QUEUE FOR COMPLETION
+        if(d->event_flag == 1 && d->open_flag == 1){ //IF EVENT FLAG IS SET, CHECK FOR IOCB QUEUE FOR COMPLETION
             iocb *temp_iocb = d->iocb_queue; //GET IOCB FROM QUEUE
             next_process = temp_iocb->process; //get pcb of iocb 
             pcb_remove(next_process); //remove from blocked queue
