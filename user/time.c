@@ -16,10 +16,9 @@ char *gettime();
 
 void time(char *args) {
     if (args == NULL || strcmp(args, "\n") == 0) {
-        char *date = gettime();
-        sys_req(WRITE, COM1, strcat(date, "\n"), 10);
-        sys_free_mem(date);
-        
+        char *time = gettime();
+        sys_req(WRITE, COM1, strcat(time, "\n"), strlen(strcat(time, "\n")));
+        sys_free_mem(time);
     }
     else {
         if (strlen(args) > 8 || (args[2] != ':' || args[5] != ':')) {

@@ -25,8 +25,8 @@ void allocate(char *mem_size){
         sys_free_mem(address);
     }
 }
-void free(char *address)
-{
+
+void free(char *address){
     if (address == NULL) {
         error("Invalid address.");
         return;
@@ -51,6 +51,7 @@ void show_allocated(){
         return;
     }
     mcb *cur = alloc_list;
+    sys_req(WRITE, COM1, "\r\n", strlen("\r\n"));
     while (cur != NULL) {
         char *address = dtoh((int)cur->start_addr);
         sys_req(WRITE, COM1, "Allocated memory at: ", sizeof("Allocated memory at: "));
@@ -72,6 +73,7 @@ void show_free(){
         return;
     }
     mcb *cur = free_list;
+    sys_req(WRITE, COM1, "\r\n", strlen("\r\n"));
     while (cur != NULL) {
         char* address = dtoh((int)cur->start_addr);
         sys_req(WRITE, COM1, "Free memory at ", sizeof("Free memory at "));

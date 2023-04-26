@@ -90,15 +90,8 @@ context *sys_call(context *c) {
             return idle(c, next_process, next_context);
         }
 
-        size_t transferred_bytes = serial_read(dev, buffer, len);
-        //if it can be satisfied on the ring buffer return current context otherwise call idle
-        if(transferred_bytes == len){
-            c->eax = transferred_bytes;
-            return c;
-        }
+        serial_read(dev, buffer, len);
         return idle(c, next_process, next_context);
-        // c->eax = -1; // for testing purposes
-        // return c;
     }
     else if(op == WRITE){
         if(dev==COM1){

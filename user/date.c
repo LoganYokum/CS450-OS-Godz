@@ -16,10 +16,10 @@ char *getdate();
 void date(char *args) {
     if (args == 0 || strcmp(args, "\n") == 0) {
         char *date = getdate();
-        sys_req(WRITE, COM1, strcat(date, "\n"), 10);
-        
+        sys_req(WRITE, COM1, strcat(date, "\n"), strlen(strcat(date, "\n")));
         sys_free_mem(date);
-    } else {
+    } 
+    else {
         if (strlen(args) != 8 || (args[2] != '/' || args[5] != '/')) {
             error("Invalid date format. Use MM/DD/YY");
             return;
