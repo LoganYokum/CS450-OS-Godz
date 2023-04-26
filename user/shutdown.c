@@ -10,13 +10,14 @@
 
 int shutdown(){
 
-    char shutdown_buf[12] = {0};    // init shutdown buffer char array
-    shutdown_buf[11] = '\0';        // null terminator at end of string
+    char shutdown_buf[100] = {0};    // init shutdown buffer char array
+    shutdown_buf[99] = '\0';        // null terminator at end of string
     char compare_str[10] = {0};     // init char compare array
     compare_str[9] = '\0';          // null terminator at end of string
 
     char prompt[] = "> ";
     char shutdown[] = "You selected shutdown. Retype shutdown to confirm.\n";
+    sys_req(IDLE);
     sys_req(WRITE, COM1, shutdown, sizeof(shutdown));
     sys_req(WRITE, COM1, prompt, sizeof(prompt));           // add prompt to output    
     sys_req(READ,COM1,shutdown_buf,strlen(shutdown_buf));   // read in buffer for confirmation

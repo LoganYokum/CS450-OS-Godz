@@ -134,6 +134,7 @@ void alarm_exec() {
                 return;
             }
         }
+        sys_free_mem(curr_time);
         sys_req(IDLE);
     }
 }
