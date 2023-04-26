@@ -12,12 +12,10 @@ void allocate(char *mem_size){
         return;
     }
     void *mem = allocate_memory(atoi(mem_size));
-    if (mem == NULL)
-    {
+    if (mem == NULL){
         error("Memory allocation failed.");
     }
-    else
-    {
+    else{
         char *alloc = sys_alloc_mem(100);
         strcpy(alloc, "Memory allocated at address: ");
         char *address = dtoh((int)mem);
@@ -35,16 +33,14 @@ void free(char *address){
     }
     int mem_addr = htod(address);
     // Do some error checking to verify that the address is valid
-    if (free_memory((void *)mem_addr) == 0)
-    {
+    if (free_memory((void *)mem_addr) == 0){
         char *free_msg = sys_alloc_mem(100);
         strcpy(free_msg, "Memory freed at: ");
         strcat(free_msg, address);
         success(free_msg);
         sys_free_mem(free_msg);
     }
-    else
-    {
+    else{
         error("Memory free failed.");
     }
 }
@@ -55,7 +51,6 @@ void show_allocated(){
         return;
     }
     mcb *cur = alloc_list;
-    sys_req(WRITE, COM1, "\r\n", strlen("\r\n"));
     while (cur != NULL) {
         char *address = dtoh((int)cur->start_addr);
         sys_req(WRITE, COM1, "Allocated memory at: ", sizeof("Allocated memory at: "));
@@ -77,7 +72,6 @@ void show_free(){
         return;
     }
     mcb *cur = free_list;
-    sys_req(WRITE, COM1, "\r\n", strlen("\r\n"));
     while (cur != NULL) {
         char* address = dtoh((int)cur->start_addr);
         sys_req(WRITE, COM1, "Free memory at ", sizeof("Free memory at "));
