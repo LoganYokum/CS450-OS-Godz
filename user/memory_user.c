@@ -7,8 +7,8 @@
 
 void allocate(char *mem_size){
     // Do some error checking to verify that the size is valid
-    if (!validnum(mem_size)){ // check if input is valid
-        error("Invalid character format. Must use numbers only.");
+    if (mem_size == NULL || !validnum(mem_size)) {
+        error("Invalid memory size. Must use numbers only.");
         return;
     }
     void *mem = allocate_memory(atoi(mem_size));
@@ -25,7 +25,12 @@ void allocate(char *mem_size){
         sys_free_mem(address);
     }
 }
-void free(char *address){
+void free(char *address)
+{
+    if (address == NULL) {
+        error("Invalid address.");
+        return;
+    }
     int mem_addr = htod(address);
     // Do some error checking to verify that the address is valid
     if (free_memory((void *)mem_addr) == 0){

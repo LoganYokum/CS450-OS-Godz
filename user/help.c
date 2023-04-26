@@ -7,7 +7,7 @@
 
 void help(char *args){
     char *help = sys_alloc_mem(1000);
-    if  (strcmp(args, "\n") == 0) {    // only the argument string contains \n and no extra params
+    if  (args == 0 || strcmp(args, "\n") == 0) {    // only the argument string contains \n and no extra params
         strcpy(help, "The list of commands you can receive help on include:\n");
         strcat(help, "1. help\n");
         strcat(help, "2. shutdown\n");

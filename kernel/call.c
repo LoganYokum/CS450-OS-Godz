@@ -74,14 +74,14 @@ context *sys_call(context *c) {
         }
         dcb *d = &dcb_table[device_index];
 
-        iocb* new_iocb = sys_alloc_mem(sizeof(iocb)); //allocate memory for new iocb
-        new_iocb->cur_op = op; //set op
-        new_iocb->buffer = buffer; //set buffer
-        new_iocb->buf_idx = 0; //set index
-        new_iocb->buf_len = len; //set length
-        new_iocb->process = current_process; //set process
-        new_iocb->next = NULL; //set next to null
-        iocb_enqueue(&(d->iocb_queue), new_iocb); //enqueue iocb
+        iocb* new_io = sys_alloc_mem(sizeof(iocb)); //allocate memory for new iocb
+        new_io->cur_op = op; //set op
+        new_io->buffer = buffer; //set buffer
+        new_io->buf_idx = 0; //set index
+        new_io->buf_len = len; //set length
+        new_io->process = current_process; //set process
+        new_io->next = NULL; //set next to null
+        iocb_enqueue(&(d->iocb_queue), new_io); //enqueue iocb
 
         current_process->state = 0x02; //move ready head process to blocked state
         pcb_insert(current_process); //insert into blocked queue
@@ -115,14 +115,14 @@ context *sys_call(context *c) {
         }
         dcb *d = &dcb_table[device_index];
         
-        iocb* new_iocb = sys_alloc_mem(sizeof(iocb)); //allocate memory for new iocb
-        new_iocb->cur_op = op; //set op
-        new_iocb->buffer = buffer; //set buffer
-        new_iocb->buf_idx = 0; //set index
-        new_iocb->buf_len = len; //set length
-        new_iocb->process = current_process; //set process
-        new_iocb->next = NULL; //set next to null
-        iocb_enqueue(&(d->iocb_queue), new_iocb); //enqueue iocb
+        iocb* new_io = sys_alloc_mem(sizeof(iocb)); //allocate memory for new iocb
+        new_io->cur_op = op; //set op
+        new_io->buffer = buffer; //set buffer
+        new_io->buf_idx = 0; //set index
+        new_io->buf_len = len; //set length
+        new_io->process = current_process; //set process
+        new_io->next = NULL; //set next to null
+        iocb_enqueue(&(d->iocb_queue), new_io); //enqueue iocb
 
         current_process->state = 0x02; //move current process to blocked state
         pcb_insert(current_process); //insert into blocked queue
