@@ -23,6 +23,13 @@ enum uart_registers {
 	SCR = 7,	// Scratch
 };
 
+#define BACKSPACE 0x08
+#define DELETE 0x7F
+#define CARRIAGE_RETURN 0x0D
+#define NEWLINE 0x0A
+
+void serial_isr(); // interrupt service routine prototype
+
 static int initialized[4] = { 0 };
 dcb dcb_table[4];
 
@@ -81,7 +88,8 @@ void serial_input_interrupt(struct dcb *dcb) {
 		return;
 	}
 
-	char c = inb(dev);	
+	char c = inb(dev);
+	c = (c == '\r') ? '\n' : c; // convert carriage return to newline	
 	if (dcb->cur_op != READ) {
 		if ((dcb->buf_end + 1) % dcb->buf_len == (size_t) dcb->buf_start) { // check if ring buffer is full
 			return;
@@ -91,7 +99,9 @@ void serial_input_interrupt(struct dcb *dcb) {
 			dcb->buf_end = 0;
 		}
 		// otherwise store the character at end of ring buffer
+		outb(dev, c);
 		dcb->buffer[dcb->buf_end] = c;
+		dcb->buf_count++;
 		dcb->buf_end = (dcb->buf_end + 1) % dcb->buf_len;
 	}else {
 		// store the character in the first IOCB in the queue
@@ -100,6 +110,8 @@ void serial_input_interrupt(struct dcb *dcb) {
 			return;
 		}
 		io->buffer[io->buf_idx++] = c;
+		
+		outb(dev, c); // echo the character back to the terminal
 		if (io->buf_idx == io->buf_len || c == '\n') { // buffer is now full or newline character
 			dcb->cur_op = IDLE;
 			dcb->event_flag = 1;
@@ -129,7 +141,7 @@ void serial_output_interrupt(struct dcb *dcb) {
 		return;
 	}
 
-	if (io->buffer[io->buf_idx] == '\0') { // end of buffer
+	if (io->buf_idx == io->buf_len) { // end of buffer
 		int ier = inb(dev + IER);
 		ier &= ~0x02;
 		outb(dev + IER, ier); // disable output interrupts
@@ -144,21 +156,25 @@ void serial_output_interrupt(struct dcb *dcb) {
 void serial_interrupt() {
 	device dev = 0;
 	// check which device caused the interrupt
-	if ((inb(COM1 + IIR) & 0x01) == 0) {
+	int iir = -1;
+	if (((iir = inb(COM1 + IIR)) & 0x01) == 0) {
 		dev = COM1;
-	}else if ((inb(COM2 + IIR) & 0x01) == 0) {
+	}else if (((iir = inb(COM2 + IIR)) & 0x01) == 0) {
 		dev = COM2;
-	}else if ((inb(COM3 + IIR) & 0x01) == 0) {
+	}else if (((iir = inb(COM3 + IIR)) & 0x01) == 0) {
 		dev = COM3;
-	}else if ((inb(COM4 + IIR) & 0x01) == 0) {
+	}else if (((iir = inb(COM4 + IIR)) & 0x01) == 0) {
 		dev = COM4;
 	}
 	dcb *d = &dcb_table[serial_devno(dev)];
+	if (d->open_flag == 0) {
+		outb(0x20, 0x20); // issue EOI to PIC to clear interrupt
+		return;
+	}
 
-	int iir = inb(dev + IIR);
-	if (iir & 0x02) { // bit 1 (output)
+	if ((iir & 0x06) == 0x02) { // bit 1 (output)
 		serial_output_interrupt(d);
-	}else if (iir & 0x04) { // bit 2 (input)
+	}else if ((iir & 0x06) == 0x04) { // bit 2 (input)
 		serial_input_interrupt(d);
 	}
 	outb(0x20, 0x20); // issue EOI to PIC to clear interrupt
@@ -169,7 +185,7 @@ int serial_open(device dev, int speed) {
 	if (dno == -1) {
 		return -1;
 	}
-	if (dcb_table[dno].open_flag) { // check if device is already open
+	if ((&dcb_table[dno])->open_flag) { // check if device is already open
 		return -103;
 	}
 
@@ -202,32 +218,30 @@ int serial_open(device dev, int speed) {
 		.open_flag = 1,
 		.event_flag = 0,
 		.cur_op = IDLE,
-		.buffer = NULL,
+		.buffer = sys_alloc_mem(128),
+		.buf_count = 0,
 		.buf_len = 128,
-		.buf_start = 0,
-		.buf_end = 0,
+		.buf_start = -1,
+		.buf_end = -1,
 		.iocb_queue = NULL
 	};
 
 	int vector = (dev == COM1 || dev == COM3) ? 0x24 : 0x23; // IRQ4 or IRQ3
-	idt_install(vector, serial_interrupt);
+	idt_install(vector, serial_isr);
 
 	outb(dev + LCR, 0x80);	//set line control register	
 	outb(dev + DLL, dll); 	//set bsd least sig bit
 	outb(dev + DLM, dlm);	//brd most significant bit
 	outb(dev + LCR, 0x03);	//lock divisor; 8bits, no parity, one stop
-	outb(dev + MCR, 0x08);
+	outb(dev + MCR, 0x0B); 	// enable interrupts
 	outb(dev + IER, 0x01);	//enable input ready interrupts
 
 	cli();
 	int mask = inb(0x21);
 	int irq = (dev == COM1 || dev == COM3) ? 4 : 3; // IRQ4 or IRQ3
-	mask &= (~1 << (irq - 1)); 
+	mask &= ~(1 << irq); 
 	outb(0x21, mask); // enable hardware IRQ4 or IRQ3
 	sti();
-
-	outb(dev + MCR, 0x08); // enable serial port interrupts
-	outb(dev + IER, 0x01); // enable interrupts
 
 	return 0;
 }
@@ -246,7 +260,7 @@ int serial_close(device dev) {
 	cli();
 	int mask = inb(0x21);
 	int irq = (dev == COM1 || dev == COM3) ? 4 : 3; // IRQ4 or IRQ3
-	mask |= (1 << (irq - 1));
+	mask |= (1 << irq);
 	outb(0x21, mask); // disable hardware IRQ4 or IRQ3
 	sti();
 
@@ -276,16 +290,21 @@ int serial_read(device dev, char *buf, size_t len) {
 	d->event_flag = 0;
 	d->cur_op = READ;
 
-	size_t i = 0, empty = 0; 
-	while (!empty && d->buffer[d->buf_start] != '\n' && i < len) {
-		empty = (d->buf_start == d->buf_end);
+	if (d->buf_start == -1) {
+		d->buf_start = 0;
+		d->buf_end = 0;
+	}
 
+	size_t i = 0, empty = 0;
+	while (!empty && d->buffer[d->buf_start] != '\n' && i < len && d->buf_count > 0) {
 		buf[d->iocb_queue->buf_idx] = d->buffer[d->buf_start];
 		d->buffer[d->buf_start] = 0;
-		d->iocb_queue->buf_idx += 1;
+		d->buf_count--;
+		d->iocb_queue->buf_idx++;
 		d->buf_start = (d->buf_start + 1) % d->buf_len;
 		i++;
 
+		empty = (d->buf_start == d->buf_end);
 		if (empty) {
 			d->buf_start = -1;
 			d->buf_end = -1;
@@ -293,11 +312,11 @@ int serial_read(device dev, char *buf, size_t len) {
 		}
 	}
 
-	if (i < len) return i+1;
+	if (i < len) return i; // did not read full buffer
 	
 	d->cur_op = IDLE;
 	d->event_flag = 1;
-	return len;
+	return len; // read full buffer
 }
 
 int serial_write(device dev, char *buf, size_t len) {
@@ -351,12 +370,6 @@ void iocb_enqueue(iocb **io_queue, iocb *io) {
 	}
 	cur->next = io;
 }
-
-
-#define BACKSPACE 0x08
-#define DELETE 0x7F
-#define CARRIAGE_RETURN 0x0D
-#define NEWLINE 0x0A
 
 int serial_poll(device dev, char *buffer, size_t len)
 {

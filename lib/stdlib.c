@@ -149,26 +149,23 @@ int validnum(const char *s) {
 	return 1;
 }
 
-int println(const char* message){
-	sys_req(WRITE, COM1, message, strlen(message));
-	sys_req(WRITE, COM1, "\r\n", 2);
-    return (int)strlen(message);
-}
-
-void error(const char *message){
+void error(const char *message) {
 	sys_req(WRITE, COM1, RED, strlen(RED));
-	println(message);
+	sys_req(WRITE, COM1, message, strlen(message));
 	sys_req(WRITE, COM1, RESET, strlen(RESET));
+	sys_req(WRITE, COM1, "\n", 1);
 }
 
-void success(const char *message){
+void success(const char *message) {
 	sys_req(WRITE, COM1, GREEN, strlen(GREEN));
-	println(message);
+	sys_req(WRITE, COM1, message, strlen(message));
 	sys_req(WRITE, COM1, RESET, strlen(RESET));
+	sys_req(WRITE, COM1, "\n", 1);
 }
 
-void alarm_output(const char *message){
-	sys_req(WRITE, COM1, YELLOW, strlen(GREEN));
-	println(message);
+void alarm_output(const char *message) {
+	sys_req(WRITE, COM1, YELLOW, strlen(YELLOW));
+	sys_req(WRITE, COM1, message, strlen(message));
 	sys_req(WRITE, COM1, RESET, strlen(RESET));
+	sys_req(WRITE, COM1, "\n", 1);
 }

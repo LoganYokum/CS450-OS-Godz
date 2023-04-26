@@ -3,19 +3,22 @@
 #include <commhand.h>
 #include <sys_req.h>
 #include <string.h>
+#include <memory.h>
 #include <ctype.h>
 #include <mpx/pcb.h>
 #include <pcb_user.h>
 
 int shutdown(){
 
-    char shutdown_buf[12] = {0};    // init shutdown buffer char array
-    shutdown_buf[11] = '\0';        // null terminator at end of string
+    char shutdown_buf[100] = {0};    // init shutdown buffer char array
+    shutdown_buf[99] = '\0';        // null terminator at end of string
     char compare_str[10] = {0};     // init char compare array
     compare_str[9] = '\0';          // null terminator at end of string
 
     char prompt[] = "> ";
-    println("You selected shutdown. Retype shutdown to confirm.");
+    char shutdown[] = "You selected shutdown. Retype shutdown to confirm.\n";
+    sys_req(IDLE);
+    sys_req(WRITE, COM1, shutdown, sizeof(shutdown));
     sys_req(WRITE, COM1, prompt, sizeof(prompt));           // add prompt to output    
     sys_req(READ,COM1,shutdown_buf,strlen(shutdown_buf));   // read in buffer for confirmation
 
@@ -30,6 +33,10 @@ int shutdown(){
     char *extra_arg = strtok(NULL, " ");
     if (extra_arg != NULL && strcmp(extra_arg, "\n") != 0) { // check for extra arguments in buffer
         error("You did not confirm shutdown. Too many arguments passed.");
+        sys_free_mem(shutdown_buf);
+        sys_free_mem(compare_str);
+        sys_free_mem(prompt);
+        sys_free_mem(shutdown);
         return 1;
     }
 
@@ -39,7 +46,20 @@ int shutdown(){
 
     if(strcmp(compare_str, "shutdown") == 0) {                  // compare string for shutdown
         //nothing to remove from queues
-        if (ready_head == NULL && suspended_ready_head == NULL && suspended_blocked_head == NULL && blocked_head == NULL) return 0;
+        if (ready_head == NULL && suspended_ready_head == NULL && suspended_blocked_head == NULL && blocked_head == NULL){
+            //free all memory in function
+            sys_free_mem(shutdown_buf);
+            sys_free_mem(compare_str);
+            sys_free_mem(prompt);
+            sys_free_mem(shutdown);
+            return 0;
+        }
+
+        //free all memory in function
+        sys_free_mem(shutdown_buf);
+        sys_free_mem(compare_str);
+        sys_free_mem(prompt);
+        sys_free_mem(shutdown);
 
         //free all lists and remove all pcb's
         list_free(ready_head);
@@ -50,5 +70,9 @@ int shutdown(){
         return 0;
     }
     error("Shutdown cancelled.");
+    sys_free_mem(shutdown_buf);
+    sys_free_mem(compare_str);
+    sys_free_mem(prompt);
+    sys_free_mem(shutdown);
     return 1;
 }

@@ -5,54 +5,53 @@
 #include <string.h>
 #include <heap.h>
 
-void allocate(char *mem_size)
-{
+void allocate(char *mem_size){
     // Do some error checking to verify that the size is valid
-    if (!validnum(mem_size))
-    { // check if input is valid
-        error("Invalid character format. Must use numbers only.");
+    if (mem_size == NULL || !validnum(mem_size)) {
+        error("Invalid memory size. Must use numbers only.");
         return;
     }
     void *mem = allocate_memory(atoi(mem_size));
-    if (mem == NULL)
-    {
+    if (mem == NULL){
         error("Memory allocation failed.");
     }
-    else
-    {
-       // sys_req(WRITE, COM1, "Memory allocated at address: ", sizeof("Memory allocated at address: "));
-       success("Memory allocated at address: ");
+    else{
+        char *alloc = sys_alloc_mem(100);
+        strcpy(alloc, "Memory allocated at address: ");
         char *address = dtoh((int)mem);
-        sys_req(WRITE, COM1, address, strlen(address));
-        sys_req(WRITE, COM1, "\r\n", 2);
+        strcat(alloc, address);
+        success(alloc);
+        sys_free_mem(alloc);
         sys_free_mem(address);
     }
 }
-void free(char *address)
-{
+
+void free(char *address){
+    if (address == NULL) {
+        error("Invalid address.");
+        return;
+    }
     int mem_addr = htod(address);
     // Do some error checking to verify that the address is valid
-    if (free_memory((void *)mem_addr) == 0)
-    {
-       // sys_req(WRITE, COM1, "Memory freed at: ", sizeof("Memory freed at: "));
-        success("Memory freed at: ");
-        sys_req(WRITE, COM1, address, strlen(address));
-        sys_req(WRITE, COM1, "\r\n", 2);
+    if (free_memory((void *)mem_addr) == 0){
+        char *free_msg = sys_alloc_mem(100);
+        strcpy(free_msg, "Memory freed at: ");
+        strcat(free_msg, address);
+        success(free_msg);
+        sys_free_mem(free_msg);
     }
-    else
-    {
+    else{
         error("Memory free failed.");
     }
 }
 
-void show_allocated()
-{
-    if (alloc_list == NULL)
-    {
+void show_allocated(){
+    if (alloc_list == NULL){
         sys_req(WRITE, COM1, "No allocated memory\r\n", sizeof("No allocated memory\r\n"));
         return;
     }
     mcb *cur = alloc_list;
+    sys_req(WRITE, COM1, "\r\n", strlen("\r\n"));
     while (cur != NULL) {
         char *address = dtoh((int)cur->start_addr);
         sys_req(WRITE, COM1, "Allocated memory at: ", sizeof("Allocated memory at: "));
@@ -68,14 +67,13 @@ void show_allocated()
     }
 }
 
-void show_free()
-{
-    if (free_list == NULL)
-    {
+void show_free(){
+    if (free_list == NULL){
         sys_req(WRITE, COM1, "No free memory\r\n", sizeof("No free memory\r\n"));
         return;
     }
     mcb *cur = free_list;
+    sys_req(WRITE, COM1, "\r\n", strlen("\r\n"));
     while (cur != NULL) {
         char* address = dtoh((int)cur->start_addr);
         sys_req(WRITE, COM1, "Free memory at ", sizeof("Free memory at "));

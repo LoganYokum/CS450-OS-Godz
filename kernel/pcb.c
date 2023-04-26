@@ -129,9 +129,11 @@ void list_insert_blocked(pcb **head, pcb *p) {
         cur = cur->next;
     }
     cur->next = p;
+    p->next = NULL; // interesting little change
 }
 
 void pcb_insert(pcb *p) {
+    pcb_remove(p);
     if (p->state == 1) {  // pcb state is ready, not suspended (0x01)
         list_insert_ready(&ready_head, p);
     }else if (p->state == 2) { // pcb state is blocked, not suspended (0x02)
