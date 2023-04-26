@@ -6,6 +6,7 @@
 #include <memory.h>
 #include <ctype.h>
 #include <mpx/pcb.h>
+#include <mpx/serial.h>
 #include <pcb_user.h>
 
 int shutdown(){
@@ -66,6 +67,8 @@ int shutdown(){
         list_free(suspended_ready_head);
         list_free(suspended_blocked_head);
         list_free(blocked_head);
+
+        serial_close(COM1);
 
         return 0;
     }

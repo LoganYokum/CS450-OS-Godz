@@ -16,8 +16,10 @@ char *gettime();
 
 void time(char *args) {
     if (args == NULL || strcmp(args, "\n") == 0) {
-        char *time = gettime();
-        sys_req(WRITE, COM1, strcat(time, "\n"), strlen(strcat(time, "\n")));
+        char *time = sys_alloc_mem(20);
+        strcpy(time, gettime());
+        strcat(time, "\n");
+        sys_req(WRITE, COM1, time, strlen(time));
         sys_free_mem(time);
     }
     else {
