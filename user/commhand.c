@@ -22,7 +22,7 @@
 #define RESET "\033[0m"
 
 void commhand(){                                                                                   
-    char* comp_date = getdate();
+    char* comp_date = __DATE__;
     char prompt[] = "> ";
     while (1) {
         char buffer[100] = {0};

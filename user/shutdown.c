@@ -22,7 +22,6 @@ int shutdown(){
     sys_req(WRITE, COM1, shutdown, sizeof(shutdown));
     sys_req(WRITE, COM1, prompt, sizeof(prompt));           // add prompt to output    
     sys_req(READ,COM1,shutdown_buf,strlen(shutdown_buf));   // read in buffer for confirmation
-
     shutdown_buf[strlen(shutdown_buf) - 2] = ' ';                   //for strtok 
 
     int spaces = 0;
@@ -49,18 +48,8 @@ int shutdown(){
         //nothing to remove from queues
         if (ready_head == NULL && suspended_ready_head == NULL && suspended_blocked_head == NULL && blocked_head == NULL){
             //free all memory in function
-            sys_free_mem(shutdown_buf);
-            sys_free_mem(compare_str);
-            sys_free_mem(prompt);
-            sys_free_mem(shutdown);
             return 0;
         }
-
-        //free all memory in function
-        sys_free_mem(shutdown_buf);
-        sys_free_mem(compare_str);
-        sys_free_mem(prompt);
-        sys_free_mem(shutdown);
 
         //free all lists and remove all pcb's
         list_free(ready_head);
