@@ -22,6 +22,11 @@ enum uart_registers {
 	SCR = 7,	// Scratch
 };
 
+#define BACKSPACE 0x08
+#define DELETE 0x7F
+#define CARRIAGE_RETURN 0x0D
+#define NEWLINE 0x0A
+
 void serial_isr(); // interrupt service routine prototype
 
 static int initialized[4] = { 0 };
@@ -93,6 +98,7 @@ void serial_input_interrupt(struct dcb *dcb) {
 			dcb->buf_end = 0;
 		}
 		// otherwise store the character at end of ring buffer
+		outb(dev, c);
 		dcb->buffer[dcb->buf_end] = c;
 		dcb->buf_count++;
 		dcb->buf_end = (dcb->buf_end + 1) % dcb->buf_len;
@@ -103,7 +109,8 @@ void serial_input_interrupt(struct dcb *dcb) {
 			return;
 		}
 		io->buffer[io->buf_idx++] = c;
-		// outb(dev, c);
+		
+		outb(dev, c); // echo the character back to the terminal
 		if (io->buf_idx == io->buf_len || c == '\n') { // buffer is now full or newline character
 			dcb->cur_op = IDLE;
 			dcb->event_flag = 1;
@@ -362,12 +369,6 @@ void iocb_enqueue(iocb **io_queue, iocb *io) {
 	}
 	cur->next = io;
 }
-
-
-#define BACKSPACE 0x08
-#define DELETE 0x7F
-#define CARRIAGE_RETURN 0x0D
-#define NEWLINE 0x0A
 
 int serial_poll(device dev, char *buffer, size_t len)
 {
